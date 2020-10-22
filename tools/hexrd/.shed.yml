@@ -1,0 +1,9 @@
+categories:
+- Imaging
+description: High energy diffraction data analysis
+homepage_url: https://github.com/HEXRD/hexrd
+long_description: High energy diffraction data analysis. Process rotation image series
+  to find grain orientations, and extracts G vectors, grain position and strain
+name: hexrd
+owner: ximgchess
+remote_repository_url: https://github.com/ximg-chess/galaxytools/tools/hexrd
