@@ -11,3 +11,10 @@ Procedure for adding and updating tools:
   - commit your changes
   - push your changes to your github fork
   - on your github fork: compare to ximg-chess/galaxytools and create a pull request
+  
+Information links for developing galaxy tools:
+  - https://docs.galaxyproject.org/en/latest/index.html
+  - https://galaxyproject.org/tools/
+  - https://galaxy-iuc-standards.readthedocs.io/en/latest/best_practices.html
+  - https://docs.galaxyproject.org/en/latest/dev/schema.html
+  - https://planemo.readthedocs.io/en/latest/index.html
