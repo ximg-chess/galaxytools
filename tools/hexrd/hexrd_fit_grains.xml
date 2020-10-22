@@ -1,0 +1,67 @@
+<tool id="hexrd_fit_grains" name="HEXRD fit-grains" version="@TOOL_VERSION@.0" python_template_version="3.5">
+    <description>Extracts G vectors, grain position and strain</description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements" />
+    <command detect_errors="exit_code"><![CDATA[
+        cp '$config_yml' $config &&
+        cp '$config_yml' config.yml &&
+        ## symlink input files
+        @FIT_GRAIN_LINKS@
+        hexrd fit-grains config.yml &&
+        cp analysis/*.log '$log' 
+    ]]></command>
+    <configfiles>
+        <configfile name="config_yml"><![CDATA[@FIT_GRAINS_YML@
+]]></configfile>
+    </configfiles>
+    <inputs>
+        <expand macro="fit_grains_config"/>
+    </inputs>
+    <outputs>
+        <data name="config" format="hexrd.yml" label="${tool.name} on ${on_string}: ${active_material}_config.yml"/>
+        <data name="log" format="txt" label="${tool.name} on ${on_string}:fit_grains_analysis_${active_material}.log"/>
+        <data name="grains" format="txt" label="${tool.name} on ${on_string}: grains.out" from_work_dir="analysis/grains.out" />
+    </outputs>
+    <tests>
+        <test>
+            <repeat name="detectors">
+                <param name="panel" value="GE"/>
+                <param name="inputs" ftype="hexrd.npz" value="RUBY_0000-fc_GE.npz,RUBY_0001-fc_GE.npz,RUBY_0002-fc_GE.npz,RUBY_0003-fc_GE.npz,RUBY_0004-fc_GE.npz,RUBY_0005-fc_GE.npz"/>
+            </repeat>
+            <param name="instrument" ftype="hexrd.yml" value="ge_detector.yml"/>
+            <param name="material" ftype="material.hexrd" value="materials_py38.hexrd"/>
+            <param name="active_material" value="ruby"/>
+            <param name="ome_map" ftype="hexrd.npz" value="analysis_ruby_eta-ome_maps.npz"/>
+            <param name="accepted_orientations" ftype="tabular" value="accepted_orientations_analysis_ruby.dat"/>
+            <param name="do_fit" value="true"/>
+            <param name="npdiv" value="2"/>
+            <param name="threshold" value="25"/>
+            <section name="tolerance">
+                <repeat name="tolerance_lists">
+                    <param name="tth" value="0.25"/>
+                    <param name="eta" value="3.0"/>
+                    <param name="omega" value="2.0"/>
+                    <param name="refit" value="1"/>
+                </repeat>
+                <repeat name="tolerance_lists">
+                    <param name="tth" value="0.20"/>
+                    <param name="eta" value="2.0"/>
+                    <param name="omega" value="1.0"/>
+                    <param name="refit" value="1"/>
+                </repeat>
+                <param name="tth_max" value="14.25"/>
+            </section>
+            <output name="grains">
+                <assert_contents>
+                    <has_text text="6.6655" />
+                </assert_contents>
+            </output>
+        </test>
+    </tests>
+    <help><![CDATA[
+        TODO: Fill in help.
+    ]]></help>
+    <expand macro="citations" />
+</tool>
