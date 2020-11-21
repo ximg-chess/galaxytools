@@ -9,8 +9,10 @@
         cp '$config_yml' config.yml &&
         ## symlink input files
         @FIT_GRAIN_LINKS@
-        hexrd fit-grains config.yml &&
-        cp analysis/*.log '$log' 
+        hexrd fit-grains config.yml -f &&
+        cp analysis/*.log '$log' && 
+        @CONVERT2TAB@ 
+        && for i in analysis/*/spots*.out; do dest=`echo \${i\#*/} | tr '/' '_'`; mv \${i} analysis/\$dest; done
     ]]></command>
     <configfiles>
         <configfile name="config_yml"><![CDATA[@FIT_GRAINS_YML@
@@ -22,19 +24,23 @@
     <outputs>
         <data name="config" format="hexrd.yml" label="${tool.name} on ${on_string}: ${active_material}_config.yml"/>
         <data name="log" format="txt" label="${tool.name} on ${on_string}:fit_grains_analysis_${active_material}.log"/>
-        <data name="grains" format="txt" label="${tool.name} on ${on_string}: grains.out" from_work_dir="analysis/grains.out" />
+        <data name="grains" format="tabular" label="${tool.name} on ${on_string}: grains.out" from_work_dir="analysis/grains.out" />
+        <collection name="spots" type="list" label="${tool.name} on ${on_string}:spots">
+            <discover_datasets pattern="(?P&lt;designation&gt;.+_spots.+\.out)" ext="tabular" directory="analysis"/>
+        </collection>
     </outputs>
     <tests>
         <test>
-            <repeat name="detectors">
-                <param name="panel" value="GE"/>
-                <param name="inputs" ftype="hexrd.npz" value="RUBY_0000-fc_GE.npz,RUBY_0001-fc_GE.npz,RUBY_0002-fc_GE.npz,RUBY_0003-fc_GE.npz,RUBY_0004-fc_GE.npz,RUBY_0005-fc_GE.npz"/>
-            </repeat>
+            <param name="inputs" ftype="hexrd.npz" value="RUBY_0000-fc_GE.npz,RUBY_0001-fc_GE.npz,RUBY_0002-fc_GE.npz,RUBY_0003-fc_GE.npz,RUBY_0004-fc_GE.npz,RUBY_0005-fc_GE.npz"/>
+            <conditional name="detector">
+                <param name="panel_assignment" value="infer_from_name"/>
+            </conditional>
             <param name="instrument" ftype="hexrd.yml" value="ge_detector.yml"/>
             <param name="material" ftype="material.hexrd" value="materials_py38.hexrd"/>
             <param name="active_material" value="ruby"/>
             <param name="ome_map" ftype="hexrd.npz" value="analysis_ruby_eta-ome_maps.npz"/>
             <param name="accepted_orientations" ftype="tabular" value="accepted_orientations_analysis_ruby.dat"/>
+            <param name="grains_estimate" ftype="tabular" value="grains.out"/>
             <param name="do_fit" value="true"/>
             <param name="npdiv" value="2"/>
             <param name="threshold" value="25"/>
