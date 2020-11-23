@@ -288,7 +288,18 @@ find_orientations:
             <param name="refit" type="text" value="1" label="refit">
                 <validator type="regex" message="">^\d(,\d)*$</validator>
             </param>
-            <param name="tth_max" type="float" value="14.25" label="tth_max"/>
+            <conditional name="max_tth">
+                <param name="tth_max_value" type="select" label="Set tth_max">
+                    <option value="true" selected="true">true</option>
+                    <option value="false">false</option>
+                    <option value="entered">enter value</option>
+		</param> 
+                <when value="true"/>
+                <when value="false"/>
+                <when value="entered">
+                    <param name="tth_max" type="float" value="14.25" label="tth_max"/>
+	        </when>
+	  </conditional>
         </section>
     </xml>
 
@@ -322,7 +333,11 @@ $omega.append(float($tol.omega))
     omega: $omega
 
   refit: $refit
-  tth_max: $tolerance.tth_max # true, false, or a non-negative value, defaults to true
+  #if $tolerance.max_tth.tth_max_value == 'entered':
+  tth_max: $tolerance.max_tth.tth_max # true, false, or a non-negative value, defaults to true
+  #else
+  tth_max: $tolerance.max_tth.tth_max_value # true, false, or a non-negative value, defaults to true
+  #end if
 ]]></token>
 
 </macros>
