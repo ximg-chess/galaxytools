@@ -7,3 +7,17 @@ long_description: High energy diffraction data analysis. Process rotation image 
 name: hexrd
 owner: ximgchess
 remote_repository_url: https://github.com/ximg-chess/galaxytools/tools/hexrd
+exclude:
+  - test-data/RUBY_0000-fc_GE.npz
+  - test-data/RUBY_0001-fc_GE.npz
+  - test-data/RUBY_0002-fc_GE.npz
+  - test-data/RUBY_0003-fc_GE.npz
+  - test-data/RUBY_0004-fc_GE.npz
+  - test-data/RUBY_0005-fc_GE.npz
+  - test-data/accepted_orientations_analysis_ruby.dat
+  - test-data/analysis_ruby_eta-ome_maps.npz
+  - test-data/ge_detector.yml
+  - test-data/grains.out
+  - test-data/materials_py38.hexrd
+  - test-data/ruby_combo_image_panel.tsv
+  - test-data/ruby_config.yml
