@@ -13,6 +13,7 @@ Procedure for adding and updating tools:
   - on your github fork: compare to ximg-chess/galaxytools and create a pull request
   
 Information links for developing galaxy tools:
+  - https://training.galaxyproject.org/training-material/topics/dev/tutorials/tool-integration/slides.html
   - https://docs.galaxyproject.org/en/latest/index.html
   - https://galaxyproject.org/tools/
   - https://galaxy-iuc-standards.readthedocs.io/en/latest/best_practices.html
