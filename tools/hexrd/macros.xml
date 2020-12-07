@@ -124,8 +124,10 @@ image_series:
         <section name="orientation_maps" title="Orientation Maps" expanded="true">
             <param name="threshold" type="integer" value="25" min="1" label="threshold"/>
             <param name="bin_frames" type="integer" value="1" label="bin frames"/>
-            <param name="active_hkls" type="text" value="" optional="true" label="active hkls">
-                <validator type="regex" message="">^\d(,\d)*$</validator>
+            <!-- active_hkls should be able to be optional="true" -->
+            <param name="active_hkls" type="text" value="" label="active hkl planes"> 
+                <help>commas separated list of planes, e.g.: 0,1,2,3,4,5</help>
+                <validator type="regex" message="plane indeces separated by commas">^\d(,\d)*$</validator>
 	    </param> 
         </section>
         <param name="on_map_threshold" type="integer" value="1" min="1" label="on-map threshold used in the scoring"/>
@@ -136,7 +138,9 @@ image_series:
                     <option value="use_quaternion_grid">use quaternion grid</option>
                 </param>
                 <when value="seed_search">
-                    <param name="hkl_seeds" type="text" value="" optional="true" label="hkl seeds">
+                    <!-- hkl_seeds should be able to be optional="true" -->
+                    <param name="hkl_seeds" type="text" value="" label="hkl seeds">
+                        <help>commas separated list of planes, e.g.: 0,1,2 (subset of active hkl planes)</help>
                         <validator type="regex" message="">^\d(,\d)*$</validator>
     	        </param> 
                     <param name="fiber_step" type="float" value="0.5" min="0" max="10" label="fiber step"/>
@@ -311,11 +315,8 @@ find_orientations:
 
 fit_grains:
   do_fit: $do_fit # if false, extracts grains but doesn't fit. defaults to true
-
   # estimate: null
-
   npdiv: $npdiv # number of polar pixel grid subdivisions, defaults to 2
-
   threshold: $threshold
 
 #set $tth = []
@@ -323,9 +324,9 @@ fit_grains:
 #set $omega = []
 #set refit = '[' + str($tolerance.refit) + ']'
 #for $tol in $tolerance.tolerance_lists
-$tth.append(float($tol.tth))
-$eta.append(float($tol.eta))
-$omega.append(float($tol.omega))
+#silent $tth.append(float($tol.tth))
+#silent $eta.append(float($tol.eta))
+#silent $omega.append(float($tol.omega))
 #end for
   tolerance:
     tth: $tth # tolerance lists must be identical length
@@ -339,5 +340,42 @@ $omega.append(float($tol.omega))
   tth_max: $tolerance.max_tth.tth_max_value # true, false, or a non-negative value, defaults to true
   #end if
 ]]></token>
+    <token name="@HEXRD_HELP@"><![CDATA[
+HEXRD_ provides analysis of x-ray diffraction data, especially high-energy x-ray diffraction. HEXRD is comprised of a library and API for writing scripts, a command line interface, and an interactive graphical user interface.
+
+.. _HEXRD: https://github.com/HEXRD/hexrd
+]]></token>
+
+    <token name="@COMMON_INPUTS_HELP@"><![CDATA[
+
+**INPUTS** 
+
+  - imageseries - Detector image files converted to sparse matrix compressed numpy arrays.  
+  - instrument - A yaml file that decribes the instrument 
+  - materials.hexrd - A "pickled" hexrd Materials object that desscribes the sample material
+]]></token>
+    <token name="@FIT_GRAIN_INPUTS_HELP@"><![CDATA[@COMMON_INPUTS_HELP@
+  - analysis eta-ome_maps.npz from find_orientations
+  - accepted_orientations from find_orientations
+
+]]></token>
+
+    <token name="@COMMON_OUTPUTS_HELP@"><![CDATA[
+
+**OUTPUTS**
+
+  - config yaml - parameter for hexrd
+  - log - the hexrd logging output
+  - grains.out
+]]></token>
+    <token name="@FIND_ORIENTATIONS_OUTPUTS_HELP@"><![CDATA[@COMMON_OUTPUTS_HELP@
+  - analysis eta-ome_maps.npz *(used as input for hexrd fit-grains)*
+  - analysis accepted_orientations_analysis.dat *(used as input for hexrd fit-grains)*
+  - analysis scored_orientations_analysis.npz
+]]></token>
+    <token name="@FIT_GRAINS_OUTPUTS_HELP@"><![CDATA[@COMMON_OUTPUTS_HELP@
+  - Collection of spots.out
+]]></token>
+
 
 </macros>
