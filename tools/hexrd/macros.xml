@@ -1,5 +1,6 @@
 <macros>
-    <token name="@TOOL_VERSION@">0.8.0</token>
+    <token name="@TOOL_VERSION@">0.8.4</token>
+    <token name="@VERSION_SUFFIX@">0</token>
     <xml name="requirements">
         <requirements>
         <requirement type="package" version="@TOOL_VERSION@">hexrd</requirement>
@@ -72,7 +73,7 @@
             </when>
         </conditional>
         <param name="instrument" type="data" format="hexrd.yml" label="instrument"/>
-        <param name="material" type="data" format="material.hexrd" label="material"/>
+        <param name="material" type="data" format="hexrd.materials.h5" label="material"/>
         <param name="active_material" type="text" value="" label="active material name">
             <validator type="empty_field" />
         </param>
@@ -80,7 +81,7 @@
 
     <token name="@CMD_LINKS@"><![CDATA[@CMD_IMPORTS@
 mkdir -p imageseries &&
-ln -s '$material' $ln_name($material,'hexrd') &&
+ln -s '$material' $ln_name($material,'h5') &&
 ln -s '$instrument' $ln_name($instrument,'yml') &&
 #for $input in $inputs
 ln -s '$input' imageseries/$ln_name($input,'npz') &&
@@ -103,7 +104,7 @@ analysis_name: analysis
 multiprocessing: -1
 
 material:
-  definitions: $ln_name($material,'hexrd')
+  definitions: $ln_name($material,'h5')
   active: $active_material
 
 instrument: $ln_name($instrument,'yml')
