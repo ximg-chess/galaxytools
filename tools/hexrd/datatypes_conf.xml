@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <datatypes>
   <registration>
-    <datatype extension="material.hexrd" type="galaxy.datatypes.binary:Binary" subclass="true" display_in_upload="true"/>
+    <datatype extension="hexrd.materials.h5" type="galaxy.datatypes.binary:H5" subclass="true" display_in_upload="true"/>
     <datatype extension="hexrd.npz" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="true"/>
     <datatype extension="hexrd.yml" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="true"/>
   </registration>
