@@ -18,6 +18,6 @@ exclude:
   - test-data/analysis_ruby_eta-ome_maps.npz
   - test-data/ge_detector.yml
   - test-data/grains.out
-  - test-data/materials_py38.hexrd
+  - test-data/materials.h5
   - test-data/ruby_combo_image_panel.tsv
   - test-data/ruby_config.yml
