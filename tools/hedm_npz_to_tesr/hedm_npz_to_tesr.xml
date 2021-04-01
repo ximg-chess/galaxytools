@@ -1,0 +1,51 @@
+<tool id="hedm_npz_to_tesr" name="HEDM to tesr" version="0.1.0" python_template_version="3.5">
+    <description>Convert HEDM npz to a Neper tesr</description>
+    <requirements>
+        <requirement type="package" version="1.19">numpy</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        $__tool_directory__/hedm_npz_to_tesr.py 
+        --voxel_spacing $voxel_spacing 
+        #if $names.x_name:
+            -x '$names.x_name'
+        #end if 
+        #if $names.y_name:
+            -y '$names.y_name'
+        #end if 
+        #if $names.z_name:
+            -z '$names.z_name'
+        #end if 
+        #if $names.grain_map:
+            --grain_map '$names.grain_map'
+        #end if 
+        '$input' 
+        '$output'
+    ]]></command>
+    <inputs>
+        <!-- change format to approriate npz subclass when available -->
+        <param name="input" type="data" format="zip" label="HEDM npz file"/>
+        <param name="voxel_spacing" type="float" value="0.005" min="0" label="Voxel spacing"/>
+        <section name="names" expanded="false" title="Specify names used in HEDM.npz input file">
+            <param name="x_name" type="text" value="" label="Name of the X array in the input" optional="true" help="Deafault is a name containing 'X'"/>
+            <param name="y_name" type="text" value="" label="Name of the Y array in the input" optional="true" help="Deafault is a name containing 'Y'"/>
+            <param name="z_name" type="text" value="" label="Name of the Z array in the input" optional="true" help="Deafault is a name containing 'Z'"/>
+            <param name="grain_map" type="text" value="" label="Name of the grain map in the input" optional="true" help="Deafault is a name containing 'grain'"/>
+	</section>
+    </inputs>
+    <outputs>
+        <!-- output format should be changed to tesr when that is available -->
+        <data name="output" format="txt" label="${input.name.rsplit(sep='.',maxsplit=1)[0]}.tesr"/>
+    </outputs>
+    <tests>
+        <test>
+            <!-- change format to approriate npz subclass when available -->
+            <param name="input" ftype="zip" value="HEDM_map.npz"/>
+            <output name="output" file="HEDM_map.tesr"/> 
+        </test>
+    </tests>
+    <help><![CDATA[
+        Create a neper compatible tesr format file from a HEDM numpy compressed file.  
+        The converter will look for columns named: Xs, Ys, Zs, and grain_map by default,
+        If the input file uses different names, the user should specify them.
+    ]]></help>
+</tool>
