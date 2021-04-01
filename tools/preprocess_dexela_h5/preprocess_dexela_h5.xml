@@ -1,0 +1,79 @@
+<tool id="preprocess_dexela_h5" name="Preprocess Dexla" version="0.1.0" python_template_version="3.5">
+    <description>H5 files</description>
+    <requirements>
+        <requirement type="package" version="0.8.0">hexrd</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        #import os.path
+        ## Flatten scan number list
+        #set $scans = [i for a in [(int(j[0]),int(j[-1])+1) for j in [x.split(':') for x in $scan_numbers.split(',')]] for i in range(a[0],a[1])] 
+        #set $scanlist = '\n'.join($scans)
+        ## create output_dir
+        CWD = `pwd`
+        && ln -s '$base_dir' output_dir
+        && cd '$base_dir'
+        ## Use xargs to run jobs in parallel 
+        && printf "$scanlist" | xargs -n1 -P\${GALAXY_SLOTS} -I{} 
+            python '$__tool_directory__/preprocess_dexela_h5.py' '$base_dir' '$experiment_name' '$sample_name'{} 
+            --start-frame $start_frame
+            --num-frames $ num_frames
+            --threshold $threshold
+            --ome-start $start_omega
+            --ome-end $end_omega
+        ## copy imagseries file paths 
+        #if 'paths' in $select_outputs:
+        && find '$base_dir' -name '*.npz' > '$imageseries'
+        #end if
+    ]]></command>
+    <inputs>
+        <param name="facility" type="text" value="" label="Facility with the raw data">
+            <validator type="empty_field" />
+        </param>
+        <param name="framecache_dir" type="text" value="" label="Directory sub directory for framecache">
+            <validator type="empty_field" />
+        </param>
+        <param name="base_dir" type="text" value="" label="Data directory path on remote server">
+            <validator type="empty_field" />
+        </param>
+        <param name="experiment_name" type="text" value="" label="Experiment name">
+            <validator type="empty_field" />
+        </param>
+        <param name="sample_name" type="text" value="" label="Sample name">
+            <validator type="empty_field" />
+        </param>
+        <param name="scan_numbers" type="text" value="" label="Scan numbers">
+            <help>scan numbers or scan number ranges separated by commas
+                  the scan number list: 5,7,8,9,20,21,22,23,30 
+                  can also be enterd as: 5,7:9,20:23,30
+            </help> 
+            <validator type="regex" message="Not a valid scan number list">^(\d+|\d+:\d+)(,(\d+|\d+:\d+))*$</validator>
+            <validator type="empty_field" />
+        </param>
+        <param name="num_frames" type="integer" value="1441" min="1" label="Number of frames to read"/>
+        <param name="start_frame" type="integer" value="4" min="1" label="Index of first data frame"/>
+        <param name="threshold" type="integer" value="50" min="1" label="Threshold for frame caches"/>
+        <param name="start_omega" type="float" value="0." label="Start omega"/>
+        <param name="end_omega" type="float" value="360." label="End omega"/>
+        <param name="select_outputs" type="select" multiple="true" label="Select outputs">
+            <option value="paths" selected="true">File with imageseries file paths</option> 
+            <option value="framecache" selected="true">Dataset Collection of framecache</option> 
+        </param>
+    </inputs>
+    <outputs>
+        <data name="imageseries" format="tabular" label="${experiment_name} ${sample_name} imageseries">
+            <filter>'paths' in select_outputs</filter>
+        </data>
+        <collection name="framecache" type="list" label="${experiment_name} ${sample_name}:Image series frame-cache">
+            <filter>'framecache' in select_outputs</filter>
+            <discover_datasets pattern="(?P&lt;designation&gt;.npz)" ext="hexrd.npz" directory="output_dir"/>
+        </collection>
+    </outputs>
+    <tests>
+    </tests>
+    <help><![CDATA[
+        TODO: Fill in help.
+    ]]></help>
+    <citations>
+        <citation type="doi">10.1016/j.matchar.2020.110366</citation>
+    </citations>
+</tool>
