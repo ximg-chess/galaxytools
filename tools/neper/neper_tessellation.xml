@@ -1,0 +1,155 @@
+<tool id="neper_tessellation" name="Neper Tessellation" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
+    <description>generates polycrystals as tessellations</description>
+    <macros>
+        <import>macros.xml</import>
+        <xml name="input_spectrums" token_multiple="false" token_filetype="Spectrum">
+            <param name="spectrums" type="data" format="mzml" multiple="@MULTIPLE@" label="MS/MS @FILETYPE@ files"/>
+        </xml>
+
+    </macros>
+    <expand macro="requirements" />
+    <expand macro="version_command" />
+    <command detect_errors="exit_code"><![CDATA[
+        neper -T 
+        #if $cells.format == 'number':
+          -n $cells.number_of_cells
+        ## #elif $cells.format == 'from_morpho':
+        #end if
+        #if $output.format == 'tess':
+           -o output.tess 
+        #elif $output.format == 'tesr'
+           -o output.tesr 
+           #if $output.tesrformat:
+               -tesrformat '$output.tesrformat'
+           #end if
+           #if $output.tesrsize:
+               -tesrsize '$output.tesrsize'
+           #end if
+        #end if
+    ]]></command>
+    <inputs>
+        <!-- Should we make profiles for common ways this is used -->
+        <!--
+        <conditional name="profile">
+            <param name="format" type="select" label="Specify number of cells by">
+                <option value="simple">number</option>
+                <option value="morpho">Use morpho with tesr input</option>
+                <option value="expression"></option>
+            </param>
+        </conditional>
+        -->
+        
+        <conditional name="cells">
+            <param name="format" type="select" label="Specify number of cells by">
+                <option value="number">number</option>
+                <option value="from_morpho">from_morpho</option>
+                <option value="expression"></option>
+            </param>
+            <when value="number">
+                <param name="number_of_cells" argument="-n" type="integer" value="10" min="1" label="the number of cells of the tessellation"/>
+            </when>
+            <when value="from_morpho">
+                <param name="number_of_cells" argument="-n" type="integer" value="" min="1" optional="true" label="the number of cells of the tessellation"/>
+            </when>
+            <when value="expression">
+            </when>
+        </conditional>
+        <param name="id" argument="-id" type="integer" value="" min="1" optional="true" label="identifier of the tessellation" 
+            help="It defines the seed used by the random number generator to compute the (initial) seed positions."/>
+
+        <!--
+        <conditional name="morph">
+            <param name="morphology" type="select" label="morphology">
+                <option value="voronoi">Poisson-Voronoi tessellation (voronoi)</option>
+                <option value="graingrowth">grain-growth statistical properties (graingrowth)</option>
+                <option value="centroidal">centroidal tessellation (centroidal)</option>
+                <option value="cube">regular tessellation into cubic cells: cube(N1,N2,N3)</option>
+                <option value="square">regular tessellation into square cells: square(N1,N2)</option>
+                <option value="tocta">truncated octahedra: tocta(N)</option>
+                <option value="lamellar">lamellar(w=w,v=v,pos=pos)</option>
+                <option value="size">size</option>
+                <option value="diameq">diameq</option>
+                <option value="sphericity">sphericity</option>
+                <option value="circularity">circularity</option>
+            </param>
+            <when value="voronoi`">
+            </when>
+        </conditional>
+        <param name="loadtess" argument="-loadtess" type="data" format="tess" label="Load a tessellation from a file"/>
+        <param name="loadtesr" argument="-loadtesr" type="data" format="tess" label="Load a raster tessellation from a file"/>
+        -->
+
+        <conditional name="output">
+            <param name="format" argument="-format" type="select" label="Output format">
+                <option value="tess" selected="true">Neper scalar tessellation file (.tess)</option>
+                <option value="tesr">Neper raster tessellation file (.tesr)</option>
+                <!--  TODO
+                <option value="geo">Gmsh scalar tessellation file (.geo)</option>
+                <option value="ply">Ply scalar tessellation file (.ply)</option>
+                <option value="ply">Ply scalar tessellation file (.ply)</option>
+                <option value="vtk">VTK raster file (.vtk)</option>
+                -->
+            </param>
+            <when value="tess">
+                <!-- macro for oridescriptor -->
+            </when>
+            <when value="tesr">
+                <param name="tesrformat" argument="-tesrformat" type="select" optional="true" label="TESR format">
+                    <option value="ascii">ASCII</option>
+                    <option value="binary8">8-bit binary / unsigned char-type</option>
+                    <option value="binary16">16-bit binary / short-type little endian</option>
+                    <option value="binary16_big">16-bit binary / short-type big endian</option>
+                    <option value="binary32">32-bit binary / int-type little endian</option>
+                    <option value="binary32_big">32-bit binary / int-type big endian</option>
+                </param>
+                <param name="tesrsize" argument="-tesrsize" type="text" value="" optional="true" label="TESR size">
+                    <help><![CDATA[
+Specify the number of points of a raster tessellation along a direction of the domain. In case of a domain of different lengths along the different directions, the argument stands for the geometrical average of the number of points along the different directions, so that the raster points are as close to cubic as possible. To specify different values along the x, y and z directions, combine the values with ‘:’. Default value: 20
+                    ]]></help>
+                    <validator type="regex" message="integer sizes">[1-9]\d(:[1-9]\d+){,2}</validator>
+                </param>
+                <!-- macro for oridescriptor -->
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="output_tess" format="neper.tess" label="${tool.name} on ${on_string} tess" from_work_dir="output.tess">
+            <filter>output['format'] == 'tess'</filter>
+        </data>
+        <data name="output_tesr" format="neper.tesr" label="${tool.name} on ${on_string} tesr" from_work_dir="output.tesr">
+            <filter>output['format'] == 'tesr'</filter>
+        </data>
+    </outputs>
+    <tests>
+        <!-- Test-1  neper -T -n 4 -->
+        <test>
+            <conditional name="cells">
+                <param name="format" value="number"/>
+                <param name="number_of_cells" value="4"/>
+            </conditional>
+            <output name="output_tess"> 
+                <assert_contents>
+                    <has_text text="***tess" />
+                    <has_text_matching expression="[*][*]cell\n  4\n  [*]id\n   1 2 3 4\n"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test neper -T -n from_morpho -domain "cube(0.5,0.5,0.5)" -morpho "tesr:file(example_tesr.tesr)" -morphooptiobj "tesr:pts(region=surf,res=7)" -morphooptistop itermax=30 -reg 1 -->
+    </tests>
+    <help><![CDATA[
+**Neper Tessellation**
+
+@NEPER_HELP@
+
+Neper Tessellation Module *-T* generates polycrystals as tessellations. The two main capabilities are: 
+
+  (i) the generation of tessellations from cell properties (e.g. a size distribution) 
+  (ii) the genera- tion of multiscale tessellations (i.e. including cell subdivisions). 
+
+These capabilities can also be used together. Tessellations are Laguerre (or Voronoi) tessellations and are therefore composed of convex cells. Once generated, the tessellations can be “regularized” by removing their smallest features (edges and faces), which then enables good-quality meshing with module -M. Periodicity conditions can be prescribed. Crystal orientations are pro- vided for the cells.
+
+ The output is a tessellation file written at a scalar (vectorial) or raster format. Scalar tessellations are intended to be passed to modules -M and -V while raster tessellations can be used by FFT solvers.
+
+    ]]></help>
+    <expand macro="citations" />
+</tool>

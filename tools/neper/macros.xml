@@ -1,0 +1,32 @@
+<macros>
+    <token name="@TOOL_VERSION@">4.1.2</token>
+    <token name="@VERSION_SUFFIX@">0</token>
+    <xml name="requirements">
+        <requirements>
+            <requirement type="package" version="@TOOL_VERSION@">neper</requirement>
+            <!-- These aren't available on galaxy default channels
+            <requirement type="package" version="3.7.0.8">povray</requirement>
+            <requirement type="package" version="4.6.0">gmsh</requirement>
+            -->
+            <yield/>
+        </requirements>
+    </xml>
+    <xml name="citations">
+        <citations>
+            <citation type="doi">10.1016/j.cma.2011.01.002</citation>
+            <citation type="doi">10.1016/j.cma.2017.10.029</citation>
+            <citation type="doi">10.1107/S1600576718009019</citation>
+            <yield />
+        </citations>
+    </xml>
+    <xml name="version_command">
+        <version_command>neper --version</version_command>
+    </xml>
+    <token name="@NEPER_HELP@">
+Neper_ is a software package for polycrystal generation and meshing. The polycrystals can be 2D or 3D.
+See the neper user manual for a complete description: https://neper.info/docs/neper.pdf
+
+.. _Neper: https://github.com/rquey/neper
+
+    </token>
+</macros>
