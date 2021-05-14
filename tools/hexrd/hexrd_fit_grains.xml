@@ -1,4 +1,4 @@
-<tool id="hexrd_fit_grains" name="HEXRD fit-grains" version="@TOOL_VERSION@.0" python_template_version="3.5">
+<tool id="hexrd_fit_grains" name="HEXRD fit-grains" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
     <description>Extracts G vectors, grain position and strain</description>
     <macros>
         <import>macros.xml</import>
@@ -36,7 +36,7 @@
                 <param name="panel_assignment" value="infer_from_name"/>
             </conditional>
             <param name="instrument" ftype="hexrd.yml" value="ge_detector.yml"/>
-            <param name="material" ftype="material.hexrd" value="materials_py38.hexrd"/>
+            <param name="material" ftype="hexrd.materials.h5" value="materials.h5"/>
             <param name="active_material" value="ruby"/>
             <param name="ome_map" ftype="hexrd.npz" value="analysis_ruby_eta-ome_maps.npz"/>
             <param name="accepted_orientations" ftype="tabular" value="accepted_orientations_analysis_ruby.dat"/>
@@ -67,7 +67,10 @@
         </test>
     </tests>
     <help><![CDATA[
-        TODO: Fill in help.
+**HEXRD fit-grains**
+@HEXRD_HELP@
+@FIT_GRAIN_INPUTS_HELP@
+@FIT_GRAINS_OUTPUTS_HELP@
     ]]></help>
     <expand macro="citations" />
 </tool>
