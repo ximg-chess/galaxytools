@@ -23,13 +23,13 @@
     ]]></command>
     <inputs>
         <!-- change format to approriate npz subclass when available -->
-        <param name="input" type="data" format="zip" label="HEDM npz file"/>
+        <param name="input" type="data" format="npz" label="HEDM npz file"/>
         <param name="voxel_spacing" type="float" value="0.005" min="0" label="Voxel spacing"/>
         <section name="names" expanded="false" title="Specify names used in HEDM.npz input file">
-            <param name="x_name" type="text" value="" label="Name of the X array in the input" optional="true" help="Deafault is a name containing 'X'"/>
-            <param name="y_name" type="text" value="" label="Name of the Y array in the input" optional="true" help="Deafault is a name containing 'Y'"/>
-            <param name="z_name" type="text" value="" label="Name of the Z array in the input" optional="true" help="Deafault is a name containing 'Z'"/>
-            <param name="grain_map" type="text" value="" label="Name of the grain map in the input" optional="true" help="Deafault is a name containing 'grain'"/>
+            <param name="x_name" type="text" value="" label="Name of the X array in the input" optional="true" help="Default is a name containing 'X'"/>
+            <param name="y_name" type="text" value="" label="Name of the Y array in the input" optional="true" help="Default is a name containing 'Y'"/>
+            <param name="z_name" type="text" value="" label="Name of the Z array in the input" optional="true" help="Default is a name containing 'Z'"/>
+            <param name="grain_map" type="text" value="" label="Name of the grain map in the input" optional="true" help="Default is a name containing 'grain'"/>
 	</section>
     </inputs>
     <outputs>
