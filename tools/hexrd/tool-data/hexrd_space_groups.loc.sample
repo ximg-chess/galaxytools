@@ -1,0 +1,531 @@
+#value	name	lattice_type
+1	SpaceGroup: 1  Hall: P 1  Laue: P 1  Lattice: c1	triclinic
+2	SpaceGroup: 2  Hall: -P 1  Laue: P -1  Lattice: ci	triclinic
+3	SpaceGroup: 3:b  Hall: P 2y  Laue: P 1 2 1  Lattice: c2	monoclinic
+3	SpaceGroup: 3:c  Hall: P 2y  Laue: P 1 2 1  Lattice: c2	monoclinic
+3	SpaceGroup: 3:a  Hall: P 2y  Laue: P 1 2 1  Lattice: c2	monoclinic
+4	SpaceGroup: 4:b  Hall: P 2yb  Laue: P 1 21 1  Lattice: c2	monoclinic
+4	SpaceGroup: 4:c  Hall: P 2yb  Laue: P 1 21 1  Lattice: c2	monoclinic
+4	SpaceGroup: 4:a  Hall: P 2yb  Laue: P 1 21 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:b1  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:b2  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:b3  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:c1  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:c2  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:c3  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:a1  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:a2  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+5	SpaceGroup: 5:a3  Hall: C 2y  Laue: C 1 2 1  Lattice: c2	monoclinic
+6	SpaceGroup: 6:b  Hall: P -2y  Laue: P 1 m 1  Lattice: cs	monoclinic
+6	SpaceGroup: 6:c  Hall: P -2y  Laue: P 1 m 1  Lattice: cs	monoclinic
+6	SpaceGroup: 6:a  Hall: P -2y  Laue: P 1 m 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:b1  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:b2  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:b3  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:c1  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:c2  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:c3  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:a1  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:a2  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+7	SpaceGroup: 7:a3  Hall: P -2yc  Laue: P 1 c 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:b1  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:b2  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:b3  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:c1  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:c2  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:c3  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:a1  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:a2  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+8	SpaceGroup: 8:a3  Hall: C -2y  Laue: C 1 m 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:b1  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:b2  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:b3  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-b1  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-b2  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-b3  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:c1  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:c2  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:c3  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-c1  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-c2  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-c3  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:a1  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:a2  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:a3  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-a1  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-a2  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+9	SpaceGroup: 9:-a3  Hall: C -2yc  Laue: C 1 c 1  Lattice: cs	monoclinic
+10	SpaceGroup: 10:b  Hall: -P 2y  Laue: P 1 2/m 1  Lattice: c2h	monoclinic
+10	SpaceGroup: 10:c  Hall: -P 2y  Laue: P 1 2/m 1  Lattice: c2h	monoclinic
+10	SpaceGroup: 10:a  Hall: -P 2y  Laue: P 1 2/m 1  Lattice: c2h	monoclinic
+11	SpaceGroup: 11:b  Hall: -P 2yb  Laue: P 1 21/m 1  Lattice: c2h	monoclinic
+11	SpaceGroup: 11:c  Hall: -P 2yb  Laue: P 1 21/m 1  Lattice: c2h	monoclinic
+11	SpaceGroup: 11:a  Hall: -P 2yb  Laue: P 1 21/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:b1  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:b2  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:b3  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:c1  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:c2  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:c3  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:a1  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:a2  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+12	SpaceGroup: 12:a3  Hall: -C 2y  Laue: C 1 2/m 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:b1  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:b2  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:b3  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:c1  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:c2  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:c3  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:a1  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:a2  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+13	SpaceGroup: 13:a3  Hall: -P 2yc  Laue: P 1 2/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:b1  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:b2  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:b3  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:c1  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:c2  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:c3  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:a1  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:a2  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+14	SpaceGroup: 14:a3  Hall: -P 2ybc  Laue: P 1 21/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:b1  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:b2  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:b3  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-b1  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-b2  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-b3  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:c1  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:c2  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:c3  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-c1  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-c2  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-c3  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:a1  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:a2  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:a3  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-a1  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-a2  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+15	SpaceGroup: 15:-a3  Hall: -C 2yc  Laue: C 1 2/c 1  Lattice: c2h	monoclinic
+16	SpaceGroup: 16  Hall: P 2 2  Laue: P 2 2 2  Lattice: d2	orthorhombic
+17	SpaceGroup: 17  Hall: P 2c 2  Laue: P 2 2 21  Lattice: d2	orthorhombic
+17	SpaceGroup: 17:cab  Hall: P 2c 2  Laue: P 2 2 21  Lattice: d2	orthorhombic
+17	SpaceGroup: 17:bca  Hall: P 2c 2  Laue: P 2 2 21  Lattice: d2	orthorhombic
+18	SpaceGroup: 18  Hall: P 2 2ab  Laue: P 21 21 2  Lattice: d2	orthorhombic
+18	SpaceGroup: 18:cab  Hall: P 2 2ab  Laue: P 21 21 2  Lattice: d2	orthorhombic
+18	SpaceGroup: 18:bca  Hall: P 2 2ab  Laue: P 21 21 2  Lattice: d2	orthorhombic
+19	SpaceGroup: 19  Hall: P 2ac 2ab  Laue: P 21 21 21  Lattice: d2	orthorhombic
+20	SpaceGroup: 20  Hall: C 2c 2  Laue: C 2 2 21  Lattice: d2	orthorhombic
+20	SpaceGroup: 20:cab  Hall: C 2c 2  Laue: C 2 2 21  Lattice: d2	orthorhombic
+20	SpaceGroup: 20:bca  Hall: C 2c 2  Laue: C 2 2 21  Lattice: d2	orthorhombic
+21	SpaceGroup: 21  Hall: C 2 2  Laue: C 2 2 2  Lattice: d2	orthorhombic
+21	SpaceGroup: 21:cab  Hall: C 2 2  Laue: C 2 2 2  Lattice: d2	orthorhombic
+21	SpaceGroup: 21:bca  Hall: C 2 2  Laue: C 2 2 2  Lattice: d2	orthorhombic
+22	SpaceGroup: 22  Hall: F 2 2  Laue: F 2 2 2  Lattice: d2	orthorhombic
+23	SpaceGroup: 23  Hall: I 2 2  Laue: I 2 2 2  Lattice: d2	orthorhombic
+24	SpaceGroup: 24  Hall: I 2b 2c  Laue: I 21 21 21  Lattice: d2	orthorhombic
+25	SpaceGroup: 25  Hall: P 2 -2  Laue: P m m 2  Lattice: c2v	orthorhombic
+25	SpaceGroup: 25:cab  Hall: P 2 -2  Laue: P m m 2  Lattice: c2v	orthorhombic
+25	SpaceGroup: 25:bca  Hall: P 2 -2  Laue: P m m 2  Lattice: c2v	orthorhombic
+26	SpaceGroup: 26  Hall: P 2c -2  Laue: P m c 21  Lattice: c2v	orthorhombic
+26	SpaceGroup: 26:ba-c  Hall: P 2c -2  Laue: P m c 21  Lattice: c2v	orthorhombic
+26	SpaceGroup: 26:cab  Hall: P 2c -2  Laue: P m c 21  Lattice: c2v	orthorhombic
+26	SpaceGroup: 26:-cba  Hall: P 2c -2  Laue: P m c 21  Lattice: c2v	orthorhombic
+26	SpaceGroup: 26:bca  Hall: P 2c -2  Laue: P m c 21  Lattice: c2v	orthorhombic
+26	SpaceGroup: 26:a-cb  Hall: P 2c -2  Laue: P m c 21  Lattice: c2v	orthorhombic
+27	SpaceGroup: 27  Hall: P 2 -2c  Laue: P c c 2  Lattice: c2v	orthorhombic
+27	SpaceGroup: 27:cab  Hall: P 2 -2c  Laue: P c c 2  Lattice: c2v	orthorhombic
+27	SpaceGroup: 27:bca  Hall: P 2 -2c  Laue: P c c 2  Lattice: c2v	orthorhombic
+28	SpaceGroup: 28  Hall: P 2 -2a  Laue: P m a 2  Lattice: c2v	orthorhombic
+28	SpaceGroup: 28:ba-c  Hall: P 2 -2a  Laue: P m a 2  Lattice: c2v	orthorhombic
+28	SpaceGroup: 28:cab  Hall: P 2 -2a  Laue: P m a 2  Lattice: c2v	orthorhombic
+28	SpaceGroup: 28:-cba  Hall: P 2 -2a  Laue: P m a 2  Lattice: c2v	orthorhombic
+28	SpaceGroup: 28:bca  Hall: P 2 -2a  Laue: P m a 2  Lattice: c2v	orthorhombic
+28	SpaceGroup: 28:a-cb  Hall: P 2 -2a  Laue: P m a 2  Lattice: c2v	orthorhombic
+29	SpaceGroup: 29  Hall: P 2c -2ac  Laue: P c a 21  Lattice: c2v	orthorhombic
+29	SpaceGroup: 29:ba-c  Hall: P 2c -2ac  Laue: P c a 21  Lattice: c2v	orthorhombic
+29	SpaceGroup: 29:cab  Hall: P 2c -2ac  Laue: P c a 21  Lattice: c2v	orthorhombic
+29	SpaceGroup: 29:-cba  Hall: P 2c -2ac  Laue: P c a 21  Lattice: c2v	orthorhombic
+29	SpaceGroup: 29:bca  Hall: P 2c -2ac  Laue: P c a 21  Lattice: c2v	orthorhombic
+29	SpaceGroup: 29:a-cb  Hall: P 2c -2ac  Laue: P c a 21  Lattice: c2v	orthorhombic
+30	SpaceGroup: 30  Hall: P 2 -2bc  Laue: P n c 2  Lattice: c2v	orthorhombic
+30	SpaceGroup: 30:ba-c  Hall: P 2 -2bc  Laue: P n c 2  Lattice: c2v	orthorhombic
+30	SpaceGroup: 30:cab  Hall: P 2 -2bc  Laue: P n c 2  Lattice: c2v	orthorhombic
+30	SpaceGroup: 30:-cba  Hall: P 2 -2bc  Laue: P n c 2  Lattice: c2v	orthorhombic
+30	SpaceGroup: 30:bca  Hall: P 2 -2bc  Laue: P n c 2  Lattice: c2v	orthorhombic
+30	SpaceGroup: 30:a-cb  Hall: P 2 -2bc  Laue: P n c 2  Lattice: c2v	orthorhombic
+31	SpaceGroup: 31  Hall: P 2ac -2  Laue: P m n 21  Lattice: c2v	orthorhombic
+31	SpaceGroup: 31:ba-c  Hall: P 2ac -2  Laue: P m n 21  Lattice: c2v	orthorhombic
+31	SpaceGroup: 31:cab  Hall: P 2ac -2  Laue: P m n 21  Lattice: c2v	orthorhombic
+31	SpaceGroup: 31:-cba  Hall: P 2ac -2  Laue: P m n 21  Lattice: c2v	orthorhombic
+31	SpaceGroup: 31:bca  Hall: P 2ac -2  Laue: P m n 21  Lattice: c2v	orthorhombic
+31	SpaceGroup: 31:a-cb  Hall: P 2ac -2  Laue: P m n 21  Lattice: c2v	orthorhombic
+32	SpaceGroup: 32  Hall: P 2 -2ab  Laue: P b a 2  Lattice: c2v	orthorhombic
+32	SpaceGroup: 32:cab  Hall: P 2 -2ab  Laue: P b a 2  Lattice: c2v	orthorhombic
+32	SpaceGroup: 32:bca  Hall: P 2 -2ab  Laue: P b a 2  Lattice: c2v	orthorhombic
+33	SpaceGroup: 33  Hall: P 2c -2n  Laue: P n a 21  Lattice: c2v	orthorhombic
+33	SpaceGroup: 33:ba-c  Hall: P 2c -2n  Laue: P n a 21  Lattice: c2v	orthorhombic
+33	SpaceGroup: 33:cab  Hall: P 2c -2n  Laue: P n a 21  Lattice: c2v	orthorhombic
+33	SpaceGroup: 33:-cba  Hall: P 2c -2n  Laue: P n a 21  Lattice: c2v	orthorhombic
+33	SpaceGroup: 33:bca  Hall: P 2c -2n  Laue: P n a 21  Lattice: c2v	orthorhombic
+33	SpaceGroup: 33:a-cb  Hall: P 2c -2n  Laue: P n a 21  Lattice: c2v	orthorhombic
+34	SpaceGroup: 34  Hall: P 2 -2n  Laue: P n n 2  Lattice: c2v	orthorhombic
+34	SpaceGroup: 34:cab  Hall: P 2 -2n  Laue: P n n 2  Lattice: c2v	orthorhombic
+34	SpaceGroup: 34:bca  Hall: P 2 -2n  Laue: P n n 2  Lattice: c2v	orthorhombic
+35	SpaceGroup: 35  Hall: C 2 -2  Laue: C m m 2  Lattice: c2v	orthorhombic
+35	SpaceGroup: 35:cab  Hall: C 2 -2  Laue: C m m 2  Lattice: c2v	orthorhombic
+35	SpaceGroup: 35:bca  Hall: C 2 -2  Laue: C m m 2  Lattice: c2v	orthorhombic
+36	SpaceGroup: 36  Hall: C 2c -2  Laue: C m c 21  Lattice: c2v	orthorhombic
+36	SpaceGroup: 36:ba-c  Hall: C 2c -2  Laue: C m c 21  Lattice: c2v	orthorhombic
+36	SpaceGroup: 36:cab  Hall: C 2c -2  Laue: C m c 21  Lattice: c2v	orthorhombic
+36	SpaceGroup: 36:-cba  Hall: C 2c -2  Laue: C m c 21  Lattice: c2v	orthorhombic
+36	SpaceGroup: 36:bca  Hall: C 2c -2  Laue: C m c 21  Lattice: c2v	orthorhombic
+36	SpaceGroup: 36:a-cb  Hall: C 2c -2  Laue: C m c 21  Lattice: c2v	orthorhombic
+37	SpaceGroup: 37  Hall: C 2 -2c  Laue: C c c 2  Lattice: c2v	orthorhombic
+37	SpaceGroup: 37:cab  Hall: C 2 -2c  Laue: C c c 2  Lattice: c2v	orthorhombic
+37	SpaceGroup: 37:bca  Hall: C 2 -2c  Laue: C c c 2  Lattice: c2v	orthorhombic
+38	SpaceGroup: 38  Hall: A 2 -2  Laue: A m m 2  Lattice: c2v	orthorhombic
+38	SpaceGroup: 38:ba-c  Hall: A 2 -2  Laue: A m m 2  Lattice: c2v	orthorhombic
+38	SpaceGroup: 38:cab  Hall: A 2 -2  Laue: A m m 2  Lattice: c2v	orthorhombic
+38	SpaceGroup: 38:-cba  Hall: A 2 -2  Laue: A m m 2  Lattice: c2v	orthorhombic
+38	SpaceGroup: 38:bca  Hall: A 2 -2  Laue: A m m 2  Lattice: c2v	orthorhombic
+38	SpaceGroup: 38:a-cb  Hall: A 2 -2  Laue: A m m 2  Lattice: c2v	orthorhombic
+39	SpaceGroup: 39  Hall: A 2 -2c  Laue: A b m 2  Lattice: c2v	orthorhombic
+39	SpaceGroup: 39:ba-c  Hall: A 2 -2c  Laue: A b m 2  Lattice: c2v	orthorhombic
+39	SpaceGroup: 39:cab  Hall: A 2 -2c  Laue: A b m 2  Lattice: c2v	orthorhombic
+39	SpaceGroup: 39:-cba  Hall: A 2 -2c  Laue: A b m 2  Lattice: c2v	orthorhombic
+39	SpaceGroup: 39:bca  Hall: A 2 -2c  Laue: A b m 2  Lattice: c2v	orthorhombic
+39	SpaceGroup: 39:a-cb  Hall: A 2 -2c  Laue: A b m 2  Lattice: c2v	orthorhombic
+40	SpaceGroup: 40  Hall: A 2 -2a  Laue: A m a 2  Lattice: c2v	orthorhombic
+40	SpaceGroup: 40:ba-c  Hall: A 2 -2a  Laue: A m a 2  Lattice: c2v	orthorhombic
+40	SpaceGroup: 40:cab  Hall: A 2 -2a  Laue: A m a 2  Lattice: c2v	orthorhombic
+40	SpaceGroup: 40:-cba  Hall: A 2 -2a  Laue: A m a 2  Lattice: c2v	orthorhombic
+40	SpaceGroup: 40:bca  Hall: A 2 -2a  Laue: A m a 2  Lattice: c2v	orthorhombic
+40	SpaceGroup: 40:a-cb  Hall: A 2 -2a  Laue: A m a 2  Lattice: c2v	orthorhombic
+41	SpaceGroup: 41  Hall: A 2 -2ac  Laue: A b a 2  Lattice: c2v	orthorhombic
+41	SpaceGroup: 41:ba-c  Hall: A 2 -2ac  Laue: A b a 2  Lattice: c2v	orthorhombic
+41	SpaceGroup: 41:cab  Hall: A 2 -2ac  Laue: A b a 2  Lattice: c2v	orthorhombic
+41	SpaceGroup: 41:-cba  Hall: A 2 -2ac  Laue: A b a 2  Lattice: c2v	orthorhombic
+41	SpaceGroup: 41:bca  Hall: A 2 -2ac  Laue: A b a 2  Lattice: c2v	orthorhombic
+41	SpaceGroup: 41:a-cb  Hall: A 2 -2ac  Laue: A b a 2  Lattice: c2v	orthorhombic
+42	SpaceGroup: 42  Hall: F 2 -2  Laue: F m m 2  Lattice: c2v	orthorhombic
+42	SpaceGroup: 42:cab  Hall: F 2 -2  Laue: F m m 2  Lattice: c2v	orthorhombic
+42	SpaceGroup: 42:bca  Hall: F 2 -2  Laue: F m m 2  Lattice: c2v	orthorhombic
+43	SpaceGroup: 43  Hall: F 2 -2d  Laue: F d d 2  Lattice: c2v	orthorhombic
+43	SpaceGroup: 43:cab  Hall: F 2 -2d  Laue: F d d 2  Lattice: c2v	orthorhombic
+43	SpaceGroup: 43:bca  Hall: F 2 -2d  Laue: F d d 2  Lattice: c2v	orthorhombic
+44	SpaceGroup: 44  Hall: I 2 -2  Laue: I m m 2  Lattice: c2v	orthorhombic
+44	SpaceGroup: 44:cab  Hall: I 2 -2  Laue: I m m 2  Lattice: c2v	orthorhombic
+44	SpaceGroup: 44:bca  Hall: I 2 -2  Laue: I m m 2  Lattice: c2v	orthorhombic
+45	SpaceGroup: 45  Hall: I 2 -2c  Laue: I b a 2  Lattice: c2v	orthorhombic
+45	SpaceGroup: 45:cab  Hall: I 2 -2c  Laue: I b a 2  Lattice: c2v	orthorhombic
+45	SpaceGroup: 45:bca  Hall: I 2 -2c  Laue: I b a 2  Lattice: c2v	orthorhombic
+46	SpaceGroup: 46  Hall: I 2 -2a  Laue: I m a 2  Lattice: c2v	orthorhombic
+46	SpaceGroup: 46:ba-c  Hall: I 2 -2a  Laue: I m a 2  Lattice: c2v	orthorhombic
+46	SpaceGroup: 46:cab  Hall: I 2 -2a  Laue: I m a 2  Lattice: c2v	orthorhombic
+46	SpaceGroup: 46:-cba  Hall: I 2 -2a  Laue: I m a 2  Lattice: c2v	orthorhombic
+46	SpaceGroup: 46:bca  Hall: I 2 -2a  Laue: I m a 2  Lattice: c2v	orthorhombic
+46	SpaceGroup: 46:a-cb  Hall: I 2 -2a  Laue: I m a 2  Lattice: c2v	orthorhombic
+47	SpaceGroup: 47  Hall: -P 2 2  Laue: P m m m  Lattice: d2h	orthorhombic
+48	SpaceGroup: 48:1  Hall: P 2 2 -1n  Laue: P n n n:1  Lattice: d2h	orthorhombic
+48	SpaceGroup: 48:2  Hall: P 2 2 -1n  Laue: P n n n:1  Lattice: d2h	orthorhombic
+49	SpaceGroup: 49  Hall: -P 2 2c  Laue: P c c m  Lattice: d2h	orthorhombic
+49	SpaceGroup: 49:cab  Hall: -P 2 2c  Laue: P c c m  Lattice: d2h	orthorhombic
+49	SpaceGroup: 49:bca  Hall: -P 2 2c  Laue: P c c m  Lattice: d2h	orthorhombic
+50	SpaceGroup: 50:1  Hall: P 2 2 -1ab  Laue: P b a n:1  Lattice: d2h	orthorhombic
+50	SpaceGroup: 50:2  Hall: P 2 2 -1ab  Laue: P b a n:1  Lattice: d2h	orthorhombic
+50	SpaceGroup: 50:1cab  Hall: P 2 2 -1ab  Laue: P b a n:1  Lattice: d2h	orthorhombic
+50	SpaceGroup: 50:2cab  Hall: P 2 2 -1ab  Laue: P b a n:1  Lattice: d2h	orthorhombic
+50	SpaceGroup: 50:1bca  Hall: P 2 2 -1ab  Laue: P b a n:1  Lattice: d2h	orthorhombic
+50	SpaceGroup: 50:2bca  Hall: P 2 2 -1ab  Laue: P b a n:1  Lattice: d2h	orthorhombic
+51	SpaceGroup: 51  Hall: -P 2a 2a  Laue: P m m a  Lattice: d2h	orthorhombic
+51	SpaceGroup: 51:ba-c  Hall: -P 2a 2a  Laue: P m m a  Lattice: d2h	orthorhombic
+51	SpaceGroup: 51:cab  Hall: -P 2a 2a  Laue: P m m a  Lattice: d2h	orthorhombic
+51	SpaceGroup: 51:-cba  Hall: -P 2a 2a  Laue: P m m a  Lattice: d2h	orthorhombic
+51	SpaceGroup: 51:bca  Hall: -P 2a 2a  Laue: P m m a  Lattice: d2h	orthorhombic
+51	SpaceGroup: 51:a-cb  Hall: -P 2a 2a  Laue: P m m a  Lattice: d2h	orthorhombic
+52	SpaceGroup: 52  Hall: -P 2a 2bc  Laue: P n n a  Lattice: d2h	orthorhombic
+52	SpaceGroup: 52:ba-c  Hall: -P 2a 2bc  Laue: P n n a  Lattice: d2h	orthorhombic
+52	SpaceGroup: 52:cab  Hall: -P 2a 2bc  Laue: P n n a  Lattice: d2h	orthorhombic
+52	SpaceGroup: 52:-cba  Hall: -P 2a 2bc  Laue: P n n a  Lattice: d2h	orthorhombic
+52	SpaceGroup: 52:bca  Hall: -P 2a 2bc  Laue: P n n a  Lattice: d2h	orthorhombic
+52	SpaceGroup: 52:a-cb  Hall: -P 2a 2bc  Laue: P n n a  Lattice: d2h	orthorhombic
+53	SpaceGroup: 53  Hall: -P 2ac 2  Laue: P m n a  Lattice: d2h	orthorhombic
+53	SpaceGroup: 53:ba-c  Hall: -P 2ac 2  Laue: P m n a  Lattice: d2h	orthorhombic
+53	SpaceGroup: 53:cab  Hall: -P 2ac 2  Laue: P m n a  Lattice: d2h	orthorhombic
+53	SpaceGroup: 53:-cba  Hall: -P 2ac 2  Laue: P m n a  Lattice: d2h	orthorhombic
+53	SpaceGroup: 53:bca  Hall: -P 2ac 2  Laue: P m n a  Lattice: d2h	orthorhombic
+53	SpaceGroup: 53:a-cb  Hall: -P 2ac 2  Laue: P m n a  Lattice: d2h	orthorhombic
+54	SpaceGroup: 54  Hall: -P 2a 2ac  Laue: P c c a  Lattice: d2h	orthorhombic
+54	SpaceGroup: 54:ba-c  Hall: -P 2a 2ac  Laue: P c c a  Lattice: d2h	orthorhombic
+54	SpaceGroup: 54:cab  Hall: -P 2a 2ac  Laue: P c c a  Lattice: d2h	orthorhombic
+54	SpaceGroup: 54:-cba  Hall: -P 2a 2ac  Laue: P c c a  Lattice: d2h	orthorhombic
+54	SpaceGroup: 54:bca  Hall: -P 2a 2ac  Laue: P c c a  Lattice: d2h	orthorhombic
+54	SpaceGroup: 54:a-cb  Hall: -P 2a 2ac  Laue: P c c a  Lattice: d2h	orthorhombic
+55	SpaceGroup: 55  Hall: -P 2 2ab  Laue: P b a m  Lattice: d2h	orthorhombic
+55	SpaceGroup: 55:cab  Hall: -P 2 2ab  Laue: P b a m  Lattice: d2h	orthorhombic
+55	SpaceGroup: 55:bca  Hall: -P 2 2ab  Laue: P b a m  Lattice: d2h	orthorhombic
+56	SpaceGroup: 56  Hall: -P 2ab 2ac  Laue: P c c n  Lattice: d2h	orthorhombic
+56	SpaceGroup: 56:cab  Hall: -P 2ab 2ac  Laue: P c c n  Lattice: d2h	orthorhombic
+56	SpaceGroup: 56:bca  Hall: -P 2ab 2ac  Laue: P c c n  Lattice: d2h	orthorhombic
+57	SpaceGroup: 57  Hall: -P 2c 2b  Laue: P b c m  Lattice: d2h	orthorhombic
+57	SpaceGroup: 57:ba-c  Hall: -P 2c 2b  Laue: P b c m  Lattice: d2h	orthorhombic
+57	SpaceGroup: 57:cab  Hall: -P 2c 2b  Laue: P b c m  Lattice: d2h	orthorhombic
+57	SpaceGroup: 57:-cba  Hall: -P 2c 2b  Laue: P b c m  Lattice: d2h	orthorhombic
+57	SpaceGroup: 57:bca  Hall: -P 2c 2b  Laue: P b c m  Lattice: d2h	orthorhombic
+57	SpaceGroup: 57:a-cb  Hall: -P 2c 2b  Laue: P b c m  Lattice: d2h	orthorhombic
+58	SpaceGroup: 58  Hall: -P 2 2n  Laue: P n n m  Lattice: d2h	orthorhombic
+58	SpaceGroup: 58:cab  Hall: -P 2 2n  Laue: P n n m  Lattice: d2h	orthorhombic
+58	SpaceGroup: 58:bca  Hall: -P 2 2n  Laue: P n n m  Lattice: d2h	orthorhombic
+59	SpaceGroup: 59:1  Hall: P 2 2ab -1ab  Laue: P m m n:1  Lattice: d2h	orthorhombic
+59	SpaceGroup: 59:2  Hall: P 2 2ab -1ab  Laue: P m m n:1  Lattice: d2h	orthorhombic
+59	SpaceGroup: 59:1cab  Hall: P 2 2ab -1ab  Laue: P m m n:1  Lattice: d2h	orthorhombic
+59	SpaceGroup: 59:2cab  Hall: P 2 2ab -1ab  Laue: P m m n:1  Lattice: d2h	orthorhombic
+59	SpaceGroup: 59:1bca  Hall: P 2 2ab -1ab  Laue: P m m n:1  Lattice: d2h	orthorhombic
+59	SpaceGroup: 59:2bca  Hall: P 2 2ab -1ab  Laue: P m m n:1  Lattice: d2h	orthorhombic
+60	SpaceGroup: 60  Hall: -P 2n 2ab  Laue: P b c n  Lattice: d2h	orthorhombic
+60	SpaceGroup: 60:ba-c  Hall: -P 2n 2ab  Laue: P b c n  Lattice: d2h	orthorhombic
+60	SpaceGroup: 60:cab  Hall: -P 2n 2ab  Laue: P b c n  Lattice: d2h	orthorhombic
+60	SpaceGroup: 60:-cba  Hall: -P 2n 2ab  Laue: P b c n  Lattice: d2h	orthorhombic
+60	SpaceGroup: 60:bca  Hall: -P 2n 2ab  Laue: P b c n  Lattice: d2h	orthorhombic
+60	SpaceGroup: 60:a-cb  Hall: -P 2n 2ab  Laue: P b c n  Lattice: d2h	orthorhombic
+61	SpaceGroup: 61  Hall: -P 2ac 2ab  Laue: P b c a  Lattice: d2h	orthorhombic
+61	SpaceGroup: 61:ba-c  Hall: -P 2ac 2ab  Laue: P b c a  Lattice: d2h	orthorhombic
+62	SpaceGroup: 62  Hall: -P 2ac 2n  Laue: P n m a  Lattice: d2h	orthorhombic
+62	SpaceGroup: 62:ba-c  Hall: -P 2ac 2n  Laue: P n m a  Lattice: d2h	orthorhombic
+62	SpaceGroup: 62:cab  Hall: -P 2ac 2n  Laue: P n m a  Lattice: d2h	orthorhombic
+62	SpaceGroup: 62:-cba  Hall: -P 2ac 2n  Laue: P n m a  Lattice: d2h	orthorhombic
+62	SpaceGroup: 62:bca  Hall: -P 2ac 2n  Laue: P n m a  Lattice: d2h	orthorhombic
+62	SpaceGroup: 62:a-cb  Hall: -P 2ac 2n  Laue: P n m a  Lattice: d2h	orthorhombic
+63	SpaceGroup: 63  Hall: -C 2c 2  Laue: C m c m  Lattice: d2h	orthorhombic
+63	SpaceGroup: 63:ba-c  Hall: -C 2c 2  Laue: C m c m  Lattice: d2h	orthorhombic
+63	SpaceGroup: 63:cab  Hall: -C 2c 2  Laue: C m c m  Lattice: d2h	orthorhombic
+63	SpaceGroup: 63:-cba  Hall: -C 2c 2  Laue: C m c m  Lattice: d2h	orthorhombic
+63	SpaceGroup: 63:bca  Hall: -C 2c 2  Laue: C m c m  Lattice: d2h	orthorhombic
+63	SpaceGroup: 63:a-cb  Hall: -C 2c 2  Laue: C m c m  Lattice: d2h	orthorhombic
+64	SpaceGroup: 64  Hall: -C 2bc 2  Laue: C m c a  Lattice: d2h	orthorhombic
+64	SpaceGroup: 64:ba-c  Hall: -C 2bc 2  Laue: C m c a  Lattice: d2h	orthorhombic
+64	SpaceGroup: 64:cab  Hall: -C 2bc 2  Laue: C m c a  Lattice: d2h	orthorhombic
+64	SpaceGroup: 64:-cba  Hall: -C 2bc 2  Laue: C m c a  Lattice: d2h	orthorhombic
+64	SpaceGroup: 64:bca  Hall: -C 2bc 2  Laue: C m c a  Lattice: d2h	orthorhombic
+64	SpaceGroup: 64:a-cb  Hall: -C 2bc 2  Laue: C m c a  Lattice: d2h	orthorhombic
+65	SpaceGroup: 65  Hall: -C 2 2  Laue: C m m m  Lattice: d2h	orthorhombic
+65	SpaceGroup: 65:cab  Hall: -C 2 2  Laue: C m m m  Lattice: d2h	orthorhombic
+65	SpaceGroup: 65:bca  Hall: -C 2 2  Laue: C m m m  Lattice: d2h	orthorhombic
+66	SpaceGroup: 66  Hall: -C 2 2c  Laue: C c c m  Lattice: d2h	orthorhombic
+66	SpaceGroup: 66:cab  Hall: -C 2 2c  Laue: C c c m  Lattice: d2h	orthorhombic
+66	SpaceGroup: 66:bca  Hall: -C 2 2c  Laue: C c c m  Lattice: d2h	orthorhombic
+67	SpaceGroup: 67  Hall: -C 2b 2  Laue: C m m a  Lattice: d2h	orthorhombic
+67	SpaceGroup: 67:ba-c  Hall: -C 2b 2  Laue: C m m a  Lattice: d2h	orthorhombic
+67	SpaceGroup: 67:cab  Hall: -C 2b 2  Laue: C m m a  Lattice: d2h	orthorhombic
+67	SpaceGroup: 67:-cba  Hall: -C 2b 2  Laue: C m m a  Lattice: d2h	orthorhombic
+67	SpaceGroup: 67:bca  Hall: -C 2b 2  Laue: C m m a  Lattice: d2h	orthorhombic
+67	SpaceGroup: 67:a-cb  Hall: -C 2b 2  Laue: C m m a  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:1  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:2  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:1ba-c  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:2ba-c  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:1cab  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:2cab  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:1-cba  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:2-cba  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:1bca  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:2bca  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:1a-cb  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+68	SpaceGroup: 68:2a-cb  Hall: C 2 2 -1bc  Laue: C c c a:1  Lattice: d2h	orthorhombic
+69	SpaceGroup: 69  Hall: -F 2 2  Laue: F m m m  Lattice: d2h	orthorhombic
+70	SpaceGroup: 70:1  Hall: F 2 2 -1d  Laue: F d d d:1  Lattice: d2h	orthorhombic
+70	SpaceGroup: 70:2  Hall: F 2 2 -1d  Laue: F d d d:1  Lattice: d2h	orthorhombic
+71	SpaceGroup: 71  Hall: -I 2 2  Laue: I m m m  Lattice: d2h	orthorhombic
+72	SpaceGroup: 72  Hall: -I 2 2c  Laue: I b a m  Lattice: d2h	orthorhombic
+72	SpaceGroup: 72:cab  Hall: -I 2 2c  Laue: I b a m  Lattice: d2h	orthorhombic
+72	SpaceGroup: 72:bca  Hall: -I 2 2c  Laue: I b a m  Lattice: d2h	orthorhombic
+73	SpaceGroup: 73  Hall: -I 2b 2c  Laue: I b c a  Lattice: d2h	orthorhombic
+73	SpaceGroup: 73:ba-c  Hall: -I 2b 2c  Laue: I b c a  Lattice: d2h	orthorhombic
+74	SpaceGroup: 74  Hall: -I 2b 2  Laue: I m m a  Lattice: d2h	orthorhombic
+74	SpaceGroup: 74:ba-c  Hall: -I 2b 2  Laue: I m m a  Lattice: d2h	orthorhombic
+74	SpaceGroup: 74:cab  Hall: -I 2b 2  Laue: I m m a  Lattice: d2h	orthorhombic
+74	SpaceGroup: 74:-cba  Hall: -I 2b 2  Laue: I m m a  Lattice: d2h	orthorhombic
+74	SpaceGroup: 74:bca  Hall: -I 2b 2  Laue: I m m a  Lattice: d2h	orthorhombic
+74	SpaceGroup: 74:a-cb  Hall: -I 2b 2  Laue: I m m a  Lattice: d2h	orthorhombic
+75	SpaceGroup: 75  Hall: P 4  Laue: P 4  Lattice: c4	tetragonal
+76	SpaceGroup: 76  Hall: P 4w  Laue: P 41  Lattice: c4	tetragonal
+77	SpaceGroup: 77  Hall: P 4c  Laue: P 42  Lattice: c4	tetragonal
+78	SpaceGroup: 78  Hall: P 4cw  Laue: P 43  Lattice: c4	tetragonal
+79	SpaceGroup: 79  Hall: I 4  Laue: I 4  Lattice: c4	tetragonal
+80	SpaceGroup: 80  Hall: I 4bw  Laue: I 41  Lattice: c4	tetragonal
+81	SpaceGroup: 81  Hall: P -4  Laue: P -4  Lattice: s4	tetragonal
+82	SpaceGroup: 82  Hall: I -4  Laue: I -4  Lattice: s4	tetragonal
+83	SpaceGroup: 83  Hall: -P 4  Laue: P 4/m  Lattice: c4h	tetragonal
+84	SpaceGroup: 84  Hall: -P 4c  Laue: P 42/m  Lattice: c4h	tetragonal
+85	SpaceGroup: 85:1  Hall: P 4ab -1ab  Laue: P 4/n:1  Lattice: c4h	tetragonal
+85	SpaceGroup: 85:2  Hall: P 4ab -1ab  Laue: P 4/n:1  Lattice: c4h	tetragonal
+86	SpaceGroup: 86:1  Hall: P 4n -1n  Laue: P 42/n:1  Lattice: c4h	tetragonal
+86	SpaceGroup: 86:2  Hall: P 4n -1n  Laue: P 42/n:1  Lattice: c4h	tetragonal
+87	SpaceGroup: 87  Hall: -I 4  Laue: I 4/m  Lattice: c4h	tetragonal
+88	SpaceGroup: 88:1  Hall: I 4bw -1bw  Laue: I 41/a:1  Lattice: c4h	tetragonal
+88	SpaceGroup: 88:2  Hall: I 4bw -1bw  Laue: I 41/a:1  Lattice: c4h	tetragonal
+89	SpaceGroup: 89  Hall: P 4 2  Laue: P 4 2 2  Lattice: d4	tetragonal
+90	SpaceGroup: 90  Hall: P 4ab 2ab  Laue: P 42 1 2  Lattice: d4	tetragonal
+91	SpaceGroup: 91  Hall: P 4w 2c  Laue: P 41 2 2  Lattice: d4	tetragonal
+92	SpaceGroup: 92  Hall: P 4abw 2nw  Laue: P 41 21 2  Lattice: d4	tetragonal
+93	SpaceGroup: 93  Hall: P 4c 2  Laue: P 42 2 2  Lattice: d4	tetragonal
+94	SpaceGroup: 94  Hall: P 4n 2n  Laue: P 42 21 2  Lattice: d4	tetragonal
+95	SpaceGroup: 95  Hall: P 4cw 2c  Laue: P 43 2 2  Lattice: d4	tetragonal
+96	SpaceGroup: 96  Hall: P 4nw 2abw  Laue: P 43 21 2  Lattice: d4	tetragonal
+97	SpaceGroup: 97  Hall: I 4 2  Laue: I 4 2 2  Lattice: d4	tetragonal
+98	SpaceGroup: 98  Hall: I 4bw 2bw  Laue: I 41 2 2  Lattice: d4	tetragonal
+99	SpaceGroup: 99  Hall: P 4 -2  Laue: P 4 m m  Lattice: c4v	tetragonal
+100	SpaceGroup: 100  Hall: P 4 -2ab  Laue: P 4 b m  Lattice: c4v	tetragonal
+101	SpaceGroup: 101  Hall: P 4c -2c  Laue: P 42 c m  Lattice: c4v	tetragonal
+102	SpaceGroup: 102  Hall: P 4n -2n  Laue: P 42 n m  Lattice: c4v	tetragonal
+103	SpaceGroup: 103  Hall: P 4 -2c  Laue: P 4 c c  Lattice: c4v	tetragonal
+104	SpaceGroup: 104  Hall: P 4 -2n  Laue: P 4 n c  Lattice: c4v	tetragonal
+105	SpaceGroup: 105  Hall: P 4c -2  Laue: P 42 m c  Lattice: c4v	tetragonal
+106	SpaceGroup: 106  Hall: P 4c -2ab  Laue: P 42 b c  Lattice: c4v	tetragonal
+107	SpaceGroup: 107  Hall: I 4 -2  Laue: I 4 m m  Lattice: c4v	tetragonal
+108	SpaceGroup: 108  Hall: I 4 -2c  Laue: I 4 c m  Lattice: c4v	tetragonal
+109	SpaceGroup: 109  Hall: I 4bw -2  Laue: I 41 m d  Lattice: c4v	tetragonal
+110	SpaceGroup: 110  Hall: I 4bw -2c  Laue: I 41 c d  Lattice: c4v	tetragonal
+111	SpaceGroup: 111  Hall: P -4 2  Laue: P -4 2 m  Lattice: d2d	tetragonal
+112	SpaceGroup: 112  Hall: P -4 2c  Laue: P -4 2 c  Lattice: d2d	tetragonal
+113	SpaceGroup: 113  Hall: P -4 2ab  Laue: P -4 21 m  Lattice: d2d	tetragonal
+114	SpaceGroup: 114  Hall: P -4 2n  Laue: P -4 21 c  Lattice: d2d	tetragonal
+115	SpaceGroup: 115  Hall: P -4 -2  Laue: P -4 m 2  Lattice: d2d	tetragonal
+116	SpaceGroup: 116  Hall: P -4 -2c  Laue: P -4 c 2  Lattice: d2d	tetragonal
+117	SpaceGroup: 117  Hall: P -4 -2ab  Laue: P -4 b 2  Lattice: d2d	tetragonal
+118	SpaceGroup: 118  Hall: P -4 -2n  Laue: P -4 n 2  Lattice: d2d	tetragonal
+119	SpaceGroup: 119  Hall: I -4 -2  Laue: I -4 m 2  Lattice: d2d	tetragonal
+120	SpaceGroup: 120  Hall: I -4 -2c  Laue: I -4 c 2  Lattice: d2d	tetragonal
+121	SpaceGroup: 121  Hall: I -4 2  Laue: I -4 2 m  Lattice: d2d	tetragonal
+122	SpaceGroup: 122  Hall: I -4 2bw  Laue: I -4 2 d  Lattice: d2d	tetragonal
+123	SpaceGroup: 123  Hall: -P 4 2  Laue: P 4/m m m  Lattice: d4h	tetragonal
+124	SpaceGroup: 124  Hall: -P 4 2c  Laue: P 4/m c c  Lattice: d4h	tetragonal
+125	SpaceGroup: 125:1  Hall: P 4 2 -1ab  Laue: P 4/n b m:1  Lattice: d4h	tetragonal
+125	SpaceGroup: 125:2  Hall: P 4 2 -1ab  Laue: P 4/n b m:1  Lattice: d4h	tetragonal
+126	SpaceGroup: 126:1  Hall: P 4 2 -1n  Laue: P 4/n n c:1  Lattice: d4h	tetragonal
+126	SpaceGroup: 126:2  Hall: P 4 2 -1n  Laue: P 4/n n c:1  Lattice: d4h	tetragonal
+127	SpaceGroup: 127  Hall: -P 4 2ab  Laue: P 4/m b m  Lattice: d4h	tetragonal
+128	SpaceGroup: 128  Hall: -P 4 2n  Laue: P 4/m n c  Lattice: d4h	tetragonal
+129	SpaceGroup: 129:1  Hall: P 4ab 2ab -1ab  Laue: P 4/n m m:1  Lattice: d4h	tetragonal
+129	SpaceGroup: 129:2  Hall: P 4ab 2ab -1ab  Laue: P 4/n m m:1  Lattice: d4h	tetragonal
+130	SpaceGroup: 130:1  Hall: P 4ab 2n -1ab  Laue: P 4/n c c:1  Lattice: d4h	tetragonal
+130	SpaceGroup: 130:2  Hall: P 4ab 2n -1ab  Laue: P 4/n c c:1  Lattice: d4h	tetragonal
+131	SpaceGroup: 131  Hall: -P 4c 2  Laue: P 42/m m c  Lattice: d4h	tetragonal
+132	SpaceGroup: 132  Hall: -P 4c 2c  Laue: P 42/m c m  Lattice: d4h	tetragonal
+133	SpaceGroup: 133:1  Hall: P 4n 2c -1n  Laue: P 42/n b c:1  Lattice: d4h	tetragonal
+133	SpaceGroup: 133:2  Hall: P 4n 2c -1n  Laue: P 42/n b c:1  Lattice: d4h	tetragonal
+134	SpaceGroup: 134:1  Hall: P 4n 2 -1n  Laue: P 42/n n m:1  Lattice: d4h	tetragonal
+134	SpaceGroup: 134:2  Hall: P 4n 2 -1n  Laue: P 42/n n m:1  Lattice: d4h	tetragonal
+135	SpaceGroup: 135  Hall: -P 4c 2ab  Laue: P 42/m b c  Lattice: d4h	tetragonal
+136	SpaceGroup: 136  Hall: -P 4n 2n  Laue: P 42/m n m  Lattice: d4h	tetragonal
+137	SpaceGroup: 137:1  Hall: P 4n 2n -1n  Laue: P 42/n m c:1  Lattice: d4h	tetragonal
+137	SpaceGroup: 137:2  Hall: P 4n 2n -1n  Laue: P 42/n m c:1  Lattice: d4h	tetragonal
+138	SpaceGroup: 138:1  Hall: P 4n 2ab -1n  Laue: P 42/n c m:1  Lattice: d4h	tetragonal
+138	SpaceGroup: 138:2  Hall: P 4n 2ab -1n  Laue: P 42/n c m:1  Lattice: d4h	tetragonal
+139	SpaceGroup: 139  Hall: -I 4 2  Laue: I 4/m m m  Lattice: d4h	tetragonal
+140	SpaceGroup: 140  Hall: -I 4 2c  Laue: I 4/m c m  Lattice: d4h	tetragonal
+141	SpaceGroup: 141:1  Hall: I 4bw 2bw -1bw  Laue: I 41/a m d:1  Lattice: d4h	tetragonal
+141	SpaceGroup: 141:2  Hall: I 4bw 2bw -1bw  Laue: I 41/a m d:1  Lattice: d4h	tetragonal
+142	SpaceGroup: 142:1  Hall: I 4bw 2aw -1bw  Laue: I 41/a c d:1  Lattice: d4h	tetragonal
+142	SpaceGroup: 142:2  Hall: I 4bw 2aw -1bw  Laue: I 41/a c d:1  Lattice: d4h	tetragonal
+143	SpaceGroup: 143  Hall: P 3  Laue: P 3  Lattice: c3	trigonal
+144	SpaceGroup: 144  Hall: P 31  Laue: P 31  Lattice: c3	trigonal
+145	SpaceGroup: 145  Hall: P 32  Laue: P 32  Lattice: c3	trigonal
+146	SpaceGroup: 146:H  Hall: R 3  Laue: R 3  Lattice: c3	trigonal
+146	SpaceGroup: 146:R  Hall: R 3  Laue: R 3  Lattice: c3	trigonal
+147	SpaceGroup: 147  Hall: -P 3  Laue: P -3  Lattice: s6	trigonal
+148	SpaceGroup: 148:H  Hall: -R 3  Laue: R -3  Lattice: s6	trigonal
+148	SpaceGroup: 148:R  Hall: -R 3  Laue: R -3  Lattice: s6	trigonal
+149	SpaceGroup: 149  Hall: P 3 2  Laue: P 3 1 2  Lattice: d3	trigonal
+150	SpaceGroup: 150  Hall: P 3 2"  Laue: P 3 2 1  Lattice: d3	trigonal
+151	SpaceGroup: 151  Hall: P 31 2c (0 0 1)  Laue: P 31 1 2  Lattice: d3	trigonal
+152	SpaceGroup: 152  Hall: P 31 2"  Laue: P 31 2 1  Lattice: d3	trigonal
+153	SpaceGroup: 153  Hall: P 32 2c (0 0 -1)  Laue: P 32 1 2  Lattice: d3	trigonal
+154	SpaceGroup: 154  Hall: P 32 2"  Laue: P 32 2 1  Lattice: d3	trigonal
+155	SpaceGroup: 155:H  Hall: R 3 2"  Laue: R 32  Lattice: d3	trigonal
+155	SpaceGroup: 155:R  Hall: R 3 2"  Laue: R 32  Lattice: d3	trigonal
+156	SpaceGroup: 156  Hall: P 3 -2"  Laue: P 3 m 1  Lattice: c3v	trigonal
+157	SpaceGroup: 157  Hall: P 3 -2  Laue: P 3 1 m  Lattice: c3v	trigonal
+158	SpaceGroup: 158  Hall: P 3 -2"c  Laue: P 3 c 1  Lattice: c3v	trigonal
+159	SpaceGroup: 159  Hall: P 3 -2c  Laue: P 3 1 c  Lattice: c3v	trigonal
+160	SpaceGroup: 160:H  Hall: R 3 -2"  Laue: R 3 m  Lattice: c3v	trigonal
+160	SpaceGroup: 160:R  Hall: R 3 -2"  Laue: R 3 m  Lattice: c3v	trigonal
+161	SpaceGroup: 161:H  Hall: R 3 -2"c  Laue: R 3 c  Lattice: c3v	trigonal
+161	SpaceGroup: 161:R  Hall: R 3 -2"c  Laue: R 3 c  Lattice: c3v	trigonal
+162	SpaceGroup: 162  Hall: -P 3 2  Laue: P -3 1 m  Lattice: d3d	trigonal
+163	SpaceGroup: 163  Hall: -P 3 2c  Laue: P -3 1 c  Lattice: d3d	trigonal
+164	SpaceGroup: 164  Hall: -P 3 2"  Laue: P -3 m 1  Lattice: d3d	trigonal
+165	SpaceGroup: 165  Hall: -P 3 2"c  Laue: P -3 c 1  Lattice: d3d	trigonal
+166	SpaceGroup: 166:H  Hall: -R 3 2"  Laue: R -3 m  Lattice: d3d	trigonal
+166	SpaceGroup: 166:R  Hall: -R 3 2"  Laue: R -3 m  Lattice: d3d	trigonal
+167	SpaceGroup: 167:H  Hall: -R 3 2"c  Laue: R -3 c  Lattice: d3d	trigonal
+167	SpaceGroup: 167:R  Hall: -R 3 2"c  Laue: R -3 c  Lattice: d3d	trigonal
+168	SpaceGroup: 168  Hall: P 6  Laue: P 6  Lattice: c6	hexagonal
+169	SpaceGroup: 169  Hall: P 61  Laue: P 61  Lattice: c6	hexagonal
+170	SpaceGroup: 170  Hall: P 65  Laue: P 65  Lattice: c6	hexagonal
+171	SpaceGroup: 171  Hall: P 62  Laue: P 62  Lattice: c6	hexagonal
+172	SpaceGroup: 172  Hall: P 64  Laue: P 64  Lattice: c6	hexagonal
+173	SpaceGroup: 173  Hall: P 6c  Laue: P 63  Lattice: c6	hexagonal
+174	SpaceGroup: 174  Hall: P -6  Laue: P -6  Lattice: c3h	hexagonal
+175	SpaceGroup: 175  Hall: -P 6  Laue: P 6/m  Lattice: c6h	hexagonal
+176	SpaceGroup: 176  Hall: -P 6c  Laue: P 63/m  Lattice: c6h	hexagonal
+177	SpaceGroup: 177  Hall: P 6 2  Laue: P 6 2 2  Lattice: d6	hexagonal
+178	SpaceGroup: 178  Hall: P 61 2 (0 0 -1)  Laue: P 61 2 2  Lattice: d6	hexagonal
+179	SpaceGroup: 179  Hall: P 65 2 (0 0 1)  Laue: P 65 2 2  Lattice: d6	hexagonal
+180	SpaceGroup: 180  Hall: P 62 2c (0 0 1)  Laue: P 62 2 2  Lattice: d6	hexagonal
+181	SpaceGroup: 181  Hall: P 64 2c (0 0 -1)  Laue: P 64 2 2  Lattice: d6	hexagonal
+182	SpaceGroup: 182  Hall: P 6c 2c  Laue: P 63 2 2  Lattice: d6	hexagonal
+183	SpaceGroup: 183  Hall: P 6 -2  Laue: P 6 m m  Lattice: c6v	hexagonal
+184	SpaceGroup: 184  Hall: P 6 -2c  Laue: P 6 c c  Lattice: c6v	hexagonal
+185	SpaceGroup: 185  Hall: P 6c -2  Laue: P 63 c m  Lattice: c6v	hexagonal
+186	SpaceGroup: 186  Hall: P 6c -2c  Laue: P 63 m c  Lattice: c6v	hexagonal
+187	SpaceGroup: 187  Hall: P -6 2  Laue: P -6 m 2  Lattice: d3h	hexagonal
+188	SpaceGroup: 188  Hall: P -6c 2  Laue: P -6 c 2  Lattice: d3h	hexagonal
+189	SpaceGroup: 189  Hall: P -6 -2  Laue: P -6 2 m  Lattice: d3h	hexagonal
+190	SpaceGroup: 190  Hall: P -6c -2c  Laue: P -6 2 c  Lattice: d3h	hexagonal
+191	SpaceGroup: 191  Hall: -P 6 2  Laue: P 6/m m m  Lattice: d6h	hexagonal
+192	SpaceGroup: 192  Hall: -P 6 2c  Laue: P 6/m c c  Lattice: d6h	hexagonal
+193	SpaceGroup: 193  Hall: -P 6c 2  Laue: P 63/m c m  Lattice: d6h	hexagonal
+194	SpaceGroup: 194  Hall: -P 6c 2c  Laue: P 63/m m c  Lattice: d6h	hexagonal
+195	SpaceGroup: 195  Hall: P 2 2 3  Laue: P 2 3  Lattice: t	cubic
+196	SpaceGroup: 196  Hall: F 2 2 3  Laue: F 2 3  Lattice: t	cubic
+197	SpaceGroup: 197  Hall: I 2 2 3  Laue: I 2 3  Lattice: t	cubic
+198	SpaceGroup: 198  Hall: P 2ac 2ab 3  Laue: P 21 3  Lattice: t	cubic
+199	SpaceGroup: 199  Hall: I 2b 2c 3  Laue: I 21 3  Lattice: t	cubic
+200	SpaceGroup: 200  Hall: -P 2 2 3  Laue: P m -3  Lattice: th	cubic
+201	SpaceGroup: 201:1  Hall: P 2 2 3 -1n  Laue: P n -3:1  Lattice: th	cubic
+201	SpaceGroup: 201:2  Hall: P 2 2 3 -1n  Laue: P n -3:1  Lattice: th	cubic
+202	SpaceGroup: 202  Hall: -F 2 2 3  Laue: F m -3  Lattice: th	cubic
+203	SpaceGroup: 203:1  Hall: F 2 2 3 -1d  Laue: F d -3:1  Lattice: th	cubic
+203	SpaceGroup: 203:2  Hall: F 2 2 3 -1d  Laue: F d -3:1  Lattice: th	cubic
+204	SpaceGroup: 204  Hall: -I 2 2 3  Laue: I m -3  Lattice: th	cubic
+205	SpaceGroup: 205  Hall: -P 2ac 2ab 3  Laue: P a -3  Lattice: th	cubic
+206	SpaceGroup: 206  Hall: -I 2b 2c 3  Laue: I a -3  Lattice: th	cubic
+207	SpaceGroup: 207  Hall: P 4 2 3  Laue: P 4 3 2  Lattice: o	cubic
+208	SpaceGroup: 208  Hall: P 4n 2 3  Laue: P 42 3 2  Lattice: o	cubic
+209	SpaceGroup: 209  Hall: F 4 2 3  Laue: F 4 3 2  Lattice: o	cubic
+210	SpaceGroup: 210  Hall: F 4d 2 3  Laue: F 41 3 2  Lattice: o	cubic
+211	SpaceGroup: 211  Hall: I 4 2 3  Laue: I 4 3 2  Lattice: o	cubic
+212	SpaceGroup: 212  Hall: P 4acd 2ab 3  Laue: P 43 3 2  Lattice: o	cubic
+213	SpaceGroup: 213  Hall: P 4bd 2ab 3  Laue: P 41 3 2  Lattice: o	cubic
+214	SpaceGroup: 214  Hall: I 4bd 2c 3  Laue: I 41 3 2  Lattice: o	cubic
+215	SpaceGroup: 215  Hall: P -4 2 3  Laue: P -4 3 m  Lattice: td	cubic
+216	SpaceGroup: 216  Hall: F -4 2 3  Laue: F -4 3 m  Lattice: td	cubic
+217	SpaceGroup: 217  Hall: I -4 2 3  Laue: I -4 3 m  Lattice: td	cubic
+218	SpaceGroup: 218  Hall: P -4n 2 3  Laue: P -4 3 n  Lattice: td	cubic
+219	SpaceGroup: 219  Hall: F -4c 2 3  Laue: F -4 3 c  Lattice: td	cubic
+220	SpaceGroup: 220  Hall: I -4bd 2c 3  Laue: I -4 3 d  Lattice: td	cubic
+221	SpaceGroup: 221  Hall: -P 4 2 3  Laue: P m -3 m  Lattice: oh	cubic
+222	SpaceGroup: 222:1  Hall: P 4 2 3 -1n  Laue: P n -3 n:1  Lattice: oh	cubic
+222	SpaceGroup: 222:2  Hall: P 4 2 3 -1n  Laue: P n -3 n:1  Lattice: oh	cubic
+223	SpaceGroup: 223  Hall: -P 4n 2 3  Laue: P m -3 n  Lattice: oh	cubic
+224	SpaceGroup: 224:1  Hall: P 4n 2 3 -1n  Laue: P n -3 m:1  Lattice: oh	cubic
+224	SpaceGroup: 224:2  Hall: P 4n 2 3 -1n  Laue: P n -3 m:1  Lattice: oh	cubic
+225	SpaceGroup: 225  Hall: -F 4 2 3  Laue: F m -3 m  Lattice: oh	cubic
+226	SpaceGroup: 226  Hall: -F 4c 2 3  Laue: F m -3 c  Lattice: oh	cubic
+227	SpaceGroup: 227:1  Hall: F 4d 2 3 -1d  Laue: F d -3 m:1  Lattice: oh	cubic
+227	SpaceGroup: 227:2  Hall: F 4d 2 3 -1d  Laue: F d -3 m:1  Lattice: oh	cubic
+228	SpaceGroup: 228:1  Hall: F 4d 2 3 -1cd  Laue: F d -3 c:1  Lattice: oh	cubic
+228	SpaceGroup: 228:2  Hall: F 4d 2 3 -1cd  Laue: F d -3 c:1  Lattice: oh	cubic
+229	SpaceGroup: 229  Hall: -I 4 2 3  Laue: I m -3 m  Lattice: oh	cubic
+230	SpaceGroup: 230  Hall: -I 4bd 2c 3  Laue: I a -3 d  Lattice: oh	cubic

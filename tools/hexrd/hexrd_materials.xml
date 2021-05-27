@@ -1,0 +1,155 @@
+<tool id="hexrd_materials" name="Make HEXRD Materials file" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
+    <description>Add or edit materials</description>
+    <macros>
+        <import>macros.xml</import>
+        <xml name="add_material">
+            <repeat name="add_materials" title="Add material">
+                <param name="material_name" type="text" value="" label="Name for material">
+                    <yield/>
+                    <validator type="empty_field" />
+                </param>
+	      <param name="min_d_spacing" type="float" value="0.75" min=".1" label="Min d-spacing in Angstroms"/> 
+              <expand macro="lattice"/>
+            </repeat>
+        </xml>
+        <xml name="space_group" token_ltype="triclinic">
+                <param name="space_group" type="select" label="Select Space Group">
+                    <options from_data_table="hexrd_space_groups">
+                        <column name="value" index="0"/>
+                        <column name="name" index="1"/>
+                        <filter type="static_value" name="ltype" value="@LTYPE@" column="2"/> 
+                    </options>
+                </param>
+        </xml>
+        <xml name="cell_a" token_val="" token_min="" token_max="">
+            <param name="cell_a" type="float" value="@VAL@" min="@MIN@" max="@MAX@" label="latitice cell a"/>
+        </xml>
+        <xml name="cell_b" token_val="" token_min="" token_max="">
+            <param name="cell_b" type="float" value="@VAL@" min="@MIN@" max="@MAX@" label="latitice cell b"/>
+        </xml>
+        <xml name="cell_c" token_val="" token_min="" token_max="">
+            <param name="cell_c" type="float" value="@VAL@" min="@MIN@" max="@MAX@" label="latitice cell c"/>
+        </xml>
+        <xml name="cell_alpha" token_val="90" token_min="90" token_max="90">
+            <param name="cell_alpha" type="float" value="@VAL@" min="@MIN@" max="@MAX@" label="latitice cell alpha"/>
+        </xml>
+        <xml name="cell_beta" token_val="90" token_min="90" token_max="90">
+            <param name="cell_beta" type="float" value="@VAL@" min="@MIN@" max="@MAX@" label="latitice cell beta"/>
+        </xml>
+        <xml name="cell_gamma" token_val="90" token_min="90" token_max="90">
+            <param name="cell_gamma" type="float" value="@VAL@" min="@MIN@" max="@MAX@" label="latitice cell gamma"/>
+        </xml>
+        <xml name="lattice">
+            <conditional name="lattice">
+                <param name="lattice_type" type="select" label="SpaceGroup lattice type">
+                    <option value="triclinic">triclinic - SpaceGroups: 1 - 2</option>
+                    <option value="monoclinic">monoclinic - SpaceGroups: 3 - 15</option>
+                    <option value="orthorhombic">orthorhombic - SpaceGroups: 16 - 74</option>
+                    <option value="tetragonal">tetragonal - SpaceGroups: 75 - 142</option>
+                    <option value="trigonal">trigonal - SpaceGroups: 143 - 167</option>
+                    <option value="hexagonal">hexagonal - SpaceGroups: 168 - 194</option>
+                    <option value="cubic">cubic - SpaceGroups: 195 - 230</option>
+                </param> 
+                <when value="triclinic">
+                    <expand macro="space_group" ltype="triclinic"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_b" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_c" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_alpha" val="90" min="30.0" max="180.0"/>
+                    <expand macro="cell_beta" val="90" min="30.0" max="180.0"/>
+                    <expand macro="cell_gamma" val="90" min="30.0" max="180.0"/>
+                </when>
+                <when value="monoclinic">
+                    <expand macro="space_group" ltype="monoclinic"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_b" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_c" val="5" min="1.0" max="10.0"/>
+                    <param name="cell_alpha" type="hidden" value="90.0"/>
+                    <expand macro="cell_beta" val="90.0" min="30.0" max="180.0"/>
+                    <param name="cell_gamma" type="hidden" value="90.0"/>
+                </when>
+                <when value="orthorhombic">
+                    <expand macro="space_group" ltype="orthorhombic"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_b" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_c" val="5" min="1.0" max="10.0"/>
+                    <param name="cell_alpha" type="hidden" value="90.0"/>
+                    <param name="cell_beta" type="hidden" value="90.0"/>
+                    <param name="cell_gamma" type="hidden" value="90.0"/>
+                </when>
+                <when value="tetragonal">
+                    <expand macro="space_group" ltype="tetragonal"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_c" val="5" min="1.0" max="10.0"/>
+                </when>
+                <when value="trigonal">
+                    <expand macro="space_group" ltype="trigonal"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_c" val="5" min="1.0" max="10.0"/>
+                </when>
+                <when value="hexagonal">
+                    <expand macro="space_group" ltype="hexagonal"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                    <expand macro="cell_c" val="5" min="1.0" max="10.0"/>
+                </when>
+                <when value="cubic">
+                    <expand macro="space_group" ltype="cubic"/>
+                    <expand macro="cell_a" val="5" min="1.0" max="10.0"/>
+                </when>
+            </conditional>
+        </xml>
+    </macros>
+    <expand macro="requirements" />
+    <command detect_errors="exit_code"><![CDATA[
+        #if $materials.file == 'modify':
+            ln -s '$materials.input' materials.h5 &&
+        #end if 
+        python $__tool_directory__/make_materials.py 
+        #if $materials.file == 'modify':
+            -i materials.h5
+        #end if 
+        #for $mat in $materials.add_materials:
+           #if $mat.lattice.lattice_type == 'triclinic'
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a,$mat.lattice.cell_b,$mat.lattice.cell_c,$mat.lattice.cell_alpha,$mat.lattice.cell_beta,$mat.lattice.cell_gamma'
+           #elif $mat.lattice.lattice_type == 'monoclinic':
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a,$mat.lattice.cell_b,$mat.lattice.cell_c,$mat.lattice.cell_beta'
+           #elif $mat.lattice.lattice_type == 'orthorhombic':
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a,$mat.lattice.cell_b,$mat.lattice.cell_c'
+           #elif $mat.lattice.lattice_type == 'tetragonal':
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a,$mat.lattice.cell_c'
+           #elif $mat.lattice.lattice_type == 'trigonal':
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a,$mat.lattice.cell_c'
+           #elif $mat.lattice.lattice_type == 'hexagonal':
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a,$mat.lattice.cell_c'
+           #elif $mat.lattice.lattice_type == 'cubic':
+               -m '$mat.material_name,$mat.lattice.space_group,$mat.lattice.cell_a'
+           #end if
+        #end for
+        -o '$output'
+    ]]></command>
+    <inputs>
+        <conditional name="materials">
+            <param name="file" type="select" label="Make HEXRD materials file">
+                <option value="modify">Modify an existing materials file</option>
+                <option value="create">Create new materials file</option>
+            </param>
+            <when value="modify">
+                <param name="input" type="data" format="hexrd.materials.h5" label="Edit existing materials file"/>
+                <expand macro="add_material">
+                    <options>
+                        <filter type="data_meta" ref="input" key="materials" />
+                    </options>
+                </expand>
+	  </when>
+          <when value="create">
+              <expand macro="add_material"/>
+          </when>
+        </conditional>   
+    </inputs>
+    <outputs>
+        <data name="output" format="hexrd.materials.h5" label="Materials file"/>
+    </outputs>
+    <help><![CDATA[
+        TODO: Fill in help.
+    ]]></help>
+</tool>
