@@ -2,7 +2,8 @@
 <datatypes>
   <registration>
     <datatype extension="hexrd.materials.h5" type="galaxy.datatypes.binary:H5" subclass="true" display_in_upload="true"/>
-    <datatype extension="hexrd.npz" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="true"/>
+    <datatype extension="hexrd.images.npz" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="true"/>
+    <datatype extension="hexrd.eta_ome.npz" type="galaxy.datatypes.binary:CompressedZipArchive" subclass="true" display_in_upload="true"/>
     <datatype extension="hexrd.yml" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="true"/>
   </registration>
 </datatypes>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+    <tables>
+        <table name="hexrd_space_groups" comment_char="#" allow_duplicate_entries="False">
+            <columns>value,name,lattice_type</columns>
+            <file path="tool-data/hexrd_space_groups.loc" />
+       </table>
+    </tables>
+
