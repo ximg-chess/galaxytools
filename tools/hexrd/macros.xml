@@ -1,6 +1,7 @@
 <macros>
-    <token name="@TOOL_VERSION@">0.8.4</token>
+    <token name="@TOOL_VERSION@">0.8.12</token>
     <token name="@VERSION_SUFFIX@">0</token>
+    <token name="@PROFILE@">21.09</token>
     <xml name="requirements">
         <requirements>
         <requirement type="package" version="@TOOL_VERSION@">hexrd</requirement>
@@ -59,7 +60,7 @@
     </token>
 
     <xml name="common_config" token_multiple_inputs="true" >
-        <param name="inputs" type="data" format="hexrd.npz" multiple="true" label="Image series frame-cache"/>
+        <param name="inputs" type="data" format="hexrd.images.npz" multiple="true" label="Image series frame-cache"/>
         <conditional name="detector">
             <param name="panel_assignment" type="select" label="Assign detector panel to images">
                 <option value="infer_from_name" selected="true">Infer the panel from the image name</option>
@@ -74,9 +75,19 @@
         </conditional>
         <param name="instrument" type="data" format="hexrd.yml" label="instrument"/>
         <param name="material" type="data" format="hexrd.materials.h5" label="material"/>
+        <param name="active_material" type="select" label="active material name">
+            <options>
+                <filter type="data_meta" ref="material" key="materials"/>
+            </options>
+        </param>
+        <param name="dmin" type="float" value="1.0" min="0" max="10" optional="true" label="dmin angstroms" help="used to figure out the maximum sampling for g-vectors default 1.0"/>
+        <param name="tth_width" type="float" value="0.25" min="0" max="10" optional="true" label="tth tolerance in degrees" help="tth_width default 0.25 "/>
+        <param name="min_sfac_ratio" type="float" value="" min="0" max="1" optional="true" label="min percentage of max to exclude" help="min_sfac_ratio min percentage of max |F|^2 to exclude; default None"/>
+        <!-- 
         <param name="active_material" type="text" value="" label="active material name">
             <validator type="empty_field" />
         </param>
+        -->
     </xml>
 
     <token name="@CMD_LINKS@"><![CDATA[@CMD_IMPORTS@
@@ -99,6 +110,8 @@ ln -s '$accepted_orientations' $ln_name($accepted_orientations,'dat') &&
     <token name="@CONVERT2TAB@"><![CDATA[for i in `find analysis -name '[gs]*.out'`; do sed -i.bak "s/[ ][ ][ ]*/\$(printf '\t')/g" \${i}; done]]></token>
 
     <token name="@COMMON_YML@"><![CDATA[@CMD_IMPORTS@
+#slurp
+#set instrument_file = $ln_name($instrument,'yml')
 analysis_name: analysis
 
 multiprocessing: -1
@@ -106,8 +119,15 @@ multiprocessing: -1
 material:
   definitions: $ln_name($material,'h5')
   active: $active_material
-
-instrument: $ln_name($instrument,'yml')
+#if $dmin 
+  dmin: $dmin  # defaults to 1.0 angstrom
+#end if
+#if $tth_width 
+  tth_width: $tth_width  # defaults to 0.25 degrees
+#end if
+#if $min_sfac_ratio 
+  min_sfac_ratio: $min_sfac_ratio  # min percentage of max |F|^2 to exclude; default None
+#end if
 
 image_series:
   format: frame-cache
@@ -117,6 +137,8 @@ image_series:
       args: {}
       panel: $get_panel($input)  # must match detector key
 #end for
+
+instrument: $instrument_file
 
 ]]></token>
 
@@ -278,8 +300,8 @@ find_orientations:
 
     <xml name="fit_grains_config">
         <expand macro="common_config" token_multiple_inputs="true"/>
-        <param name="ome_map" type="data" format="hexrd.npz" label="analysis eta-ome_maps.npz from find_orientations"/>
-        <param name="accepted_orientations" type="data" format="tabular" label="accepted_orientations from find_orientations"/>
+        <param name="ome_map" type="data" format="hexrd.eta_ome.npz" label="analysis eta-ome_maps.npz from find_orientations"/>
+        <param name="accepted_orientations" type="data" format="hexrd.accepted_orientations" label="accepted_orientations from find_orientations"/>
         <param name="grains_estimate" type="data" format="tabular" label="grains.out from find_orientations"/>
         <param name="do_fit" type="boolean" truevalue="true" falsevalue="false" checked="true" label="fit grains" help="if false, extracts grains but doesn't fit"/>
         <param name="npdiv" type="integer" value="2" min="1" label="number of polar pixel grid subdivisions"/>
