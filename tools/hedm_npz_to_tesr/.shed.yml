@@ -5,7 +5,7 @@ homepage_url: https://github.com/HEXRD/hexrd
 long_description: Convert compressed numpy to a neper tesr file. 
    The numpy npz input file should arrays  Xs, Ys, Zs, and grain_map.
    The tesr format is described in https://neper.info/docs/neper.pdf
-name: hexrd
+name: hedm_npz_to_tesr
 owner: ximgchess
 remote_repository_url: https://github.com/ximg-chess/galaxytools/tools/hedm_npz_to_tesr
 exclude:
