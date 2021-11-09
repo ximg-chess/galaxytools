@@ -1,0 +1,168 @@
+<tool id="neper_meshing" name="Neper Meshing" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
+    <description>scalar and raster tessellations</description>
+    <macros>
+        <import>macros.xml</import>
+        <xml name="meshing">
+            <section name="meshing" expanded="false" title="Meshing Options">
+                <param name="elttype" type="select" optional="true" label="Set element type">
+                    <help>Default value: tetrahedral in 3D and triangular in 2D</help>
+                    <option value="tri">triangular</option>
+                    <option value="quad">quadrangular</option>
+                    <option value="quad9">9-node quadrangular</option>
+                    <option value="tet">tetrahedral</option>
+                    <option value="hex">hexahedral</option>
+                </param>
+                <!-- cl,rcl -->
+                <param name="dim" type="select" multiple="true" optional="true" label="Set the meshing dimension">
+                    <help>Default value: inputdim</help>
+                    <option value="inputdim">inputdim</option>
+                    <option value="all">all</option>
+                    <option value="none">none</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </param>
+                <param name="order" type="select" optional="true" label="Set the mesh order">
+                    <help>Default value: 1
+                          A value of 1 corresponds to 2-node linear elements, 3-node triangular elements, 
+                          4-node quadrangular elements, 4-node tetrahedral elements and 8-node hexahedral elements, 
+                          A value of 2 corresponds to 3-node linear elements, 6-node triangular elements, 
+                          8-node or 9-node quadrangular elements, 10-node tetrahedral elements 
+                          and 20-node hexahedral elements.
+                    </help>
+                    <option value="1">1 - 2-node linear...</option>
+                    <option value="2">2 - 3-node linear...</option>
+                </param>
+
+                <!--
+                <expand macro="set_ny" name="elttype" label="Set element typescale">
+                    <expand macro="tx3d" label="scale" lx="x factor" ly="y factor" lz="z factor"/>
+                </expand>
+                -->
+            </section>
+        </xml>
+        <token name="@MESHING@">
+#if $meshing.elttype
+-elttype $meshing.elttype
+#end if
+#if $meshing.dim
+-dim $meshing.dim
+#end if
+#if $meshing.order
+-order $meshing.order
+#end if
+</token>
+        <xml name="meshing_output">
+            <section name="meshing_output" expanded="false" title="Meshing Output Options">
+                <!--
+                <param name="nset" type="select" label="Specify the node sets">
+                    <option value="faces">faces</option>
+                    <option value="edges">edges</option>
+                    <option value="vertices">vertices</option>
+                    <option value="facebodies">facebodies</option>
+                    <option value="edgebodies">edgebodies</option>
+                    <option value="all">all</option>
+                    <option value="none">none</option>
+                </param>
+                -->
+                <param name="nset" type="text" value="" optional="true" label="Specify the node sets">
+                    <option value="faces">faces</option>
+                    <option value="edges">edges</option>
+                    <option value="vertices">vertices</option>
+                    <option value="facebodies">facebodies</option>
+                    <option value="edgebodies">edgebodies</option>
+                    <option value="all">all</option>
+                    <option value="none">none</option>
+                    <!--
+                    <validator type="regex" message="">^all|none|(faces|edges|vertices|facebodies|edgebodies)*|([x-z][01]|[x-z][01][x-z][01]|[x-z][01][x-z][01][x-z][01]|z[0,1]f[1-9][0-9]*|f[1-9][0-9]*)*$</validator>
+                    -->
+                </param>
+                <param name="faset" type="text" value="" optional="true" label="Specify the element surface meshes">
+                    <option value="faces">faces</option>
+                    <option value="internal">internal</option>
+                    <!--
+                    <validator type="regex" message="">^(faces|internal|([x-z][01]|[x-z][01][x-z][01]|[x-z][01][x-z][01][x-z][01]|z[0,1]f[1-9][0-9]*|f[1-9][0-9]*)?$</validator>
+                    -->
+                </param>
+            </section>
+        </xml>
+        <token name="@MESHING_OUTPUT@">
+#if $meshing_output.nset
+-nset "$meshing_output.nset"
+#end if
+#if $meshing_output.faset
+-faset "$meshing_output.faset"
+#end if
+</token>
+
+    </macros>
+    <expand macro="requirements" />
+    <expand macro="version_command" />
+    <command detect_errors="exit_code"><![CDATA[
+        neper -M 
+        '$input'
+        @MESHING@
+        @MESHING_OUTPUT@
+        @TRANSFORM@
+        -format "$format"
+        -part "\${GALAXY_SLOTS:-4}"
+        -o output
+        | grep -v '%$' | tee 'neper.log'
+    ]]></command>
+    <inputs>
+        <param name="input" type="data" format="neper.tesr,neper.tess,gmsh.msh" label="Input to visualize"/>
+        <expand macro="meshing"/>
+        <expand macro="meshing_output"/>
+        <expand macro="transform"/>
+        <param name="format" argument="-format" type="select" multiple="true" optional="false" label="Output formats">
+            <option value="msh" selected="true">Gmsh-style msh ascii</option>
+            <option value="msh:binary">Gmsh-style msh binary</option>
+            <option value="msh4">Gmsh v4</option>
+            <option value="vtk">VTK</option>
+        </param>
+    </inputs>
+    <outputs>
+        <data name="log" format="txt" label="${tool.name} on ${on_string} log" from_work_dir="neper.log"/>
+        <data name="output_msh" format="gmsh.msh" label="${tool.name} on ${on_string} msh" from_work_dir="output.msh">
+            <filter>'msh' in format.split(',') or 'mshi:binary' in format.split(',')</filter>
+        </data>
+        <data name="output_msh4" format="gmsh.msh" label="${tool.name} on ${on_string} msh4" from_work_dir="output.tesr">
+            <filter>'msh4' in format</filter>
+        </data>
+        <data name="output_vtk" format="vtkascii" label="${tool.name} on ${on_string} vtk" from_work_dir="output.vtk">
+            <filter>'vtk' in format</filter>
+        </data>
+    </outputs>
+    <tests>
+        <!-- Test-1  neper -M defaults -->
+        <test>
+            <param name="input" ftype="neper.tess" value="neper.tess"/>
+            <output name="log">
+                <assert_contents>
+                    <has_text text="Wrote file `output.msh'." />
+                </assert_contents>
+            </output>
+            <output name="output_msh">
+                <assert_contents>
+                    <has_text text="$MeshFormat" />
+                    <has_text text="2.2" />
+                </assert_contents>
+            </output>
+        </test>
+    </tests>
+    <help><![CDATA[
+**Neper Meshing**
+
+@NEPER_HELP@
+
+Neper Mesahing Module *-M* is the module for meshing scalar and raster tessellations. The two meshing strategies are: 
+
+  (i) Free (or unstructured) meshing creates a conforming mesh into tetrahedral elements (triangular in 2D).
+  (ii) Mapped (or structured) meshing generates a non-conforming mesh into regular hexahedral elements (quadrangular in 2D).
+
+ The output is a Gmsh msh format and/or VTK format. 
+
+    ]]></help>
+    <expand macro="citations" />
+</tool>

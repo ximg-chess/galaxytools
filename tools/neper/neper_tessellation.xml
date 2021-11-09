@@ -2,19 +2,18 @@
     <description>generates polycrystals as tessellations</description>
     <macros>
         <import>macros.xml</import>
-        <xml name="input_spectrums" token_multiple="false" token_filetype="Spectrum">
-            <param name="spectrums" type="data" format="mzml" multiple="@MULTIPLE@" label="MS/MS @FILETYPE@ files"/>
-        </xml>
-
     </macros>
     <expand macro="requirements" />
     <expand macro="version_command" />
     <command detect_errors="exit_code"><![CDATA[
         neper -T 
-        #if $cells.format == 'number':
-          -n $cells.number_of_cells
-        ## #elif $cells.format == 'from_morpho':
-        #end if
+        @CELLS@
+        #* *#
+        @TESSELLATION@ 
+        @MORPHO@
+        @MORPHOOPTISTOP@
+        @TRANSFORM@
+        @REGULARIZATION@
         #if $output.format == 'tess':
            -o output.tess 
         #elif $output.format == 'tesr'
@@ -26,8 +25,15 @@
                -tesrsize '$output.tesrsize'
            #end if
         #end if
+        | grep -v '%$' | tee 'neper.log'
     ]]></command>
     <inputs>
+        <expand macro="cells"/>
+        <expand macro="tessellation"/>
+        <expand macro="morpho"/>
+        <expand macro="morphooptistop"/>
+        <expand macro="transform"/>
+        <expand macro="regularization"/>
         <!-- Should we make profiles for common ways this is used -->
         <!--
         <conditional name="profile">
@@ -37,7 +43,6 @@
                 <option value="expression"></option>
             </param>
         </conditional>
-        -->
         
         <conditional name="cells">
             <param name="format" type="select" label="Specify number of cells by">
@@ -57,6 +62,7 @@
         <param name="id" argument="-id" type="integer" value="" min="1" optional="true" label="identifier of the tessellation" 
             help="It defines the seed used by the random number generator to compute the (initial) seed positions."/>
 
+        -->
         <!--
         <conditional name="morph">
             <param name="morphology" type="select" label="morphology">
@@ -113,6 +119,7 @@ Specify the number of points of a raster tessellation along a direction of the d
         </conditional>
     </inputs>
     <outputs>
+        <data name="log" format="txt" label="${tool.name} on ${on_string} log" from_work_dir="neper.log"/>
         <data name="output_tess" format="neper.tess" label="${tool.name} on ${on_string} tess" from_work_dir="output.tess">
             <filter>output['format'] == 'tess'</filter>
         </data>

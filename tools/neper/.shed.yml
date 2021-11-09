@@ -1,0 +1,14 @@
+name: neper
+owner: ximgchess
+categories:
+- Structural Materials Analysis
+description: Neper tessellation, meshing, and visualization
+long_description: |
+  Methods such as far-field 3DXRD or Laue diffraction provides incomplete information
+  on a grain structure, such as the grains centroids (centers of mass) and volumes.
+  Neper can generate the optimal tessellation (made of convex cells) that corresponds
+  to such a data set.
+  The tessellation can be described as a raster tessellation (for FFT simulations)
+  or can be meshed (for FEM simulations). 
+homepage_url: https://github.com/rquey/neper
+remote_repository_url: https://github.com/ximg-chess/galaxytools/tools/neper

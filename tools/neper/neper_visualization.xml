@@ -1,0 +1,208 @@
+<tool id="neper_visualization" name="Neper Visualization" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
+    <description></description>
+    <macros>
+        <import>macros.xml</import>
+        <import>color_macros.xml</import>
+        <xml name="tess_data">
+            <section name="tess" expanded="false" title="Tessellation Rendering">
+                <conditional name="datacellcol">
+                    <param name="set_datacellcol" type="select" label="Set datacell color">
+                        <option value="none">None</option>
+                        <option value="id" selected="true">id</option>
+                        <option value="mode">mode</option>
+                        <option value="by_value">By value</option>
+                    </param>
+                    <when value="none"/>
+                    <when value="id"/>
+                    <when value="mode"/>
+                    <when value="by_value">
+                        <expand macro="color_selector" name="datacellcolor" label="Select datacell color"/>
+                    </when> 
+                    <when value="by_value">
+                    </when> 
+                </conditional>
+            </section>
+        </xml>
+        <token name="@TESS_DATA@">
+#if $tess.datacellcol.set_datacellcol in ['id','mode']
+-datacellcol $tess.datacellcol.set_datacellcol
+#elif $tess.datacellcol.set_datacellcol == 'by_value'
+-datacellcol $tess.datacellcol.datacellcolor
+#end if
+        </token>
+        <xml name="show_settings">
+            <section name="show" expanded="false" title="Show Settings">
+                <param name="showtess" type="select" optional="true" label="Show tess" >
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+                <param name="showtesr" type="select" optional="true" label="Show tesr" >
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+                <param name="showmesh" type="select" optional="true" label="Show mesh" >
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+                <param name="showmeshslice" type="select" optional="true" label="Show mesh slice" >
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+            </section>
+        </xml>
+        <token name="@SHOW_SETTINGS@">
+#if $show.showtess
+-showtess $show.showtess
+#end if
+#if $show.showtesr
+-showtesr $show.showtesr
+#end if
+#if $show.showmesh
+-showmesh $show.showmesh
+#end if
+#if $show.showmeshslice
+-showmeshslice $show.showmeshslice
+#end if
+        </token>
+
+        <xml name="camera_settings">
+            <section name="camera" expanded="false" title="Camera Settings">
+                <expand macro="set_nv" name="cameracoo" label="Specify the camera coordinates">
+                    <expand macro="tx3d" label="Camera position" lx="x" ly="y" lz="z"/>
+                </expand>
+                <expand macro="set_nv" name="cameralookat" label="Specify the camera look-at point">
+                    <expand macro="tx3d" label="Camera lookat" lx="x" ly="y" lz="z"/>
+                </expand>
+
+                <param name="cameraangle" type="float" value="" min="1" max="179" optional="true" label="Set the opening angle of the camera along the horizontal direction (in degrees)"/>
+                <expand macro="set_nv" name="camerasky" label="Specify the sky vector of the camera (vertical direction)">
+                    <expand macro="tx3d" label="Camera Sky vector" lx="x" ly="y" lz="z" x="0" y="0" z="1"/>
+                </expand>
+                <param name="cameraprojection" type="select" optional="true" label="Camera Projection">
+                    <help>Default value: perspective for 3D and orthographic for 2D</help>
+                    <option value="perspective">perspective</option>
+                    <option value="orthographic">orthographic</option>
+                </param>
+            </section>
+        </xml>
+        <token name="@CAMERA_SETTINGS@">
+#if $camera.cameracoo.set_cameracoo == 'by_value'
+-cameracoo "${camera.cameracoo.x}:${camera.cameracoo.y}:${camera.cameracoo.z}"
+#end if
+#if $camera.cameralookat.set_cameralookat == 'by_value'
+-cameralookat "${camera.cameralookat.x}:${camera.cameralookat.y}:${camera.cameralookat.z}"
+#end if
+#if $camera.cameraangle
+-cameraangle $camera.cameraangle
+#end if
+#if $camera.camerasky.set_camerasky == 'by_value'
+-camerasky "${camera.camerasky.x}:${camera.camerasky.y}:${camera.camerasky.z}"
+#end if
+#if $camera.cameraprojection
+-cameraprojection $camera.cameraprojection
+#end if
+        </token>
+        <xml name="image_settings">
+            <section name="image" expanded="false" title="Image Settings">
+                <expand macro="set_ny" name="imagesize" label="Set the image size">
+                    <expand macro="size2d" label="Image size" lx="width" ly="height"/>
+                </expand>
+                <expand macro="color_selector" name="imagebackground" label="Image background color"/>
+                <param name="imageantialias" type="boolean" truevalue="" falsevalue="-imageantialias 0" checked="true" label="Use antialiasing" 
+                    help="Use antialiasing to produce a smoother image. Switch antialiasing off for faster image gener- ation or smaller image file"/>
+            </section>
+        </xml>
+        <token name="@IMAGE_SETTINGS@">
+#if $image.imagesize.set_imagesize == 'yes'
+-imagesize "${image.imagesize.x}:${image.imagesize.y}"
+#end if
+#if $image.imagebackground
+-imagebackground "$image.imagebackground"
+#end if
+$image.imageantialias
+        </token>
+    </macros>
+    <expand macro="requirements" />
+    <expand macro="version_command" />
+    <command detect_errors="exit_code"><![CDATA[
+        neper -V 
+        '$input'
+        @TESS_DATA@
+        @TRANSFORM@
+        @SHOW_SETTINGS@
+        @CAMERA_SETTINGS@
+        @IMAGE_SETTINGS@
+        -imageformat "$imageformat"
+        -print output
+        | grep -v '%$' | tee 'neper.log'
+        #if 'png' in $imageformat
+          && test -s output.png
+        #end if
+        #if 'vtk' in $imageformat
+          && test -s output.vtk
+        #end if
+    ]]></command>
+    <inputs>
+        <param name="input" type="data" format="neper.tesr,neper.tess,gmsh.msh" label="Input to visualize"/> 
+        <expand macro="tess_data"/>
+        <expand macro="transform"/>
+        <expand macro="show_settings"/>
+        <expand macro="camera_settings"/>
+        <expand macro="image_settings"/>
+        <param name="imageformat" argument="-imageformat" type="select" multiple="true" optional="false" label="Image formats">
+            <option value="png" selected="true">PNG</option>
+            <option value="vtk">VTK</option>
+            <option value="pov">POV</option>
+        </param>
+    </inputs>
+    <outputs>
+        <data name="log" format="txt" label="${tool.name} on ${on_string} log" from_work_dir="neper.log"/>
+        <data name="output_png" format="png" label="${tool.name} on ${on_string} png" from_work_dir="output.png">
+            <filter>'png' in imageformat</filter>
+        </data>
+        <data name="output_vtk" format="vtkascii" label="${tool.name} on ${on_string} vtk" from_work_dir="output.vtk">
+            <filter>'vtk' in imageformat</filter>
+        </data>
+        <data name="output_pov" format="pov" label="${tool.name} on ${on_string} pov" from_work_dir="output.pov">
+            <filter>'pov' in imageformat</filter>
+        </data>
+    </outputs>
+    <tests>
+        <!-- Test-1  neper -V neper.tess -datacellcol id -imageformat "png" -->
+        <test>
+            <param name="input" ftype="neper.tess" value="neper.tess"/>
+            <output name="log">
+                <assert_contents>
+                    <has_text text="Wrote file `output.png'." />
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test-2  neper -V gmsh.msh -datacellcol id -imageformat "png,vtk" -->
+        <test>
+            <param name="input" ftype="neper.tess" value="gmsh.msh"/>
+            <param name="imageformat" value="png,vtk"/>
+            <output name="log">
+                <assert_contents>
+                    <has_text text="Wrote file `output.png'." />
+                    <has_text text="Wrote file `output.vtk'." />
+                </assert_contents>
+            </output>
+            <output name="output_vtk">
+                <assert_contents>
+                    <has_text text="vtk DataFile" />
+                    <has_text text="DATASET UNSTRUCTURED_GRID" />
+                </assert_contents>
+            </output>
+        </test>
+
+    </tests>
+    <help><![CDATA[
+**Neper Visualization**
+
+@NEPER_HELP@
+
+Module -V is the module for visualizing tessellations, meshes and simulation results as publication-quality PNG images1 or as VTK files, for interactive visualization. Results can be defined from internal data, data loaded from external files or a simulation directory as generated by module -S. For the PNG images, it is possible to set different attributes of the tessellations and meshes such as the node coordinates, or the colors and transparencies of the different entities. Point data can also be represented, using symbols of specified sizes and colors. Slice views can also be generated.
+
+    ]]></help>
+    <expand macro="citations" />
+</tool>

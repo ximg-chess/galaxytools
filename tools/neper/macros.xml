@@ -22,6 +22,306 @@
     <xml name="version_command">
         <version_command>neper --version</version_command>
     </xml>
+
+    <xml name="profile">
+        <conditional name="profile">
+            <param name="format" type="select" label="Specify number of cells by">
+                <option value="number">number</option>
+                <option value="morpho">Use morpho with tesr input</option>
+                <option value="expression"></option>
+            </param>
+        </conditional>
+    </xml>
+
+    <xml name="coords2d" token_label="Set" token_x="1.0" token_y="1.0">
+        <param name="x" type="float" value="@X@" label="@LABEL@ x"/>
+        <param name="y" type="float" value="@Y@" label="@LABEL@ y"/>
+    </xml>
+    <xml name="coords3d" token_label="Set" token_x="1.0" token_y="1.0" token_z="1.0">
+        <param name="x" type="float" value="@X@" label="@LABEL@ x"/>
+        <param name="y" type="float" value="@Y@" label="@LABEL@ y"/>
+        <param name="z" type="float" value="@Z@" label="@LABEL@ z"/>
+    </xml>
+
+    <xml name="size2d" token_label="Set" token_xl="x" token_yl="y" token_x="1" token_y="1">
+        <param name="x" type="integer" value="@X@" min="0" label="@LABEL@ @XL@"/>
+        <param name="y" type="integer" value="@Y@" min="0" label="@LABEL@ @YL@"/>
+    </xml>
+    <xml name="size3d" token_label="Set" token_xl="x" token_yl="y" token_zl="z" token_x="1" token_y="1" token_z="1">
+        <param name="x" type="integer" value="@X@" min="0" label="@LABEL@ @XL@"/>
+        <param name="y" type="integer" value="@Y@" min="0" label="@LABEL@ @YL@"/>
+        <param name="z" type="integer" value="@Z@" min="0" label="@LABEL@ @ZL@"/>
+    </xml>
+
+    <xml name="tx2d" token_label="Set" token_xl="x" token_yl="y" token_x="1" token_y="1">
+        <param name="x" type="float" value="@X@" label="@LABEL@ @XL@"/>
+        <param name="y" type="float" value="@Y@" label="@LABEL@ @YL@"/>
+        <yield/>
+    </xml>
+    <xml name="tx3d" token_label="Set" token_xl="x" token_yl="y" token_zl="z" token_x="1" token_y="1" token_z="1">
+        <expand macro="tx2d" label="@LABEL@" xl="@XL@" yl="@YL@" x="@X@" y="@Y@">
+        <param name="z" type="float" value="@Z@" label="@LABEL@ @ZL@"/>
+        </expand>
+    </xml>
+    <xml name="tx4d" token_label="Set" token_xl="x" token_yl="y" token_zl="z" token_al="a" token_x="1" token_y="1" token_z="1" token_a="1">
+        <expand macro="tx3d" label="@LABEL@" xl="@XL@" yl="@YL@" zl="@ZL@" x="@X@" y="@Y@" z="@Z@">
+        <param name="a" type="float" value="@A@" label="@LABEL@ @AL@"/>
+        </expand>
+    </xml>
+    <xml name="set_ny" token_name="scale" token_label="Scale">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="@LABEL@">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="yes">
+                        <yield/>
+                    </when>
+                </conditional>
+    </xml>
+    <xml name="set_nv" token_name="option" token_label="Option">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="@LABEL@">
+                        <option value="no">No</option>
+                        <option value="by_value">by value </option>
+                    </param>
+                    <when value="no"/>
+                    <when value="by_value">
+                        <yield/>
+                    </when>
+                </conditional>
+    </xml>
+    <xml name="set_nve" token_name="option" token_label="Option">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="@LABEL@">
+                        <option value="no">No</option>
+                        <option value="by_value">by value </option>
+                        <option value="by_expr">by expression</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="by_value">
+                        <yield/>
+                    </when>
+                    <when value="by_expr">
+                        <yield/>
+                    </when>
+                </conditional>
+    </xml>
+
+    <xml name="transform">
+        <section name="transform" expanded="false" title="Set Transforms">
+            <expand macro="set_ny" name="scale" label="Set scale">
+                <expand macro="tx3d" label="scale" lx="x factor" ly="y factor" lz="z factor"/>
+            </expand>
+            <expand macro="set_ny" name="rotate" label="Set rotate">
+                <expand macro="tx4d" label="rotate" lx="x axis" ly="y axis" lz="z axis" la="angle"/>
+            </expand>
+            <expand macro="set_ny" name="translate" label="Set translate">
+                <expand macro="tx3d" label="translate" lx="x distance" ly="y distance" lz="z distance"/>
+            </expand>
+        </section>
+    </xml>
+    <token name="@TRANSFORM@">
+#set $transforms = []
+#if $transform.scale.set_scale == 'yes'
+#silent $transforms.append('scale(' + str($transform.scale.x) + ',' + str($transform.scale.y) + ',' + str($transform.scale.z) + ')')
+#end if
+#if $transform.rotate.set_rotate == 'yes'
+#silent $transforms.append('rotate(' + str($transform.rotate.x) + ',' + str($transform.rotate.y) + ',' + str($transform.rotate.z) + ',' + str($transform.rotate.a) + ')')
+#end if
+#if $transform.translate.set_translate == 'yes'
+#silent $transforms.append('translate(' + str($transform.translate.x) + ',' + str($transform.translate.y) + ',' + str($transform.translate.z) + ')')
+#end if
+#if $transforms
+  #set $txargs = ','.join($transforms)
+ -transform "$txargs"
+#end if
+</token>
+
+    <xml name="cells">
+        <conditional name="cells">
+            <param name="format" type="select" label="Specify number of cells by">
+                <option value="number">number</option>
+                <option value="from_morpho">from_morpho</option>
+                <option value="expression"></option>
+            </param>
+            <when value="number">
+                <param name="number_of_cells" argument="-n" type="integer" value="10" min="1" label="the number of cells of the tessellation"/>
+            </when>
+            <when value="from_morpho">
+            </when>
+            <when value="expression">
+            </when>
+        </conditional>
+    </xml>
+    <token name="@CELLS@">
+        #if $cells.format == 'number'
+          -n $cells.number_of_cells
+        #elif $cells.format == 'from_morpho'
+          -n from_morpho
+        #end if
+</token>
+
+    <xml name="tessellation">
+        <conditional name="tessellation">
+            <param name="dim" type="select" label="Dimensions">
+                <option value="3" selected="true">3D</option>
+                <option value="2">2D</option>
+            </param>
+            <when value="3">
+                <conditional name="domain">
+                    <param name="shape" type="select" label="Dimensions">
+                        <option value="cube">cube</option>
+                        <option value="cylinder">cylinder</option>
+                        <option value="sphere">sphere</option>
+                    </param>
+                    <when value="cube">
+                        <param name="size_x" type="float" value="1.0" min="0.0" label="size x"/>
+                        <param name="size_y" type="float" value="1.0" min="0.0" label="size y"/>
+                        <param name="size_z" type="float" value="1.0" min="0.0" label="size z"/>
+                    </when>
+                    <when value="cylinder">
+                        <param name="height" type="float" value="1.0" min="0.0" label="height"/>
+                        <param name="diameter" type="float" value="1.0" min="0.0" label="diameter"/>
+                    </when>
+                    <when value="sphere">
+                        <param name="diameter" type="float" value="1.0" min="0.0" label="diameter"/>
+                    </when>
+                </conditional>
+
+            </when>
+            <when value="2">
+                <conditional name="domain">
+                    <param name="shape" type="select" label="Dimensions">
+                        <option value="square">cube</option>
+                        <option value="circle">cylinder</option>
+                    </param>
+                    <when value="square">
+                        <param name="size_x" type="float" value="1.0" min="0.0" label="size x"/>
+                        <param name="size_y" type="float" value="1.0" min="0.0" label="size y"/>
+                    </when>
+                    <when value="circle">
+                        <param name="diameter" type="float" value="1.0" min="0.0" label="diameter"/>
+                    </when>
+                </conditional>
+            </when>
+        </conditional>
+    </xml>
+    <token name="@TESSELLATION@">
+-dim $tessellation.dim
+#if $tessellation.domain.shape == 'cube' 
+-domain "${tessellation.domain.shape}($tessellation.domain.size_x,$tessellation.domain.size_y,$tessellation.domain.size_z)"
+#elif $tessellation.domain.shape == 'cylinder'
+-domain "${tessellation.domain.shape}($tessellation.domain.height,$tessellation.domain.diameter)"
+#elif $tessellation.domain.shape == 'sphere'
+-domain "${tessellation.domain.shape}($tessellation.domain.diameter)"
+#elif $tessellation.domain.shape == 'square'
+-domain "${tessellation.domain.shape}($tessellation.domain.size_x,$tessellation.domain.size_y)"
+#elif $tessellation.domain.shape == 'circle'
+-domain "${tessellation.domain.shape}($tessellation.domain.diameter)"
+#end if
+</token>
+    <xml name="morphooptistop">
+        <section name="morphooptistop" expanded="false" title="Set Optimization Stop Criteria">
+            <param name="eps" type="float" value="" optional="true" label="Absolute error on objective function"/>
+            <param name="reps" type="float" value="" optional="true" label="Relative error on objective function"/>
+            <param name="xeps" type="float" value="" optional="true" label="Absolute error on components of the solution vector"/>
+            <param name="xreps" type="float" value="" optional="true" label="Relative error on components of the solution vector"/>
+            <param name="itermax" type="integer" value="" min="1" optional="true" label="After n iterations"/>
+            <param name="loopmax" type="integer" value="" min="1" optional="true" label="After n iteration loops"/>
+            <param name="time" type="float" value="" optional="true" label="After n seconds"/>
+        </section>
+    </xml>
+    <token name="@MORPHOOPTISTOP@">
+#set $stops = []
+#if $morphooptistop.eps
+    #silent $stops.append('eps=' + str($morphooptistop.eps))
+#end if
+#if $morphooptistop.reps
+    #silent $stops.append('reps=' + str($morphooptistop.reps))
+#end if
+#if $morphooptistop.xeps
+    #silent $stops.append('xeps=' + str($morphooptistop.xeps))
+#end if
+#if $morphooptistop.xreps
+    #silent $stops.append('xreps=' + str($morphooptistop.xreps))
+#end if
+#if $morphooptistop.itermax
+    #silent $stops.append('itermax=' + str($morphooptistop.itermax))
+#end if
+#if $morphooptistop.loopmax
+    #silent $stops.append('loopmax=' + str($morphooptistop.loopmax))
+#end if
+#if $morphooptistop.time
+    #silent $stops.append('time=' + str($morphooptistop.time))
+#end if
+#if $stops
+  #set $stopargs = ','.join($stops)
+  -morphooptistop "$stopargs"
+#end if
+</token>
+
+    <xml name="morpho">
+        <conditional name="morpho">
+            <param name="morpho_type" type="select" label="Dimensions">
+                <option value="voronoi" selected="true">voronoi</option>
+                <option value="tesr">tesr file</option>
+                <option value="gg">graingrowth</option>
+            </param>
+            <when value="voronoi">
+            </when>
+            <when value="tesr">
+                <param name="tesr_file" type="data" format="neper.tesr" label="tesr file" help="Use -n from_morpho"/>
+                <param name="pts_region" type="select" optional="true" label="control points region">
+                    <option value="surf">surface voxels</option>
+                    <option value="all">all voxels</option>
+                </param>
+                <param name="pts_res" type="float" value="" min="1.0" optional="true" label="control points resolution" help="average number of control points along a direction of a grain"/>
+            </when>
+            <when value="gg">
+            </when>
+        </conditional>
+    </xml>
+    <token name="@MORPHO@">
+#if $morpho.morpho_type == 'tesr'
+-morpho "tesr:file($morpho.tesr_file)"
+  #set $pts = []
+  #if $morpho.pts_region
+    #silent $pts.append('region=' + str($morpho.pts_region))
+  #end if
+  #if $morpho.pts_res
+    #silent $pts.append('res=' + str($morpho.pts_res))
+  #end if
+  #if $pts
+    #set $args = ','.join($pts)
+    -morphooptiobj "tesr:pts($args)"
+  #end if
+#end if
+</token>
+
+    <xml name="regularization">
+        <conditional name="regularization">
+            <param name="regularize" type="select" label="Regularize tessellation">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </param>
+            <when value="0"/>
+            <when value="1">
+                <param name="fmax" type="float" value="20.0" min="0.0" max="180.0" label="face flatness fault (in degrees)" 
+                    help="The flatness fault is the maxi- mum angle between the normals at two locations on a face."/>
+                <param name="mloop" type="integer" value="2" min="1" label="maximum number of regularization loops"/>
+            </when>
+        </conditional>
+    </xml>
+    <token name="@REGULARIZATION@">
+-reg $regularization.regularize
+#if $regularization.regularize == '1' 
+-fmax $regularization.fmax
+-mloop $regularization.mloop
+#end if
+</token>
+
     <token name="@NEPER_HELP@">
 Neper_ is a software package for polycrystal generation and meshing. The polycrystals can be 2D or 3D.
 See the neper user manual for a complete description: https://neper.info/docs/neper.pdf
