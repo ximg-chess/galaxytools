@@ -2,9 +2,10 @@
     <description>scalar and raster tessellations</description>
     <macros>
         <import>macros.xml</import>
+        <token name="@VERSION_SUFFIX@">0</token>
         <xml name="meshing">
             <section name="meshing" expanded="false" title="Meshing Options">
-                <param name="elttype" type="select" optional="true" label="Set element type">
+                <param argument="-elttype" type="select" optional="true" label="Set element type">
                     <help>Default value: tetrahedral in 3D and triangular in 2D</help>
                     <option value="tri">triangular</option>
                     <option value="quad">quadrangular</option>
@@ -13,7 +14,7 @@
                     <option value="hex">hexahedral</option>
                 </param>
                 <!-- cl,rcl -->
-                <param name="dim" type="select" multiple="true" optional="true" label="Set the meshing dimension">
+                <param argument="-dim" type="select" multiple="true" optional="true" label="Set the meshing dimension">
                     <help>Default value: inputdim</help>
                     <option value="inputdim">inputdim</option>
                     <option value="all">all</option>
@@ -23,7 +24,7 @@
                     <option value="2">2</option>
                     <option value="3">3</option>
                 </param>
-                <param name="order" type="select" optional="true" label="Set the mesh order">
+                <param argument="-order" type="select" optional="true" label="Set the mesh order">
                     <help>Default value: 1
                           A value of 1 corresponds to 2-node linear elements, 3-node triangular elements, 
                           4-node quadrangular elements, 4-node tetrahedral elements and 8-node hexahedral elements, 
@@ -43,30 +44,20 @@
             </section>
         </xml>
         <token name="@MESHING@">
-#if $meshing.elttype
--elttype $meshing.elttype
-#end if
-#if $meshing.dim
--dim $meshing.dim
-#end if
-#if $meshing.order
--order $meshing.order
-#end if
-</token>
+        #if $meshing.elttype
+            -elttype $meshing.elttype
+        #end if
+        #if $meshing.dim
+            -dim $meshing.dim
+        #end if
+        #if $meshing.order
+            -order $meshing.order
+        #end if
+        </token>
+
         <xml name="meshing_output">
             <section name="meshing_output" expanded="false" title="Meshing Output Options">
-                <!--
-                <param name="nset" type="select" label="Specify the node sets">
-                    <option value="faces">faces</option>
-                    <option value="edges">edges</option>
-                    <option value="vertices">vertices</option>
-                    <option value="facebodies">facebodies</option>
-                    <option value="edgebodies">edgebodies</option>
-                    <option value="all">all</option>
-                    <option value="none">none</option>
-                </param>
-                -->
-                <param name="nset" type="text" value="" optional="true" label="Specify the node sets">
+                <param argument="-nset" type="text" value="" optional="true" label="Specify the node sets">
                     <option value="faces">faces</option>
                     <option value="edges">edges</option>
                     <option value="vertices">vertices</option>
@@ -78,7 +69,7 @@
                     <validator type="regex" message="">^all|none|(faces|edges|vertices|facebodies|edgebodies)*|([x-z][01]|[x-z][01][x-z][01]|[x-z][01][x-z][01][x-z][01]|z[0,1]f[1-9][0-9]*|f[1-9][0-9]*)*$</validator>
                     -->
                 </param>
-                <param name="faset" type="text" value="" optional="true" label="Specify the element surface meshes">
+                <param argument="-faset" type="text" value="" optional="true" label="Specify the element surface meshes">
                     <option value="faces">faces</option>
                     <option value="internal">internal</option>
                     <!--
@@ -88,13 +79,13 @@
             </section>
         </xml>
         <token name="@MESHING_OUTPUT@">
-#if $meshing_output.nset
--nset "$meshing_output.nset"
-#end if
-#if $meshing_output.faset
--faset "$meshing_output.faset"
-#end if
-</token>
+        #if $meshing_output.nset
+            -nset "$meshing_output.nset"
+        #end if
+        #if $meshing_output.faset
+            -faset "$meshing_output.faset"
+        #end if
+        </token>
 
     </macros>
     <expand macro="requirements" />
@@ -111,7 +102,7 @@
         | grep -v '%$' | tee 'neper.log'
     ]]></command>
     <inputs>
-        <param name="input" type="data" format="neper.tesr,neper.tess,gmsh.msh" label="Input to visualize"/>
+        <param name="input" type="data" format="neper.tesr,neper.tess,gmsh.msh" label="Input tessellation or mesh file"/>
         <expand macro="meshing"/>
         <expand macro="meshing_output"/>
         <expand macro="transform"/>
