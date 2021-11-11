@@ -20,6 +20,13 @@
         <version_command>neper --version</version_command>
     </xml>
 
+    <xml name="optional_yn" token_arg="-x" token_label="Show" token_help="">
+        <param argument="@ARG@" type="select" optional="true" label="@LABEL@"  help="@HELP@">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </param>
+    </xml>
+
     <xml name="coords2d" token_label="Set" token_x="1.0" token_y="1.0">
         <param name="x" type="float" value="@X@" label="@LABEL@ x"/>
         <param name="y" type="float" value="@Y@" label="@LABEL@ y"/>

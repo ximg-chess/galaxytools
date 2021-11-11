@@ -35,22 +35,11 @@
 
         <xml name="show_settings">
             <section name="show" expanded="false" title="Show Settings">
-                <param argument="-showtess" type="select" optional="true" label="Show tess" >
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </param>
-                <param argument="-showtesr" type="select" optional="true" label="Show tesr" >
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </param>
-                <param argument="-showmesh" type="select" optional="true" label="Show mesh" >
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </param>
-                <param argument="-showmeshslice" type="select" optional="true" label="Show mesh slice" >
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </param>
+                <expand macro="optional_yn" arg="-showtess" label="Show tess" help="test"/>
+                <expand macro="optional_yn" arg="-showtesr" label="Show tesr" help="test"/>
+                <expand macro="optional_yn" arg="-showmesh" label="Show mesh" help="test"/>
+                <expand macro="optional_yn" arg="-showmeshslice" label="Show mesh slice" help="test"/>
+                <!-- showpoint -->
             </section>
         </xml>
         <token name="@SHOW_SETTINGS@">
@@ -65,6 +54,52 @@
         #end if
         #if $show.showmeshslice
             -showmeshslice $show.showmeshslice
+        #end if
+        ## -showpoint
+        </token>
+
+        <xml name="show_tess_settings">
+            <section name="show_tess" expanded="false" title="Show Tessellation Settings">
+                <!-- showcell -->
+                <!-- showpoly -->
+                <!-- showface -->
+                <!-- showedge -->
+                <!-- showver -->
+                <!-- showseed -->
+                <!-- showfaceinter -->
+                <expand macro="optional_yn" arg="-showfaceinter" label="Show the interpolations of the tessellation faces" help=""/>
+                <!-- RASTER tesr -->
+                <!-- showvoidvox -->
+            </section>
+        </xml>
+        <token name="@SHOW_TESS_SETTINGS@">
+        #if $show_tess.showfaceinter
+            -showfaceinter $show_tess.showfaceinter
+        #end if
+        </token>
+
+        <xml name="show_mesh_settings">
+            <section name="show_mesh" expanded="false" title="Show Mesh Settings">
+                <!-- showelt3d -->
+                <!-- showelt2d -->
+                <!-- showelt1d -->
+                <!-- showelt0d -->
+                <!-- shownode -->
+                <expand macro="optional_yn" arg="-showcys" label="Show the coordinate system" help=""/>
+                <expand macro="optional_yn" arg="-showshadow" label="Show the shadows" help=""/>
+            </section>
+        </xml>
+        <token name="@SHOW_MESH_SETTINGS@">
+        ## showelt3d
+        ## showelt2d
+        ## showelt1d
+        ## showelt0d
+        ## shownode
+        #if $show_mesh.showcys
+            -showcys $show_mesh.showcys
+        #end if
+        #if $show_mesh.showshadow
+            -showshadow $show_mesh.showshadow
         #end if
         </token>
 
@@ -130,10 +165,12 @@
     <expand macro="version_command" />
     <command detect_errors="exit_code"><![CDATA[
         neper -V 
-        '$input'
+        '$inputs'
         @TESS_DATA@
         @TRANSFORM@
         @SHOW_SETTINGS@
+        @SHOW_TESS_SETTINGS@
+        @SHOW_MESH_SETTINGS@
         @CAMERA_SETTINGS@
         @IMAGE_SETTINGS@
         -imageformat "$imageformat"
@@ -147,10 +184,12 @@
         #end if
     ]]></command>
     <inputs>
-        <param name="input" type="data" format="neper.tesr,neper.tess,gmsh.msh" label="Input to visualize"/> 
+        <param name="inputs" type="data" format="neper.tesr,neper.tess,gmsh.msh" multiple="true" label="Input to visualize"/> 
         <expand macro="tess_data"/>
         <expand macro="transform"/>
         <expand macro="show_settings"/>
+        <expand macro="show_tess_settings"/>
+        <expand macro="show_mesh_settings"/>
         <expand macro="camera_settings"/>
         <expand macro="image_settings"/>
         <param name="imageformat" argument="-imageformat" type="select" multiple="true" optional="false" label="Image formats">
@@ -174,7 +213,7 @@
     <tests>
         <!-- Test-1  neper -V neper.tess -datacellcol id -imageformat "png" -->
         <test>
-            <param name="input" ftype="neper.tess" value="neper.tess"/>
+            <param name="inputs" ftype="neper.tess" value="neper.tess"/>
             <output name="log">
                 <assert_contents>
                     <has_text text="Wrote file `output.png'." />
@@ -183,7 +222,7 @@
         </test>
         <!-- Test-2  neper -V gmsh.msh -datacellcol id -imageformat "png,vtk" -->
         <test>
-            <param name="input" ftype="neper.tess" value="gmsh.msh"/>
+            <param name="inputs" ftype="neper.tess" value="gmsh.msh"/>
             <param name="imageformat" value="png,vtk"/>
             <output name="log">
                 <assert_contents>
