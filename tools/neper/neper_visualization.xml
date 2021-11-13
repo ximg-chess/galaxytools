@@ -156,6 +156,7 @@ neper -V example_mesh.msh -showelt1d all -dataelset3dcol id -dataelt1drad 0.0025
 
                 <!-- dataelt2dcol -->    
                 <expand macro="set_el_color" name="dataelt2dcol">
+                </expand>
                 <!-- dataelt2dcolscheme -->    
                 <!-- dataelt2dcolscale -->    
                 <!-- dataelt2dcolscaletitle -->    
@@ -165,6 +166,7 @@ neper -V example_mesh.msh -showelt1d all -dataelset3dcol id -dataelt1drad 0.0025
 
                 <!-- dataelt1dcol -->    
                 <expand macro="set_el_color" name="dataelt1dcol">
+                </expand>
                 <!-- dataelt1dcolscheme -->    
                 <!-- dataelt1dcolscale -->    
                 <!-- dataelt1dcolscaletitle -->    
@@ -173,6 +175,7 @@ neper -V example_mesh.msh -showelt1d all -dataelset3dcol id -dataelt1drad 0.0025
 
                 <!-- dataelt0dcol -->    
                 <expand macro="set_el_color" name="dataelt0dcol">
+                </expand>
                 <!-- dataelt0dcolscheme -->    
                 <!-- dataelt0dcolscale -->    
                 <!-- dataelt0dcolscaletitle -->    
