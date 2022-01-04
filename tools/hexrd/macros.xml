@@ -1,6 +1,6 @@
 <macros>
     <token name="@TOOL_VERSION@">0.8.12</token>
-    <token name="@VERSION_SUFFIX@">0</token>
+    <token name="@VERSION_SUFFIX@">1</token>
     <token name="@PROFILE@">21.09</token>
     <xml name="requirements">
         <requirements>
@@ -73,7 +73,7 @@
                 </param>
             </when>
         </conditional>
-        <param name="instrument" type="data" format="hexrd.yml" label="instrument"/>
+        <param name="instrument" type="data" format="yaml" label="instrument"/>
         <param name="material" type="data" format="hexrd.materials.h5" label="material"/>
         <param name="active_material" type="select" label="active material name">
             <options>
@@ -194,7 +194,7 @@ instrument: $instrument_file
                     </conditional>
                 </when>
                 <when value="use_quaternion_grid">
-                    <param name="quaternion_grid" type="data" format="hexrd.npz" label="quaterion grid file"/>
+                    <param name="quaternion_grid" type="data" format="npz" label="quaterion grid file"/>
                 </when>
             </conditional>
         </section>
@@ -301,7 +301,7 @@ find_orientations:
     <xml name="fit_grains_config">
         <expand macro="common_config" token_multiple_inputs="true"/>
         <param name="ome_map" type="data" format="hexrd.eta_ome.npz" label="analysis eta-ome_maps.npz from find_orientations"/>
-        <param name="accepted_orientations" type="data" format="hexrd.accepted_orientations" label="accepted_orientations from find_orientations"/>
+        <param name="accepted_orientations" type="data" format="tabular" label="accepted_orientations from find_orientations"/>
         <param name="grains_estimate" type="data" format="tabular" label="grains.out from find_orientations"/>
         <param name="do_fit" type="boolean" truevalue="true" falsevalue="false" checked="true" label="fit grains" help="if false, extracts grains but doesn't fit"/>
         <param name="npdiv" type="integer" value="2" min="1" label="number of polar pixel grid subdivisions"/>

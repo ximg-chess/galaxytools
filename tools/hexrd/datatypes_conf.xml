@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<datatypes>
-  <registration>
-    <datatype extension="hexrd.yml" type="galaxy.datatypes.data:Text" subclass="true" display_in_upload="true"/>
-  </registration>
-</datatypes>
