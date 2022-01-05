@@ -1,4 +1,4 @@
-<tool id="hexrd_fit_grains" name="HEXRD fit-grains" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@" python_template_version="3.5">
+<tool id="hexrd_fit_grains" name="HEXRD fit-grains" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
     <description>Extracts G vectors, grain position and strain</description>
     <macros>
         <import>macros.xml</import>
