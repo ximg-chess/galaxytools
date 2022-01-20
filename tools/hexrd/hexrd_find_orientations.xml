@@ -9,7 +9,7 @@
         cp '$config_yml' config.yml &&
         ## symlink input files
         @CMD_LINKS@
-        hexrd find-orientations config.yml &&
+        hexrd find-orientations --clean config.yml &&
         @CONVERT2TAB@ &&
         cp find-orientations_analysis_*.log '$log' &&
         cp  accepted_orientations_analysis_*.dat '$accepted_orientations' &&
