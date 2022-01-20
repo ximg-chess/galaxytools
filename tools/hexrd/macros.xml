@@ -1,6 +1,6 @@
 <macros>
     <token name="@TOOL_VERSION@">0.8.12</token>
-    <token name="@VERSION_SUFFIX@">1</token>
+    <token name="@VERSION_SUFFIX@">2</token>
     <token name="@PROFILE@">21.09</token>
     <xml name="requirements">
         <requirements>
@@ -150,7 +150,7 @@ instrument: $instrument_file
             <!-- active_hkls should be able to be optional="true" -->
             <param name="active_hkls" type="text" value="" label="active hkl planes"> 
                 <help>commas separated list of planes, e.g.: 0,1,2,3,4,5</help>
-                <validator type="regex" message="plane indeces separated by commas">^\d(,\d)*$</validator>
+                <validator type="regex" message="plane indices separated by commas">^\d(,\d)*$</validator>
 	    </param> 
         </section>
         <param name="on_map_threshold" type="integer" value="1" min="1" label="on-map threshold used in the scoring"/>
@@ -312,8 +312,8 @@ find_orientations:
                 <param name="eta" type="float" value="" min="0" label="eta"/>
                 <param name="omega" type="float" value="" min="0" label="omega"/>
             </repeat>
-            <param name="refit" type="text" value="1" label="refit">
-                <validator type="regex" message="">^\d(,\d)*$</validator>
+            <param name="refit" type="text" value="1" label="refit" help="float values separated by commas">
+                <validator type="regex" message="">^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?(,[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)*$</validator>
             </param>
             <conditional name="max_tth">
                 <param name="tth_max_value" type="select" label="Set tth_max">
@@ -345,7 +345,7 @@ fit_grains:
 #set $tth = []
 #set $eta = []
 #set $omega = []
-#set refit = '[' + str($tolerance.refit) + ']'
+#set $refit = '[' + str($tolerance.refit) + ']'
 #for $tol in $tolerance.tolerance_lists
 #silent $tth.append(float($tol.tth))
 #silent $eta.append(float($tol.eta))

@@ -1,4 +1,4 @@
-<tool id="hexrd_find_orientations" name="HEXRD find-orientations" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
+<tool id="hexrd_find_orientations" name="HEXRD find-orientations" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@" python_template_version="3.5">
     <description>Process rotation image series to find grain orientations</description>
     <macros>
         <import>macros.xml</import>
@@ -9,7 +9,7 @@
         cp '$config_yml' config.yml &&
         ## symlink input files
         @CMD_LINKS@
-        hexrd find-orientations config.yml &&
+        hexrd find-orientations --clean config.yml &&
         @CONVERT2TAB@ &&
         cp find-orientations_analysis_*.log '$log' &&
         cp  accepted_orientations_analysis_*.dat '$accepted_orientations' &&
