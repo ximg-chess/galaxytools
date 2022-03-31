@@ -481,7 +481,6 @@ class Tomo:
             return
 
         if self.galaxy_flag:
-            self.num_core = 1 #RV can I set this? mp.cpu_count()
             assert(self.output_folder == '.')
             assert(self.test_mode is False)
             self.save_plots = True
@@ -528,7 +527,7 @@ class Tomo:
             self.tomo_stacks = [np.array([]) for _ in range(num_tomo_stacks)]
             self.tomo_recon_stacks = [np.array([]) for _ in range(num_tomo_stacks)]
 
-        logging.info(f'num_core = {self.num_core}')
+        logging.debug(f'num_core = {self.num_core}')
         logging.debug(f'config_file = {config_file}')
         logging.debug(f'config_dict = {config_dict}')
         logging.debug(f'config_out = {self.config_out}')
@@ -1438,7 +1437,7 @@ class Tomo:
             # Save tomography stack to file
             if self.galaxy_flag:
                 t0 = time()
-                logging.info(f'Saving preprocessed tomography stack to file ...')
+                logging.info(f'Saving preprocessed tomography stack to {output_name} ...')
                 save_stacks = {f'set_{stack["index"]}':tomo_stack
                         for stack,tomo_stack in zip(stacks,self.tomo_stacks)}
                 np.savez(output_name, **save_stacks)
