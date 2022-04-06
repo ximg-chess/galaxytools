@@ -619,10 +619,11 @@ class Config:
         if not os.path.isfile(config_file):
             logging.error(f'Unable to load {config_file}')
             return
+        print(f'\nLoading {config_file}\n')
 
         # Load config file
         self.suffix = os.path.splitext(config_file)[1]
-        if self.suffix == '.yml' or self.suffix == '.yaml':
+        if self.suffix == '.yml' or self.suffix == '.yaml' or self.suffix == '.dat':
             with open(config_file, 'r') as f:
                 self.config = yaml.safe_load(f)
         elif self.suffix == '.txt':
