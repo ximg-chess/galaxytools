@@ -31,8 +31,8 @@
             <param name="row_bound_upp" type="integer" value="-1" label="Upper bound"/>
         </section>
         <section name="recon_centers" title="Reconstruction rows to establish center axis">
-            <param name="lower_row" type="integer" optional="false" label="Lower row"/>
-            <param name="upper_row" type="integer" optional="false" label="Upper row"/>
+            <param name="lower_row" type="integer" optional="true" label="Lower row"/>
+            <param name="upper_row" type="integer" optional="true" label="Upper row"/>
         </section>
         <conditional name="set">
             <param name="set_selector" type="select" label="Reconstruct slices for a set of center positions?">
