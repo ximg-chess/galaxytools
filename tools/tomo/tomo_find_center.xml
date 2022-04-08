@@ -14,10 +14,10 @@
             --center_type_selector '$set.center_type.center_type_selector'
             #if str( $set.center_type.center_type_selector ) == "user"
                 --set_center '$set.center_type.set_center'
-            #endif
+            #end if
             --set_range '$set.set_range'
             --set_step '$set.set_step'
-        #endif
+        #end if
         --output_config 'output_config.yaml'
         --recon_center_low 'recon_center_low.png'
         --recon_center_upp 'recon_center_upp.png'
