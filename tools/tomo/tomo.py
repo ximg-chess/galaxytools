@@ -1149,18 +1149,20 @@ class Tomo:
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
         return recon_clean
 
-    def _plotEdgesOnePlane(self, recon_plane, title, name=None, weight=0.001):
+    def _plotEdgesOnePlane(self, recon_plane, title, path=None, name=None, weight=0.001):
         # RV parameters for the denoise, gaussian, and ring removal will be different for different feature sizes
         edges = denoise_tv_chambolle(recon_plane, weight = weight)
         vmax = np.max(edges[0,:,:])
         vmin = -vmax
         if self.galaxy_flag:
-            msnc.quickImshow(edges[0,:,:], title, name=name, save_fig=True, save_only=True,
-                    cmap='gray', vmin=vmin, vmax=vmax)
+            msnc.quickImshow(edges[0,:,:], title, path=path, name=name, save_fig=True,
+                    save_only=True, cmap='gray', vmin=vmin, vmax=vmax)
         else:
-            msnc.quickImshow(edges[0,:,:], f'{title} coolwarm', path=self.output_folder,
+            if path is None:
+                path=self.output_folder
+            msnc.quickImshow(edges[0,:,:], f'{title} coolwarm', path=path,
                     save_fig=self.save_plots, save_only=self.save_plots_only, cmap='coolwarm')
-            msnc.quickImshow(edges[0,:,:], f'{title} gray', path=self.output_folder,
+            msnc.quickImshow(edges[0,:,:], f'{title} gray', path=path,
                     save_fig=self.save_plots, save_only=self.save_plots_only, cmap='gray',
                     vmin=vmin, vmax=vmax)
         del edges
@@ -1230,6 +1232,8 @@ class Tomo:
                 return float(center_offset)
 
         # perform center finding search
+        if self.galaxy_flag and not os.path.exists('png_files'):
+            os.mkdir('png_files')
         while True:
             if self.galaxy_flag and galaxy_param and galaxy_param['center_type_selector']:
                 set_center = center_offset_vo
@@ -1266,7 +1270,10 @@ class Tomo:
                 recon_plane = self._reconstructOnePlane(sinogram_T, center_offset+center,
                         thetas_deg, eff_pixel_size, cross_sectional_dim, False, num_core)
                 title = f'edges row{row} center_offset{center_offset:.2f}'
-                self._plotEdgesOnePlane(recon_plane, title)
+                if self.galaxy_flag:
+                    self._plotEdgesOnePlane(recon_plane, title, path='png_files')
+                else:
+                    self._plotEdgesOnePlane(recon_plane, title)
             if self.galaxy_flag or pyip.inputInt('\nContinue (0) or end the search (1): ',
                     min=0, max=1):
                 break
