@@ -58,6 +58,9 @@
         <expand macro="common_outputs"/>
         <data name="recon_center_low" format="png" label="Recontructed slice lower center using Nghia Vo’s method" from_work_dir="recon_center_low.png"/>
         <data name="recon_center_upp" format="png" label="Recontructed slice upper center using Nghia Vo’s method" from_work_dir="recon_center_upp.png"/>
+        <collection name="recon_center_set" type="list" label="Recontructed slices center position set">
+            <discover_datasets ext="png"/>
+        </collection>
     </outputs>
     <help><![CDATA[
         Preprocess tomography images.
