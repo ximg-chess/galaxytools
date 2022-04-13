@@ -17,8 +17,8 @@
         <expand macro="common_inputs"/>
         <param name="red_stacks" type='data' format='npz' optional='false' label="Reduced stacks"/>
         <section name="center_offsets" title="Reconstruction center axis offsets">
-            <param name="lower_center_offset" type="float" optional="false" label="Lower center offset"/>
-            <param name="upper_center_offset" type="float" optional="false" label="Upper center offset"/>
+            <param name="lower_center_offset" type="float" value = "0" optional="false" label="Lower center offset"/>
+            <param name="upper_center_offset" type="float" value = "0" optional="false" label="Upper center offset"/>
         </section>
     </inputs>
     <outputs>
