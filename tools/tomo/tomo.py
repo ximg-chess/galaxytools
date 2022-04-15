@@ -1877,6 +1877,7 @@ class Tomo:
     def reconstructTomoStacks(self, galaxy_param=None, num_core=None):
         """Reconstruct tomography stacks.
         """
+        print('OK1')
         if num_core is None:
             num_core = self.num_core
         logging.debug('Reconstruct tomography stacks')
@@ -1884,6 +1885,7 @@ class Tomo:
         assert(len(self.tomo_stacks) == self.config['stack_info']['num'])
         assert(len(self.tomo_stacks) == len(stacks))
         assert(len(self.tomo_recon_stacks) == len(stacks))
+        print('OK2')
         if self.galaxy_flag:
             assert(isinstance(galaxy_param, dict))
             # Get rotation axis centers
@@ -1899,6 +1901,7 @@ class Tomo:
                 galaxy_param = None
             lower_center_offset = None
             upper_center_offset = None
+        print('OK3')
 
         # Get rotation axis rows and centers
         find_center = self.config['find_center']
@@ -1925,6 +1928,7 @@ class Tomo:
         center_slope = (upper_center_offset-lower_center_offset)/(upper_row-lower_row)
 
         # Set thetas (in radians)
+        print('OK4')
         theta_range = self.config['theta_range']
         theta_start = theta_range['start']
         theta_end = theta_range['end']
@@ -1933,6 +1937,7 @@ class Tomo:
         thetas = np.radians(np.linspace(theta_start, theta_end,
                 int(num_theta/(num_theta_skip+1)), endpoint=False))
 
+        print('OK5')
         # Reconstruct tomo stacks
         zoom_perc = self.config['preprocess'].get('zoom_perc', 100)
         if zoom_perc == 100:
@@ -1960,6 +1965,7 @@ class Tomo:
             if not self.tomo_stacks[i].size:
                 self.tomo_stacks[i], available = self._loadTomo('red stack', index,
                         required=True)
+            print(f'self.tomo_stacks.shape = {self.tomo_stacks[i].shape}')
             if not self.tomo_stacks[i].size:
                 logging.error(f'Unable to load tomography stack {index} for reconstruction')
                 stack[i]['preprocessed'] = False
@@ -1989,6 +1995,7 @@ class Tomo:
 #                np.savetxt(self.output_folder+f'recon_stack_{index}.txt',
 #                        self.tomo_recon_stacks[i][row_slice,:,:], fmt='%.6e')
             self.tomo_stacks[i] = np.array([])
+            print('OK6')
 
             # Update config and save to file
             stack['reconstructed'] = True
@@ -1997,6 +2004,7 @@ class Tomo:
                 combine_stacks['stacks'].remove(index)
             self.cf.saveFile(self.config_out)
 
+        print('OK7')
         # Save reconstructed tomography stack to file
         if self.galaxy_flag:
             t0 = time()
