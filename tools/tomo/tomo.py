@@ -1984,15 +1984,17 @@ class Tomo:
                 continue
             print(f'lower_row = {lower_row} upper_row = {upper_row} self.tomo_stacks[i].shape[0] = {self.tomo_stacks[i].shape[0]}')
             assert(0 <= lower_row < upper_row < self.tomo_stacks[i].shape[0])
-            print(f'OK4 {i} c')
             center_offsets = [lower_center_offset-lower_row*center_slope,
                     upper_center_offset+(self.tomo_stacks[i].shape[0]-1-upper_row)*center_slope]
             t0 = time()
+            num_core = 1
+            print(f'OK4 {i} c')
             self.tomo_recon_stacks[i]= self._reconstructOneTomoStack(self.tomo_stacks[i],
                     thetas, center_offsets=center_offsets, sigma=0.1, num_core=num_core,
                     algorithm='gridrec', run_secondary_sirt=True, secondary_iter=25)
-            logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
             print(f'OK4 {i} d')
+            exit('Done')
+            logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
             if self.galaxy_flag:
                 x_slice = int(self.tomo_stacks[i].shape[0]/2) 
                 title = f'{basetitle} {index} xslice{x_slice}'
