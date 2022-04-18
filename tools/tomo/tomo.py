@@ -1556,6 +1556,9 @@ class Tomo:
                     logging.error('Illegal center_type_selector entry in galaxy_param '+
                             f'({center_type_selector})')
                     galaxy_param['center_type_selector'] = None
+            logging.info(f'row_bounds = {row_bounds}')
+            logging.info(f'center_rows = {center_rows}')
+            logging.info(f'center_type_selector = {center_type_selector}')
         else:
             if galaxy_param:
                 logging.warning('Ignoring galaxy_param in findCenters (only for Galaxy)')
@@ -1716,6 +1719,7 @@ class Tomo:
         use_center = 'no'
         row = center_rows[0]
         if self.test_mode or self.galaxy_flag:
+            logging.info(f'row = {row} n1 = {n1} n2 = {n2}')
             assert(msnc.is_int(row, n1, n2-2))
         if msnc.is_int(row, n1, n2-2):
             if self.test_mode or self.galaxy_flag:
@@ -1731,6 +1735,8 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current lower center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
+        logging.info(f'use_center = {use_center}')
+        logging.info(f'use_row = {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
@@ -1747,7 +1753,6 @@ class Tomo:
                     eff_pixel_size, cross_sectional_dim, num_core=num_core,
                     galaxy_param=galaxy_param)
         logging.info(f'lower_center_offset = {center_offset:.2f} {type(center_offset)}')
-        print(center_offset)
 
         # Update config and save to file
         find_center['row_bounds'] = [n1, n2]
@@ -1761,6 +1766,7 @@ class Tomo:
         use_center = 'no'
         row = center_rows[1]
         if self.test_mode or self.galaxy_flag:
+            logging.info(f'row = {row} lower_row = {lower_row} n2 = {n2}')
             assert(msnc.is_int(row, lower_row+1, n2-1))
         if msnc.is_int(row, lower_row+1, n2-1):
             if self.test_mode or self.galaxy_flag:
