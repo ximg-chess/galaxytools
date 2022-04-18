@@ -1183,6 +1183,7 @@ class Tomo:
         center = sinogram.shape[1]/2
 
         # try automatic center finding routines for initial value
+        num_core=1
         print(f'OK2 numcore = {num_core}')
         tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         center_offset_vo = tomo_center-center
