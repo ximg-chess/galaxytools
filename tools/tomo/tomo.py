@@ -1323,8 +1323,10 @@ class Tomo:
                     tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=num_core)
         else:
             tomo_stack = tomo_stack[row_bounds[0]:row_bounds[1]]
+        print('OK AA')
         tomo_recon_stack = tomopy.recon(tomo_stack, thetas, centers, sinogram_order=True,
                 algorithm=algorithm, ncore=num_core)
+        print('OK BB')
         if run_secondary_sirt and secondary_iter > 0:
             #options = {'method':'SIRT_CUDA', 'proj_type':'cuda', 'num_iter':secondary_iter}
             #RV: doesn't work for me: "Error: CUDA error 803: system has unsupported display driver /
@@ -1337,6 +1339,7 @@ class Tomo:
             tomo_recon_stack  = tomopy.recon(tomo_stack, thetas, centers,
                     init_recon=tomo_recon_stack, options=options, sinogram_order=True,
                     algorithm=tomopy.astra, ncore=num_core)
+        print('OK CC')
         if True:
             tomopy.misc.corr.remove_ring(tomo_recon_stack, rwidth=rwidth, out=tomo_recon_stack,
                     ncore=num_core)
