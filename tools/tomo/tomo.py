@@ -1183,7 +1183,6 @@ class Tomo:
         center = sinogram.shape[1]/2
 
         # try automatic center finding routines for initial value
-        #num_core=1
         tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         center_offset_vo = tomo_center-center
         if self.test_mode:
@@ -1301,6 +1300,7 @@ class Tomo:
         # RV should we remove rings?
         # https://tomopy.readthedocs.io/en/latest/api/tomopy.misc.corr.html
         # RV: Add an option to do (extra) secondary iterations later or to do some sort of convergence test?
+        print(f'OK AA row_bounds = {row_bounds}')
         if row_bounds is None:
             row_bounds = [0, tomo_stack.shape[0]]
         else:
@@ -1318,15 +1318,18 @@ class Tomo:
                 raise ValueError('center_offsets dimension mismatch in reconstructOneTomoStack')
             centers = center_offsets
         centers += tomo_stack.shape[2]/2
+        print(f'num_core = {num_core}')
+        print(f'thetas = {thetas}')
+        print(f'centers = {centers}')
         if True:
             tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
                     tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=num_core)
         else:
             tomo_stack = tomo_stack[row_bounds[0]:row_bounds[1]]
-        print('OK AA')
+        print('OK BB')
         tomo_recon_stack = tomopy.recon(tomo_stack, thetas, centers, sinogram_order=True,
                 algorithm=algorithm, ncore=num_core)
-        print('OK BB')
+        print('OK CC')
         if run_secondary_sirt and secondary_iter > 0:
             #options = {'method':'SIRT_CUDA', 'proj_type':'cuda', 'num_iter':secondary_iter}
             #RV: doesn't work for me: "Error: CUDA error 803: system has unsupported display driver /
@@ -1339,7 +1342,7 @@ class Tomo:
             tomo_recon_stack  = tomopy.recon(tomo_stack, thetas, centers,
                     init_recon=tomo_recon_stack, options=options, sinogram_order=True,
                     algorithm=tomopy.astra, ncore=num_core)
-        print('OK CC')
+        print('OK DD')
         if True:
             tomopy.misc.corr.remove_ring(tomo_recon_stack, rwidth=rwidth, out=tomo_recon_stack,
                     ncore=num_core)
@@ -1456,6 +1459,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
+        logging.info(f'num_core = {self.num_core}')
         # Try loading any already preprocessed stacks (skip in Galaxy)
         # preprocessed stack order for each one in stack: row,theta,column
         stack_info = self.config['stack_info']
@@ -1539,6 +1543,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
+        logging.info(f'num_core = {self.num_core}')
         logging.debug('Find centers for tomography stacks')
         stacks = self.config['stack_info']['stacks']
         available_stacks = [stack['index'] for stack in stacks if stack.get('preprocessed', False)]
@@ -1890,6 +1895,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
+        logging.info(f'num_core = {self.num_core}')
         if self.galaxy_flag:
             assert(galaxy_param)
             if not os.path.exists('center_slice_pngs'):
@@ -1990,13 +1996,11 @@ class Tomo:
             center_offsets = [lower_center_offset-lower_row*center_slope,
                     upper_center_offset+(self.tomo_stacks[i].shape[0]-1-upper_row)*center_slope]
             t0 = time()
-            num_core = 1
             print(f'OK4 {i} c')
             self.tomo_recon_stacks[i]= self._reconstructOneTomoStack(self.tomo_stacks[i],
                     thetas, center_offsets=center_offsets, sigma=0.1, num_core=num_core,
                     algorithm='gridrec', run_secondary_sirt=True, secondary_iter=25)
             print(f'OK4 {i} d')
-            exit('Done')
             logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
             if self.galaxy_flag:
                 x_slice = int(self.tomo_stacks[i].shape[0]/2) 
