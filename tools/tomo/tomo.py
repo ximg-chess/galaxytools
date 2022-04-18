@@ -1511,6 +1511,8 @@ class Tomo:
                 logging.info(f'Saving preprocessed tomography stack to {output_name} ...')
                 save_stacks = {f'set_{stack["index"]}':tomo_stack
                         for stack,tomo_stack in zip(stacks,self.tomo_stacks)}
+                logging.info(f'output_name = {output_name}')
+                logging.info(f'save_stacks.shape = {save_stacks.shape}')
                 np.savez(output_name, **save_stacks)
                 logging.info(f'... done in {time()-t0:.2f} seconds!')
 
