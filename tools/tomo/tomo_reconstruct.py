@@ -61,10 +61,8 @@ def __main__():
 
     # Reconstruct tomography stacks
     galaxy_param = {'center_offsets' : args.center_offsets, 'output_name' : args.output_data}
-    print(f'Here galaxy_param = {galaxy_param}')
     logging.info(f'galaxy_param = {galaxy_param}')
     tomo.reconstructTomoStacks(galaxy_param)
-    print('Here')
 
     # Displaying memory usage
     logging.info(f'Memory usage: {tracemalloc.get_traced_memory()}')
