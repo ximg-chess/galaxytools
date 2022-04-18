@@ -14,7 +14,7 @@
         --bright 'bright_field.png'
         --tomo 'tomo.png'
         --detectorbounds 'detectorbounds.png'
-        --output_data 'output.npz'
+        --output_data 'output_data.npz'
         --output_config 'output_config.yaml'
         -l '$log'
 #for $s in $tomo_sets# ${s.offset} ${s.num} #end for
