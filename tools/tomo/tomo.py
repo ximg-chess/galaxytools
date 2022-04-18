@@ -1184,10 +1184,9 @@ class Tomo:
 
         # try automatic center finding routines for initial value
         num_core=1
-        print(f'OK2 numcore = {num_core}')
+        #tomo_center = tomopy.find_center_vo(sinogram, ncore=1)
         tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         center_offset_vo = tomo_center-center
-        print(f'center_offset_vo = {center_offset_vo}')
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
             del sinogram_T
@@ -1199,7 +1198,6 @@ class Tomo:
             title = f'edges row{row} center offset{center_offset_vo:.2f} Vo'
             self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
             del recon_plane
-            print(f'center_type_selector = {galaxy_param["center_type_selector"]}')
             if not galaxy_param['center_type_selector']:
                 del sinogram_T
                 return float(center_offset_vo)
@@ -1267,7 +1265,6 @@ class Tomo:
                             min=1, max=center_offset_upp-center_offset_low)
             num_center_offset = 1+int((center_offset_upp-center_offset_low)/center_offset_step)
             center_offsets = np.linspace(center_offset_low, center_offset_upp, num_center_offset)
-            print(f'center_offsets = {center_offsets}')
             for center_offset in center_offsets:
                 if center_offset == center_offset_vo:
                     continue
@@ -1279,7 +1276,6 @@ class Tomo:
                     self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
                 else:
                     self._plotEdgesOnePlane(recon_plane, title)
-            print('OK3')
             if self.galaxy_flag or pyip.inputInt('\nContinue (0) or end the search (1): ',
                     min=0, max=1):
                 break
@@ -1740,8 +1736,8 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current lower center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
-        logging.info(f'use_center = {use_center}')
-        logging.info(f'use_row = {use_row}')
+        #logging.info(f'use_center = {use_center}')
+        #logging.info(f'use_row = {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
@@ -1787,8 +1783,8 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current upper center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
-        logging.info(f'use_center = {use_center}')
-        logging.info(f'use_row = {use_row}')
+        #logging.info(f'use_center = {use_center}')
+        #logging.info(f'use_row = {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
