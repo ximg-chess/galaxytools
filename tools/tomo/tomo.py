@@ -1897,6 +1897,7 @@ class Tomo:
         assert(len(self.tomo_stacks) == self.config['stack_info']['num'])
         assert(len(self.tomo_stacks) == len(stacks))
         assert(len(self.tomo_recon_stacks) == len(stacks))
+        print('OK1')
         if self.galaxy_flag:
             assert(isinstance(galaxy_param, dict))
             # Get rotation axis centers
@@ -1914,6 +1915,7 @@ class Tomo:
             upper_center_offset = None
 
         # Get rotation axis rows and centers
+        print('OK2')
         find_center = self.config['find_center']
         lower_row = find_center.get('lower_row')
         if lower_row is None:
@@ -1947,6 +1949,7 @@ class Tomo:
                 int(num_theta/(num_theta_skip+1)), endpoint=False))
 
         # Reconstruct tomo stacks
+        print('OK3')
         zoom_perc = self.config['preprocess'].get('zoom_perc', 100)
         if zoom_perc == 100:
             basetitle = 'recon stack fullres'
@@ -1959,6 +1962,7 @@ class Tomo:
             # reconstructed stack order for each one in stack : row/z,x,y
             # preprocessed stack order for each one in stack: row,theta,column
             index = stack['index']
+            print(f'OK4 {i} a')
             if not self.galaxy_flag:
                 available = False
                 if stack.get('reconstructed', False):
@@ -1969,6 +1973,7 @@ class Tomo:
                     assert(stack.get('preprocessed', False) == True)
                     assert(stack.get('reconstructed', False) == True)
                     continue
+            print(f'OK4 {i} b')
             stack['reconstructed'] = False
             if not self.tomo_stacks[i].size:
                 self.tomo_stacks[i], available = self._loadTomo('red stack', index,
@@ -1986,6 +1991,7 @@ class Tomo:
                     thetas, center_offsets=center_offsets, sigma=0.1, num_core=num_core,
                     algorithm='gridrec', run_secondary_sirt=True, secondary_iter=25)
             logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
+            print(f'OK4 {i} c')
             if self.galaxy_flag:
                 x_slice = int(self.tomo_stacks[i].shape[0]/2) 
                 title = f'{basetitle} {index} xslice{x_slice}'
@@ -2019,8 +2025,10 @@ class Tomo:
             if combine_stacks and index in combine_stacks.get('stacks', []):
                 combine_stacks['stacks'].remove(index)
             self.cf.saveFile(self.config_out)
+            print(f'OK4 {i} d')
 
         # Save reconstructed tomography stack to file
+        print('OK5')
         if self.galaxy_flag:
             t0 = time()
             output_name = galaxy_param['output_name']
@@ -2029,6 +2037,7 @@ class Tomo:
                     for stack,tomo_stack in zip(stacks,self.tomo_recon_stacks)}
             np.savez(output_name, **save_stacks)
             logging.info(f'... done in {time()-t0:.2f} seconds!')
+        print('OK6')
 
     def combineTomoStacks(self):
         """Combine the reconstructed tomography stacks.
