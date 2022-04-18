@@ -1186,6 +1186,7 @@ class Tomo:
         print('OK2')
         tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         center_offset_vo = tomo_center-center
+        print(f'center_offset_vo = {center_offset_vo}')
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
             del sinogram_T
