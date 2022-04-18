@@ -1183,6 +1183,7 @@ class Tomo:
         center = sinogram.shape[1]/2
 
         # try automatic center finding routines for initial value
+        print('OK2')
         tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         center_offset_vo = tomo_center-center
         if self.test_mode:
@@ -1196,6 +1197,7 @@ class Tomo:
             title = f'edges row{row} center offset{center_offset_vo:.2f} Vo'
             self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
             del recon_plane
+            print(f'center_type_selector = {center_type_selector}')
             if not galaxy_param['center_type_selector']:
                 del sinogram_T
                 return float(center_offset_vo)
@@ -1263,6 +1265,7 @@ class Tomo:
                             min=1, max=center_offset_upp-center_offset_low)
             num_center_offset = 1+int((center_offset_upp-center_offset_low)/center_offset_step)
             center_offsets = np.linspace(center_offset_low, center_offset_upp, num_center_offset)
+            print(f'center_offsets = {center_offsets}')
             for center_offset in center_offsets:
                 if center_offset == center_offset_vo:
                     continue
@@ -1274,6 +1277,7 @@ class Tomo:
                     self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
                 else:
                     self._plotEdgesOnePlane(recon_plane, title)
+            print('OK3')
             if self.galaxy_flag or pyip.inputInt('\nContinue (0) or end the search (1): ',
                     min=0, max=1):
                 break
@@ -1719,7 +1723,6 @@ class Tomo:
         use_center = 'no'
         row = center_rows[0]
         if self.test_mode or self.galaxy_flag:
-            logging.info(f'row = {row} n1 = {n1} n2 = {n2}')
             assert(msnc.is_int(row, n1, n2-2))
         if msnc.is_int(row, n1, n2-2):
             if self.test_mode or self.galaxy_flag:
@@ -1782,6 +1785,8 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current upper center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
+        logging.info(f'use_center = {use_center}')
+        logging.info(f'use_row = {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
@@ -1794,7 +1799,7 @@ class Tomo:
                 if self.save_plots_only:
                     msnc.clearFig(f'theta={theta_start}')
             # center_stack order: row,theta,column
-            center_offset = self._findCenterOnePlane(center_stack[row,:,:], row, thetas_deg,
+            center_offset = self._findOenterOnePlane(center_stack[row,:,:], row, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, num_core=num_core,
                     galaxy_param=galaxy_param)
         logging.info(f'upper_center_offset = {center_offset:.2f}')
