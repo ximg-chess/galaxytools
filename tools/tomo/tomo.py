@@ -915,8 +915,8 @@ class Tomo:
                 if not msnc.is_int(num_theta_skip, 0):
                     msnc.illegal_value('num_theta_skip', num_theta_skip, 'config file')
                     num_theta_skip = 0
-        logging.info(f'zoom_perc = {zoom_perc}')
-        logging.info(f'num_theta_skip = {num_theta_skip}')
+        logging.debug(f'zoom_perc = {zoom_perc}')
+        logging.debug(f'num_theta_skip = {num_theta_skip}')
 
         # Update config and save to file
         if preprocess is None:
@@ -1333,12 +1333,16 @@ class Tomo:
                 raise ValueError('center_offsets dimension mismatch in reconstructOneTomoStack')
             centers = center_offsets
         centers += tomo_stack.shape[2]/2
-        # RV hangs here with more than 24 cores and sge_64G_4
         if True:
             t0 = time()
-            logging.info(f'running tomopy.prep.stripe.remove_stripe_fw on {num_core} cores ...')
-            tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
-                    tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=num_core)
+            if num_core > 24:
+                logging.info(f'running tomopy.prep.stripe.remove_stripe_fw on 24 cores ...')
+                tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
+                        tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=24)
+            else:
+                logging.info(f'running tomopy.prep.stripe.remove_stripe_fw on {num_core} cores ...')
+                tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
+                        tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=num_core)
             logging.info(f'... tomopy.prep.stripe.remove_stripe_fw took {time()-t0:.2f} seconds!')
         else:
             tomo_stack = tomo_stack[row_bounds[0]:row_bounds[1]]
@@ -1567,10 +1571,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
-#        logging.info(f'num_core available = {num_core}')
-#        if num_core > 24:
-#            num_core = 24
-        logging.info(f'num_core used = {num_core}')
+        logging.info(f'num_core = {num_core}')
         logging.debug('Find centers for tomography stacks')
         stacks = self.config['stack_info']['stacks']
         available_stacks = [stack['index'] for stack in stacks if stack.get('preprocessed', False)]
@@ -1592,9 +1593,9 @@ class Tomo:
                     logging.error('Illegal center_type_selector entry in galaxy_param '+
                             f'({center_type_selector})')
                     galaxy_param['center_type_selector'] = None
-            logging.info(f'row_bounds = {row_bounds}')
-            logging.info(f'center_rows = {center_rows}')
-            logging.info(f'center_type_selector = {center_type_selector}')
+            logging.debug(f'row_bounds = {row_bounds}')
+            logging.debug(f'center_rows = {center_rows}')
+            logging.debug(f'center_type_selector = {center_type_selector}')
         else:
             if galaxy_param:
                 logging.warning('Ignoring galaxy_param in findCenters (only for Galaxy)')
@@ -1722,7 +1723,7 @@ class Tomo:
             n1 = int((1.+(tomo_ref_heights[0]+center_stack.shape[0]*eff_pixel_size-
                 tomo_ref_heights[1])/eff_pixel_size)/2)
             n2 = center_stack.shape[0]-n1
-        logging.info(f'n1 = {n1}, n2 = {n2} (n2-n1) = {(n2-n1)*eff_pixel_size:.3f} mm')
+        logging.debug(f'n1 = {n1}, n2 = {n2} (n2-n1) = {(n2-n1)*eff_pixel_size:.3f} mm')
         if not center_stack.size:
             RuntimeError('Center stack not loaded')
         if not self.test_mode and not self.galaxy_flag:
@@ -1770,8 +1771,6 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current lower center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
-        #logging.info(f'use_center = {use_center}')
-        #logging.info(f'use_row = {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
@@ -1801,7 +1800,6 @@ class Tomo:
         use_center = 'no'
         row = center_rows[1]
         if self.test_mode or self.galaxy_flag:
-            logging.info(f'row = {row} lower_row = {lower_row} n2 = {n2}')
             assert(msnc.is_int(row, lower_row+1, n2-1))
         if msnc.is_int(row, lower_row+1, n2-1):
             if self.test_mode or self.galaxy_flag:
@@ -1817,8 +1815,6 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current upper center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
-        #logging.info(f'use_center = {use_center}')
-        #logging.info(f'use_row = {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
