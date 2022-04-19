@@ -30,6 +30,11 @@ from skimage.restoration import denoise_tv_chambolle
 
 import msnc_tools as msnc
 
+# the following tomopy routines don't run with more than 24 cores on Galaxy-Dev
+#   - tomopy.find_center_vo
+#   - tomopy.prep.stripe.remove_stripe_fw
+num_core_tomopy_limit = 24
+
 class set_numexpr_threads:
 
     def __init__(self, num_core):
@@ -1148,9 +1153,9 @@ class Tomo:
         recon_clean = np.expand_dims(recon_sinogram, axis=0)
         del recon_sinogram
         t1 = time()
-        logging.info(f'running tomopy.misc.corr.remove_ring on {num_core} cores ...')
+        logging.debug(f'running tomopy.misc.corr.remove_ring on {num_core} cores ...')
         recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=17, ncore=num_core)
-        logging.info(f'... tomopy.misc.corr.remove_ring took {time()-t1:.2f} seconds!')
+        logging.debug(f'... tomopy.misc.corr.remove_ring took {time()-t1:.2f} seconds!')
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
         return recon_clean
 
@@ -1187,9 +1192,9 @@ class Tomo:
 
         # try automatic center finding routines for initial value
         t0 = time()
-        if num_core > 24:
-            logging.info('running tomopy.find_center_vo on 24 cores ...')
-            tomo_center = tomopy.find_center_vo(sinogram, ncore=24)
+        if num_core > num_core_tomopy_limit:
+            logging.info(f'running tomopy.find_center_vo on {num_core_tomopy_limit} cores ...')
+            tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core_tomopy_limit)
         else:
             logging.info(f'running tomopy.find_center_vo on {num_core} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
@@ -1335,10 +1340,12 @@ class Tomo:
         centers += tomo_stack.shape[2]/2
         if True:
             t0 = time()
-            if num_core > 24:
-                logging.info(f'running tomopy.prep.stripe.remove_stripe_fw on 24 cores ...')
+            if num_core > num_core_tomopy_limit:
+                logging.info('running tomopy.prep.stripe.remove_stripe_fw on '+
+                        f'{num_core_tomopy_limit} cores ...')
                 tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
-                        tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=24)
+                        tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma,
+                        ncore=num_core_tomopy_limit)
             else:
                 logging.info(f'running tomopy.prep.stripe.remove_stripe_fw on {num_core} cores ...')
                 tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
@@ -1918,10 +1925,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
-        logging.info(f'num_core available = {num_core}')
-        #if num_core > 24:
-        #    num_core = 24
-        logging.info(f'num_core used = {num_core}')
+        logging.info(f'num_core = {num_core}')
         if self.galaxy_flag:
             assert(galaxy_param)
             if not os.path.exists('center_slice_pngs'):
