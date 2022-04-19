@@ -1150,7 +1150,7 @@ class Tomo:
         t1 = time()
         logging.info(f'running tomopy.misc.corr.remove_ring on {num_core} cores ...')
         recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=17, ncore=num_core)
-        logging.info('... tomopy.misc.corr.remove_ring took {time()-t1:.2f} seconds!')
+        logging.info(f'... tomopy.misc.corr.remove_ring took {time()-t1:.2f} seconds!')
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
         return recon_clean
 
@@ -1193,7 +1193,7 @@ class Tomo:
         else:
             logging.info(f'running tomopy.find_center_vo on {num_core} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
-        logging.info('... tomopy.find_center_vo took {time()-t0:.2f} seconds!')
+        logging.info(f'... tomopy.find_center_vo took {time()-t0:.2f} seconds!')
         center_offset_vo = tomo_center-center
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
@@ -1202,10 +1202,10 @@ class Tomo:
         elif self.galaxy_flag:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
             t0 = time()
-            logging.info('running self._reconstructOnePlane on {num_core} cores ...')
+            logging.info(f'running self._reconstructOnePlane on {num_core} cores ...')
             recon_plane = self._reconstructOnePlane(sinogram_T, tomo_center, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, False, num_core)
-            logging.info('... self._reconstructOnePlane took {time()-t0:.2f} seconds!')
+            logging.info(f'... self._reconstructOnePlane took {time()-t0:.2f} seconds!')
             title = f'edges row{row} center offset{center_offset_vo:.2f} Vo'
             self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
             del recon_plane
@@ -1281,10 +1281,10 @@ class Tomo:
                     continue
                 logging.info(f'center_offset = {center_offset:.2f}')
                 t0 = time()
-                logging.info('running self._reconstructOnePlane on {num_core} cores ...')
+                logging.info(f'running self._reconstructOnePlane on {num_core} cores ...')
                 recon_plane = self._reconstructOnePlane(sinogram_T, center_offset+center,
                         thetas_deg, eff_pixel_size, cross_sectional_dim, False, num_core)
-                logging.info('... self._reconstructOnePlane took {time()-t0:.2f} seconds!')
+                logging.info(f'... self._reconstructOnePlane took {time()-t0:.2f} seconds!')
                 title = f'edges row{row} center_offset{center_offset:.2f}'
                 if self.galaxy_flag:
                     self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
@@ -1335,13 +1335,19 @@ class Tomo:
         centers += tomo_stack.shape[2]/2
         # RV hangs here with more than 24 cores and sge_64G_4
         if True:
+            t0 = time()
+            logging.info(f'running tomopy.prep.stripe.remove_stripe_fw on {num_core} cores ...')
             tomo_stack = tomopy.prep.stripe.remove_stripe_fw(
                     tomo_stack[row_bounds[0]:row_bounds[1]], sigma=sigma, ncore=num_core)
+            logging.info(f'... tomopy.prep.stripe.remove_stripe_fw took {time()-t0:.2f} seconds!')
         else:
             tomo_stack = tomo_stack[row_bounds[0]:row_bounds[1]]
         logging.info('performing initial reconstruction')
+        t0 = time()
+        logging.info(f'running tomopy.recon on {num_core} cores ...')
         tomo_recon_stack = tomopy.recon(tomo_stack, thetas, centers, sinogram_order=True,
                 algorithm=algorithm, ncore=num_core)
+        logging.info(f'... tomopy.recon took {time()-t0:.2f} seconds!')
         if run_secondary_sirt and secondary_iter > 0:
             logging.info(f'running {secondary_iter} secondary iterations')
             #options = {'method':'SIRT_CUDA', 'proj_type':'cuda', 'num_iter':secondary_iter}
@@ -1352,12 +1358,18 @@ class Tomo:
             #options = {'method':'SART', 'proj_type':'linear', 'num_iter':secondary_iter}
             options = {'method':'SART', 'proj_type':'linear', 'MinConstraint': 0,
                     'num_iter':secondary_iter}
+            t0 = time()
+            logging.info(f'running tomopy.recon on {num_core} cores ...')
             tomo_recon_stack  = tomopy.recon(tomo_stack, thetas, centers,
                     init_recon=tomo_recon_stack, options=options, sinogram_order=True,
                     algorithm=tomopy.astra, ncore=num_core)
+            logging.info(f'... tomopy.recon took {time()-t0:.2f} seconds!')
         if True:
+            t0 = time()
+            logging.info(f'running tomopy.misc.corr.remove_ring on {num_core} cores ...')
             tomopy.misc.corr.remove_ring(tomo_recon_stack, rwidth=rwidth, out=tomo_recon_stack,
                     ncore=num_core)
+            logging.info(f'... tomopy.misc.corr.remove_ring took {time()-t0:.2f} seconds!')
         return tomo_recon_stack
 
     def findImageFiles(self):
@@ -1911,8 +1923,8 @@ class Tomo:
         if num_core is None:
             num_core = self.num_core
         logging.info(f'num_core available = {num_core}')
-        if num_core > 24:
-            num_core = 24
+        #if num_core > 24:
+        #    num_core = 24
         logging.info(f'num_core used = {num_core}')
         if self.galaxy_flag:
             assert(galaxy_param)
@@ -2008,10 +2020,12 @@ class Tomo:
             center_offsets = [lower_center_offset-lower_row*center_slope,
                     upper_center_offset+(self.tomo_stacks[i].shape[0]-1-upper_row)*center_slope]
             t0 = time()
+            logging.info(f'running self._reconstructOneTomoStack on {num_core} cores ...')
             self.tomo_recon_stacks[i]= self._reconstructOneTomoStack(self.tomo_stacks[i],
                     thetas, center_offsets=center_offsets, sigma=0.1, num_core=num_core,
                     algorithm='gridrec', run_secondary_sirt=True, secondary_iter=25)
-            logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
+            logging.info(f'... self._reconstructOneTomoStack took {time()-t0:.2f} seconds!')
+            #logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
             if self.galaxy_flag:
                 x_slice = int(self.tomo_stacks[i].shape[0]/2) 
                 title = f'{basetitle} {index} xslice{x_slice}'
