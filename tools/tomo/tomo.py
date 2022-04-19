@@ -1147,9 +1147,10 @@ class Tomo:
         recon_sinogram = spi.gaussian_filter(recon_sinogram, 0.5)
         recon_clean = np.expand_dims(recon_sinogram, axis=0)
         del recon_sinogram
-        logging.info(f'tomopy.misc.corr.remove_ring start on {num_core} cores')
+        t1 = time()
+        logging.info(f'running tomopy.misc.corr.remove_ring on {num_core} cores ...')
         recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=17, ncore=num_core)
-        logging.info('tomopy.misc.corr.remove_ring end')
+        logging.info('... tomopy.misc.corr.remove_ring took {time()-t1:.2f} seconds!')
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
         return recon_clean
 
@@ -1185,13 +1186,14 @@ class Tomo:
         center = sinogram.shape[1]/2
 
         # try automatic center finding routines for initial value
+        t0 = time()
         if num_core > 24:
-            logging.info('tomopy.find_center_vo start on 24 cores')
+            logging.info('running tomopy.find_center_vo on 24 cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=24)
         else:
-            logging.info(f'tomopy.find_center_vo start on {num_core} cores')
+            logging.info(f'running tomopy.find_center_vo on {num_core} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
-        logging.info('tomopy.find_center_vo end')
+        logging.info('... tomopy.find_center_vo took {time()-t0:.2f} seconds!')
         center_offset_vo = tomo_center-center
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
@@ -1199,8 +1201,11 @@ class Tomo:
             return float(center_offset_vo)
         elif self.galaxy_flag:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
+            t0 = time()
+            logging.info('running self._reconstructOnePlane on {num_core} cores ...')
             recon_plane = self._reconstructOnePlane(sinogram_T, tomo_center, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, False, num_core)
+            logging.info('... self._reconstructOnePlane took {time()-t0:.2f} seconds!')
             title = f'edges row{row} center offset{center_offset_vo:.2f} Vo'
             self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
             del recon_plane
@@ -1275,8 +1280,11 @@ class Tomo:
                 if center_offset == center_offset_vo:
                     continue
                 logging.info(f'center_offset = {center_offset:.2f}')
+                t0 = time()
+                logging.info('running self._reconstructOnePlane on {num_core} cores ...')
                 recon_plane = self._reconstructOnePlane(sinogram_T, center_offset+center,
                         thetas_deg, eff_pixel_size, cross_sectional_dim, False, num_core)
+                logging.info('... self._reconstructOnePlane took {time()-t0:.2f} seconds!')
                 title = f'edges row{row} center_offset{center_offset:.2f}'
                 if self.galaxy_flag:
                     self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
