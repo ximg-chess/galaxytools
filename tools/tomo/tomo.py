@@ -1459,7 +1459,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
-        logging.info(f'num_core = {self.num_core}')
+        logging.info(f'num_core = {num_core}')
         # Try loading any already preprocessed stacks (skip in Galaxy)
         # preprocessed stack order for each one in stack: row,theta,column
         stack_info = self.config['stack_info']
@@ -1543,8 +1543,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
-        num_core = 1
-        logging.info(f'num_core = {self.num_core}')
+        logging.info(f'num_core = {num_core}')
         logging.debug('Find centers for tomography stacks')
         stacks = self.config['stack_info']['stacks']
         available_stacks = [stack['index'] for stack in stacks if stack.get('preprocessed', False)]
@@ -1896,7 +1895,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
-        logging.info(f'num_core = {self.num_core}')
+        logging.info(f'num_core = {num_core}')
         if self.galaxy_flag:
             assert(galaxy_param)
             if not os.path.exists('center_slice_pngs'):
