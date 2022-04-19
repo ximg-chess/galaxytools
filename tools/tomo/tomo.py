@@ -1186,7 +1186,8 @@ class Tomo:
 
         # try automatic center finding routines for initial value
         logging.info('tomopy.find_center_vo start')
-        tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
+        #tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
+        tomo_center = tomopy.find_center_vo(sinogram, ncore=1)
         logging.info('tomopy.find_center_vo end')
         center_offset_vo = tomo_center-center
         if self.test_mode:
