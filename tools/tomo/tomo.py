@@ -1543,6 +1543,7 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
+        num_core = 1
         logging.info(f'num_core = {self.num_core}')
         logging.debug('Find centers for tomography stacks')
         stacks = self.config['stack_info']['stacks']
