@@ -1147,7 +1147,9 @@ class Tomo:
         recon_sinogram = spi.gaussian_filter(recon_sinogram, 0.5)
         recon_clean = np.expand_dims(recon_sinogram, axis=0)
         del recon_sinogram
+        logging.info('tomopy.misc.corr.remove_ring start')
         recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=17, ncore=num_core)
+        logging.info('tomopy.misc.corr.remove_ring end')
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
         return recon_clean
 
@@ -1183,7 +1185,9 @@ class Tomo:
         center = sinogram.shape[1]/2
 
         # try automatic center finding routines for initial value
+        logging.info('tomopy.find_center_vo start')
         tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
+        logging.info('tomopy.find_center_vo end')
         center_offset_vo = tomo_center-center
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
@@ -1539,7 +1543,10 @@ class Tomo:
         """
         if num_core is None:
             num_core = self.num_core
-        logging.info(f'num_core = {num_core}')
+#        logging.info(f'num_core available = {num_core}')
+#        if num_core > 24:
+#            num_core = 24
+        logging.info(f'num_core used = {num_core}')
         logging.debug('Find centers for tomography stacks')
         stacks = self.config['stack_info']['stacks']
         available_stacks = [stack['index'] for stack in stacks if stack.get('preprocessed', False)]
