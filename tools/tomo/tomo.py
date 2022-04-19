@@ -1147,7 +1147,7 @@ class Tomo:
         recon_sinogram = spi.gaussian_filter(recon_sinogram, 0.5)
         recon_clean = np.expand_dims(recon_sinogram, axis=0)
         del recon_sinogram
-        logging.info('tomopy.misc.corr.remove_ring start')
+        logging.info(f'tomopy.misc.corr.remove_ring start on {num_core} cores')
         recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=17, ncore=num_core)
         logging.info('tomopy.misc.corr.remove_ring end')
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
@@ -1185,9 +1185,12 @@ class Tomo:
         center = sinogram.shape[1]/2
 
         # try automatic center finding routines for initial value
-        logging.info('tomopy.find_center_vo start')
-        #tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
-        tomo_center = tomopy.find_center_vo(sinogram, ncore=1)
+        if num_core > 24:
+            logging.info('tomopy.find_center_vo start on 24 cores')
+            tomo_center = tomopy.find_center_vo(sinogram, ncore=24)
+        else:
+            logging.info(f'tomopy.find_center_vo start on {num_core} cores')
+            tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         logging.info('tomopy.find_center_vo end')
         center_offset_vo = tomo_center-center
         if self.test_mode:
