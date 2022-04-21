@@ -48,7 +48,9 @@ import msnc_tools as msnc
 # the following tomopy routines don't run with more than 24 cores on Galaxy-Dev
 #   - tomopy.find_center_vo
 #   - tomopy.prep.stripe.remove_stripe_fw
-num_core_tomopy_limit = 12
+#RV the same problem reappeared once I started testing with the tenstom_1304r-1 case
+# not resolved yet
+num_core_tomopy_limit = 24
 
 class set_numexpr_threads:
 
