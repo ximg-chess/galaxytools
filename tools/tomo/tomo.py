@@ -1271,11 +1271,14 @@ class Tomo:
         t0 = time()
         if num_core > num_core_tomopy_limit:
             logging.debug(f'running find_center_vo on {num_core_tomopy_limit} cores ...')
+            print(f'running find_center_vo on {num_core_tomopy_limit} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core_tomopy_limit)
         else:
             logging.debug(f'running find_center_vo on {num_core} cores ...')
+            print(f'running find_center_vo on {num_core} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         logging.debug(f'... find_center_vo took {time()-t0:.2f} seconds!')
+        print(f'... find_center_vo took {time()-t0:.2f} seconds!')
         center_offset_vo = tomo_center-center
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
@@ -1285,11 +1288,14 @@ class Tomo:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
             t0 = time()
             logging.debug(f'running _reconstructOnePlane on {num_core} cores ...')
+            print('OK AA')
             recon_plane = self._reconstructOnePlane(sinogram_T, tomo_center, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, False, num_core)
+            print('OK BB')
             logging.debug(f'... _reconstructOnePlane took {time()-t0:.2f} seconds!')
             title = f'edges row{row} center offset{center_offset_vo:.2f} Vo'
             self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
+            print('OK CC')
             del recon_plane
             if not galaxy_param['center_type_selector']:
                 del sinogram_T
@@ -1329,6 +1335,7 @@ class Tomo:
                 return float(center_offset)
 
         # perform center finding search
+        print('OK DD')
         while True:
             if self.galaxy_flag and galaxy_param and galaxy_param['center_type_selector']:
                 set_center = center_offset_vo
@@ -1374,6 +1381,7 @@ class Tomo:
             if self.galaxy_flag or pyip.inputInt('\nContinue (0) or end the search (1): ',
                     min=0, max=1):
                 break
+        print('OK EE')
 
         del sinogram_T
         del recon_plane
