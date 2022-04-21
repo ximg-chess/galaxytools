@@ -836,6 +836,7 @@ class Tomo:
                 tmp_max = tmp.max()
                 tmp[img_x_bounds[0],:] = tmp_max
                 tmp[img_x_bounds[1]-1,:] = tmp_max
+                title = f'tomography image at theta={self.config["theta_range"]["start"]}'
                 msnc.quickImshow(tmp, title=title)
                 del tmp
                 x_sum_min = x_sum.min()
@@ -870,7 +871,7 @@ class Tomo:
                 tmp_max = tmp.max()
                 tmp[img_x_bounds[0],:] = tmp_max
                 tmp[img_x_bounds[1]-1,:] = tmp_max
-                title = 'Bright field'
+                title = 'bright field'
                 msnc.quickImshow(tmp, title=title)
                 del tmp
                 msnc.quickPlot((range(x_sum.size), x_sum),
@@ -904,7 +905,7 @@ class Tomo:
                     tmp_max = tmp.max()
                     tmp[x_low,:] = tmp_max
                     tmp[x_upp-1,:] = tmp_max
-                    title = 'Bright field'
+                    title = 'bright field'
                     msnc.quickImshow(tmp, title=title)
                     del tmp
                     msnc.quickPlot((range(x_sum.size), x_sum),
@@ -940,9 +941,14 @@ class Tomo:
                     tomo_stack[img_x_bounds[0],:] = tomo_stack_max
                     tomo_stack[img_x_bounds[1]-1,:] = tomo_stack_max
                 title = f'tomography image at theta={self.config["theta_range"]["start"]}'
-                msnc.quickImshow(tomo_stack, title=title, path='setup_pngs',
-                        name=f'tomo_{stack["index"]}.png', save_fig=self.save_plots, save_only=True,
-                        show_grid=True)
+                if self.galaxy_flag:
+                    msnc.quickImshow(tomo_stack, title=title, path='setup_pngs',
+                            name=f'tomo_{stack["index"]}.png', save_fig=True, save_only=True,
+                            show_grid=True)
+                else:
+                    msnc.quickImshow(tomo_stack, title=title, path=self.output_folder,
+                            name=f'tomo_{stack["index"]}.png', save_fig=self.save_plots,
+                            save_only=True, show_grid=True)
                 del tomo_stack
         logging.debug(f'img_x_bounds: {img_x_bounds}')
 
@@ -1848,8 +1854,10 @@ class Tomo:
         use_row = 'no'
         use_center = 'no'
         row = center_rows[0]
+        print('Ok1')
         if self.test_mode or self.galaxy_flag:
             assert(msnc.is_int(row, n1, n2-2))
+        print('Ok2')
         if msnc.is_int(row, n1, n2-2):
             if self.test_mode or self.galaxy_flag:
                 use_row = 'yes'
@@ -1864,6 +1872,7 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current lower center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
+        print(f'Ok3 {use_center} {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
@@ -1876,10 +1885,13 @@ class Tomo:
                 if self.save_plots_only:
                     msnc.clearFig(f'theta={theta_start}')
             # center_stack order: row,theta,column
+            print('Ok4')
             center_offset = self._findCenterOnePlane(center_stack[row,:,:], row, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, num_core=num_core,
                     galaxy_param=galaxy_param)
+            print('Ok5')
         logging.info(f'lower_center_offset = {center_offset:.2f} {type(center_offset)}')
+        print('Ok6')
 
         # Update config and save to file
         find_center['row_bounds'] = [n1, n2]
