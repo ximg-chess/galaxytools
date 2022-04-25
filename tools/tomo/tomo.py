@@ -48,8 +48,6 @@ import msnc_tools as msnc
 # the following tomopy routines don't run with more than 24 cores on Galaxy-Dev
 #   - tomopy.find_center_vo
 #   - tomopy.prep.stripe.remove_stripe_fw
-#RV the same problem reappeared once I started testing with the tenstom_1304r-1 case
-# not resolved yet
 num_core_tomopy_limit = 24
 
 class set_numexpr_threads:
@@ -1206,6 +1204,8 @@ class Tomo:
         two_offset = 2*int(np.round(center_offset))
         two_offset_abs = np.abs(two_offset)
         max_rad = int(0.5*(cross_sectional_dim/eff_pixel_size)*1.1) # 10% slack to avoid edge effects
+        if max_rad > 0.5*tomo_plane_T.shape[0]:
+            max_rad = 0.5*tomo_plane_T.shape[0]
         dist_from_edge = max(1, int(np.floor((tomo_plane_T.shape[0]-two_offset_abs)/2.)-max_rad))
         if two_offset >= 0:
             logging.debug(f'sinogram range = [{two_offset+dist_from_edge}, {-dist_from_edge}]')
@@ -1273,14 +1273,11 @@ class Tomo:
         t0 = time()
         if num_core > num_core_tomopy_limit:
             logging.debug(f'running find_center_vo on {num_core_tomopy_limit} cores ...')
-            print(f'running find_center_vo on {num_core_tomopy_limit} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core_tomopy_limit)
         else:
             logging.debug(f'running find_center_vo on {num_core} cores ...')
-            print(f'running find_center_vo on {num_core} cores ...')
             tomo_center = tomopy.find_center_vo(sinogram, ncore=num_core)
         logging.debug(f'... find_center_vo took {time()-t0:.2f} seconds!')
-        print(f'... find_center_vo took {time()-t0:.2f} seconds!')
         center_offset_vo = tomo_center-center
         if self.test_mode:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
@@ -1290,14 +1287,11 @@ class Tomo:
             logging.info(f'Center at row {row} using Nghia Vo’s method = {center_offset_vo:.2f}')
             t0 = time()
             logging.debug(f'running _reconstructOnePlane on {num_core} cores ...')
-            print('OK AA')
             recon_plane = self._reconstructOnePlane(sinogram_T, tomo_center, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, False, num_core)
-            print('OK BB')
             logging.debug(f'... _reconstructOnePlane took {time()-t0:.2f} seconds!')
             title = f'edges row{row} center offset{center_offset_vo:.2f} Vo'
             self._plotEdgesOnePlane(recon_plane, title, path='find_center_pngs')
-            print('OK CC')
             del recon_plane
             if not galaxy_param['center_type_selector']:
                 del sinogram_T
@@ -1337,7 +1331,6 @@ class Tomo:
                 return float(center_offset)
 
         # perform center finding search
-        print('OK DD')
         while True:
             if self.galaxy_flag and galaxy_param and galaxy_param['center_type_selector']:
                 set_center = center_offset_vo
@@ -1383,7 +1376,6 @@ class Tomo:
             if self.galaxy_flag or pyip.inputInt('\nContinue (0) or end the search (1): ',
                     min=0, max=1):
                 break
-        print('OK EE')
 
         del sinogram_T
         del recon_plane
@@ -1864,10 +1856,8 @@ class Tomo:
         use_row = 'no'
         use_center = 'no'
         row = center_rows[0]
-        print('Ok1')
         if self.test_mode or self.galaxy_flag:
             assert(msnc.is_int(row, n1, n2-2))
-        print('Ok2')
         if msnc.is_int(row, n1, n2-2):
             if self.test_mode or self.galaxy_flag:
                 use_row = 'yes'
@@ -1882,7 +1872,6 @@ class Tomo:
                     if msnc.is_num(center_offset):
                         use_center = pyip.inputYesNo('Current lower center offset = '+
                                 f'{center_offset}, use this value ([y]/n)? ', blank=True)
-        print(f'Ok3 {use_center} {use_row}')
         if use_center == 'no':
             if use_row == 'no':
                 if not self.test_mode:
@@ -1895,13 +1884,10 @@ class Tomo:
                 if self.save_plots_only:
                     msnc.clearFig(f'theta={theta_start}')
             # center_stack order: row,theta,column
-            print('Ok4')
             center_offset = self._findCenterOnePlane(center_stack[row,:,:], row, thetas_deg,
                     eff_pixel_size, cross_sectional_dim, num_core=num_core,
                     galaxy_param=galaxy_param)
-            print('Ok5')
         logging.info(f'lower_center_offset = {center_offset:.2f} {type(center_offset)}')
-        print('Ok6')
 
         # Update config and save to file
         find_center['row_bounds'] = [n1, n2]
@@ -2099,7 +2085,6 @@ class Tomo:
         else:
             basetitle = f'recon stack {zoom_perc}p'
         load_error = False
-        stacks = self.config['stack_info']['stacks']
         for i,stack in enumerate(stacks):
             # Check if stack can be loaded
             # reconstructed stack order for each one in stack : row/z,x,y
@@ -2168,8 +2153,8 @@ class Tomo:
                 combine_stacks['stacks'].remove(index)
             self.cf.saveFile(self.config_out)
 
-        # Save reconstructed tomography stack to file
         if self.galaxy_flag:
+            # Save reconstructed tomography stack to file
             t0 = time()
             output_name = galaxy_param['output_name']
             logging.info(f'Saving reconstructed tomography stack to {output_name} ...')
@@ -2177,6 +2162,44 @@ class Tomo:
                     for stack,tomo_stack in zip(stacks,self.tomo_recon_stacks)}
             np.savez(output_name, **save_stacks)
             logging.info(f'... done in {time()-t0:.2f} seconds!')
+
+            # Create cross section profile in yz-plane
+            tomosum = 0
+            [tomosum := tomosum+np.sum(tomo_recon_stack, axis=(0,2)) for tomo_recon_stack in
+                self.tomo_recon_stacks]
+            msnc.quickPlot(tomosum, title='recon stack sum yz', path='center_slice_pngs',
+                save_fig=True, save_only=True)
+
+            # Create cross section profile in xz-plane
+            tomosum = 0
+            [tomosum := tomosum+np.sum(tomo_recon_stack, axis=(0,1)) for tomo_recon_stack in
+                self.tomo_recon_stacks]
+            msnc.quickPlot(tomosum, title='recon stack sum xz', path='center_slice_pngs',
+                save_fig=True, save_only=True)
+
+            # Create cross section profile in xy-plane
+            num_tomo_stacks = len(stacks)
+            row_bounds = self.config['find_center']['row_bounds']
+            if not msnc.is_index_range(row_bounds, 0, self.tomo_recon_stacks[0].shape[0]):
+                msnc.illegal_value('row_bounds', row_bounds, 'config file')
+                return
+            if num_tomo_stacks == 1:
+                low_bound = row_bounds[0]
+            else:
+                low_bound = 0
+            tomosum = np.sum(self.tomo_recon_stacks[0][low_bound:row_bounds[1],:,:], axis=(1,2))
+            if num_tomo_stacks > 2:
+                tomosum = np.concatenate([tomosum]+
+                        [np.sum(self.tomo_recon_stacks[i][row_bounds[0]:row_bounds[1],:,:],
+                        axis=(1,2)) for i in range(1, num_tomo_stacks-1)])
+                print(f'tomosum.shape = {tomosum.shape}')
+            if num_tomo_stacks > 1:
+                tomosum = np.concatenate([tomosum,
+                    np.sum(self.tomo_recon_stacks[num_tomo_stacks-1][row_bounds[0]:,:,:],
+                    axis=(1,2))])
+                print(f'tomosum.shape = {tomosum.shape}')
+            msnc.quickPlot(tomosum, title='recon stack sum xy', path='center_slice_pngs',
+                save_fig=True, save_only=True)
 
     def combineTomoStacks(self):
         """Combine the reconstructed tomography stacks.
@@ -2280,7 +2303,7 @@ class Tomo:
             low_bound = row_bounds[0]
         else:
             low_bound = 0
-        tomo_recon_combined = self.tomo_recon_stacks[0][low_bound:row_bounds[1]:,
+        tomo_recon_combined = self.tomo_recon_stacks[0][low_bound:row_bounds[1],
                 x_bounds[0]:x_bounds[1],y_bounds[0]:y_bounds[1]]
         if num_tomo_stacks > 2:
             tomo_recon_combined = np.concatenate([tomo_recon_combined]+
