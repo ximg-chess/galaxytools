@@ -1,4 +1,4 @@
-<tool id="hedm_npz_to_tesr" name="HEDM to tesr" version="0.1.0" python_template_version="3.5">
+<tool id="hedm_npz_to_tesr" name="HEDM to tesr" version="1.0.0" python_template_version="3.5">
     <description>Convert HEDM npz to a Neper tesr</description>
     <requirements>
         <requirement type="package" version="1.19">numpy</requirement>
@@ -34,12 +34,12 @@
     </inputs>
     <outputs>
         <!-- output format should be changed to tesr when that is available -->
-        <data name="output" format="txt" label="${input.name.rsplit(sep='.',maxsplit=1)[0]}.tesr"/>
+        <data name="output" format="neper.tesr" label="${input.name.rsplit(sep='.',maxsplit=1)[0]}.tesr"/>
     </outputs>
     <tests>
         <test>
             <!-- change format to approriate npz subclass when available -->
-            <param name="input" ftype="zip" value="HEDM_map.npz"/>
+            <param name="input" ftype="npz" value="HEDM_map.npz"/>
             <output name="output" file="HEDM_map.tesr"/> 
         </test>
     </tests>
