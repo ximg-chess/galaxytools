@@ -1,0 +1,301 @@
+<tool id="neper_tessellation" name="Neper Tessellation" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@" python_template_version="3.5">
+    <description>generates polycrystals as tessellations</description>
+    <macros>
+        <import>macros.xml</import>
+        <token name="@VERSION_SUFFIX@">0</token>
+
+        <xml name="cells">
+            <conditional name="cells">
+                <param name="format" argument="-n" type="select" label="Specify cells by">
+                    <option value="number">number</option>
+                    <option value="from_morpho">from_morpho</option>
+                    <option value="expression"></option>
+                </param>
+                <when value="number">
+                    <param name="number_of_cells" argument="-n" type="integer" value="10" min="1" label="the number of cells of the tessellation"/>
+                </when>
+                <when value="from_morpho">
+                </when>
+                <when value="expression">
+                </when>
+            </conditional>
+        </xml>
+        <token name="@CELLS@">
+            #if $cells.format == 'number'
+              -n $cells.number_of_cells
+            #elif $cells.format == 'from_morpho'
+              -n from_morpho
+            #end if
+        </token>
+
+        <xml name="tessellation">
+            <conditional name="tessellation">
+                <param name="dim" argument="-dim" type="select" label="Dimensions">
+                    <option value="3" selected="true">3D</option>
+                    <option value="2">2D</option>
+                </param>
+                <when value="3">
+                    <conditional name="domain">
+                        <param name="shape" argument="-domain" type="select" label="Domain">
+                            <option value="cube">cube</option>
+                            <option value="cylinder">cylinder</option>
+                            <option value="sphere">sphere</option>
+                        </param>
+                        <when value="cube">
+                            <param name="size_x" type="float" value="1.0" min="0.0" label="size x"/>
+                            <param name="size_y" type="float" value="1.0" min="0.0" label="size y"/>
+                            <param name="size_z" type="float" value="1.0" min="0.0" label="size z"/>
+                        </when>
+                        <when value="cylinder">
+                            <param name="height" type="float" value="1.0" min="0.0" label="height"/>
+                            <param name="diameter" type="float" value="1.0" min="0.0" label="diameter"/>
+                        </when>
+                        <when value="sphere">
+                            <param name="diameter" type="float" value="1.0" min="0.0" label="diameter"/>
+                        </when>
+                    </conditional>
+                </when>
+                <when value="2">
+                    <conditional name="domain">
+                        <param name="shape" argument="-domain" type="select" label="Domain">
+                            <option value="square">square</option>
+                            <option value="circle">circle</option>
+                        </param>
+                        <when value="square">
+                            <param name="size_x" type="float" value="1.0" min="0.0" label="size x"/>
+                            <param name="size_y" type="float" value="1.0" min="0.0" label="size y"/>
+                        </when>
+                        <when value="circle">
+                            <param name="diameter" type="float" value="1.0" min="0.0" label="diameter"/>
+                        </when>
+                    </conditional>
+                </when>
+            </conditional>
+        </xml>
+        <token name="@TESSELLATION@">
+        -dim $tessellation.dim
+        #if $tessellation.domain.shape == 'cube'
+            -domain "${tessellation.domain.shape}($tessellation.domain.size_x,$tessellation.domain.size_y,$tessellation.domain.size_z)"
+        #elif $tessellation.domain.shape == 'cylinder'
+            -domain "${tessellation.domain.shape}($tessellation.domain.height,$tessellation.domain.diameter)"
+        #elif $tessellation.domain.shape == 'sphere'
+            -domain "${tessellation.domain.shape}($tessellation.domain.diameter)"
+        #elif $tessellation.domain.shape == 'square'
+            -domain "${tessellation.domain.shape}($tessellation.domain.size_x,$tessellation.domain.size_y)"
+        #elif $tessellation.domain.shape == 'circle'
+            -domain "${tessellation.domain.shape}($tessellation.domain.diameter)"
+        #end if
+        </token>
+
+        <xml name="morpho">
+            <conditional name="morpho">
+                <param name="morpho_type" argument="-morpho" type="select" label="Morphology">
+                    <option value="voronoi" selected="true">voronoi</option>
+                    <option value="tesr">tesr file</option>
+                    <option value="gg">graingrowth</option>
+                </param>
+                <when value="voronoi">
+                </when>
+                <when value="tesr">
+                    <param name="tesr_file" type="data" format="neper.tesr" label="tesr file" help="Use -n from_morpho"/>
+                    <param name="pts_region" type="select" optional="true" label="control points region">
+                        <option value="surf">surface voxels</option>
+                        <option value="all">all voxels</option>
+                    </param>
+                    <param name="pts_res" type="float" value="" min="1.0" optional="true" label="control points resolution" help="average number of control points along a direction of a grain"/>
+                </when>
+                <when value="gg">
+                </when>
+            </conditional>
+        </xml>
+        <token name="@MORPHO@">
+        #if $morpho.morpho_type == 'tesr'
+            -morpho "tesr:file($morpho.tesr_file)"
+              #set $pts = []
+              #if $morpho.pts_region
+                  #silent $pts.append('region=' + str($morpho.pts_region))
+              #end if
+              #if $morpho.pts_res
+                  #silent $pts.append('res=' + str($morpho.pts_res))
+              #end if
+              #if $pts
+                  #set $args = ','.join($pts)
+                  -morphooptiobj "tesr:pts($args)"
+              #end if
+        #end if
+        </token>
+
+        <xml name="morphooptistop">
+            <section name="morphooptistop" expanded="false" title="Set Optimization Stop Criteria">
+                <param argument="-eps" type="float" value="" optional="true" label="Absolute error on objective function"/>
+                <param argument="-reps" type="float" value="" optional="true" label="Relative error on objective function"/>
+                <param argument="-xeps" type="float" value="" optional="true" label="Absolute error on components of the solution vector"/>
+                <param argument="-xreps" type="float" value="" optional="true" label="Relative error on components of the solution vector"/>
+                <param argument="-itermax" type="integer" value="" min="1" optional="true" label="After n iterations"/>
+                <param argument="-loopmax" type="integer" value="" min="1" optional="true" label="After n iteration loops"/>
+                <param argument="-time" type="float" value="" optional="true" label="After n seconds"/>
+            </section>
+        </xml>
+        <token name="@MORPHOOPTISTOP@">
+        #set $stops = []
+        #if $morphooptistop.eps
+            #silent $stops.append('eps=' + str($morphooptistop.eps))
+        #end if
+        #if $morphooptistop.reps
+            #silent $stops.append('reps=' + str($morphooptistop.reps))
+        #end if
+        #if $morphooptistop.xeps
+            #silent $stops.append('xeps=' + str($morphooptistop.xeps))
+        #end if
+        #if $morphooptistop.xreps
+            #silent $stops.append('xreps=' + str($morphooptistop.xreps))
+        #end if
+        #if $morphooptistop.itermax
+            #silent $stops.append('itermax=' + str($morphooptistop.itermax))
+        #end if
+        #if $morphooptistop.loopmax
+            #silent $stops.append('loopmax=' + str($morphooptistop.loopmax))
+        #end if
+        #if $morphooptistop.time
+            #silent $stops.append('time=' + str($morphooptistop.time))
+        #end if
+        #if $stops
+            #set $stopargs = ','.join($stops)
+            -morphooptistop "$stopargs"
+        #end if
+        </token>
+
+        <xml name="regularization">
+            <conditional name="regularization">
+                <param name="regularize" argument="-regularization" type="select" label="Regularize tessellation">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </param>
+                <when value="0"/>
+                <when value="1">
+                    <param name="fmax" argument="-fmax" type="float" value="20.0" min="0.0" max="180.0" label="face flatness fault (in degrees)"
+                        help="The flatness fault is the maxi- mum angle between the normals at two locations on a face."/>
+                    <param name="mloop" argument="-mloop" type="integer" value="2" min="1" label="maximum number of regularization loops"/>
+                </when>
+            </conditional>
+        </xml>
+        <token name="@REGULARIZATION@">
+        -reg $regularization.regularize
+        #if $regularization.regularize == '1'
+            -fmax $regularization.fmax
+            -mloop $regularization.mloop
+        #end if
+        </token>
+
+        <xml name="output_options">
+            <section name="output_options" expanded="false" title="Output_options">
+                <param name="tesrformat" argument="-tesrformat" type="select" optional="true" label="TESR format">
+                    <option value="ascii">ASCII</option>
+                    <option value="binary8">8-bit binary / unsigned char-type</option>
+                    <option value="binary16">16-bit binary / short-type little endian</option>
+                    <option value="binary16_big">16-bit binary / short-type big endian</option>
+                    <option value="binary32">32-bit binary / int-type little endian</option>
+                    <option value="binary32_big">32-bit binary / int-type big endian</option>
+                </param>
+                <param name="tesrsize" argument="-tesrsize" type="text" value="" optional="true" label="TESR size">
+                    <help><![CDATA[
+    Specify the number of points of a raster tessellation along a direction of the domain. In case of a domain of different lengths along the different directions, the argument stands for the geometrical average of the number of points along the different directions, so that the raster points are as close to cubic as possible. To specify different values along the x, y and z directions, combine the values with ‘:’. Default value: 20
+                    ]]></help>
+                    <validator type="regex" message="integer sizes">[1-9]\d(:[1-9]\d+){,2}</validator>
+                </param>
+                <!-- macro for oridescriptor -->
+            </section>
+        </xml>
+        <token name="@OUTPUT_OPTIONS@">
+        #if 'tesr' in $format
+           #if $output_options.tesrformat:
+               -tesrformat '$output_options.tesrformat'
+           #end if
+           #if $output_options.tesrsize:
+               -tesrsize '$output_options.tesrsize'
+           #end if
+        #end if
+        </token>
+    </macros>
+    <expand macro="requirements" />
+    <expand macro="version_command" />
+    <command detect_errors="exit_code"><![CDATA[
+        neper -T 
+        @CELLS@
+        @TESSELLATION@ 
+        @MORPHO@
+        @MORPHOOPTISTOP@
+        @TRANSFORM@
+        @REGULARIZATION@
+        @OUTPUT_OPTIONS@
+        -format "$format"
+        -o output
+        | grep -v '%$' | tee 'neper.log'
+    ]]></command>
+    <inputs>
+        <expand macro="cells"/>
+        <expand macro="tessellation"/>
+        <expand macro="morpho"/>
+        <expand macro="morphooptistop"/>
+        <expand macro="transform"/>
+        <expand macro="regularization"/>
+        <expand macro="output_options"/>
+        <param name="format" argument="-format" type="select" multiple="true" optional="false" label="Output format">
+            <option value="tess" selected="true">Neper scalar tessellation file (.tess)</option>
+            <option value="tesr">Neper raster tessellation file (.tesr)</option>
+            <option value="vtk">VTK raster file (.vtk)</option>
+            <option value="geo">Gmsh geometry file (.geo)</option>
+            <option value="ply">Polygon File Format file (.ply)</option>
+        </param>
+    </inputs>
+    <outputs>
+        <data name="log" format="txt" label="${tool.name} on ${on_string} log" from_work_dir="neper.log"/>
+        <data name="output_tess" format="neper.tess" label="${tool.name} on ${on_string} tess" from_work_dir="output.tess">
+            <filter>'tess' in format</filter>
+        </data>
+        <data name="output_tesr" format="neper.tesr" label="${tool.name} on ${on_string} tesr" from_work_dir="output.tesr">
+            <filter>'tesr' in format</filter>
+        </data>
+        <data name="output_vtk" format="vtkbinary" label="${tool.name} on ${on_string} vtk" from_work_dir="output.vtk">
+            <filter>'vtk' in format</filter>
+        </data>
+        <data name="output_ply" format="plyascii" label="${tool.name} on ${on_string} ply" from_work_dir="output.ply">
+            <filter>'ply' in format</filter>
+        </data>
+        <data name="output_geo" format="gmsh.geo" label="${tool.name} on ${on_string} geo" from_work_dir="output.geo">
+            <filter>'geo' in format</filter>
+        </data>
+    </outputs>
+    <tests>
+        <!-- Test-1  neper -T -n 4 -->
+        <test>
+            <conditional name="cells">
+                <param name="format" value="number"/>
+                <param name="number_of_cells" value="4"/>
+            </conditional>
+            <output name="output_tess"> 
+                <assert_contents>
+                    <has_text text="***tess" />
+                    <has_text_matching expression="[*][*]cell\n  4\n  [*]id\n   1 2 3 4\n"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test neper -T -n from_morpho -domain "cube(0.5,0.5,0.5)" -morpho "tesr:file(example_tesr.tesr)" -morphooptiobj "tesr:pts(region=surf,res=7)" -morphooptistop itermax=30 -reg 1 -->
+    </tests>
+    <help><![CDATA[
+**Neper Tessellation**
+
+@NEPER_HELP@
+
+Neper Tessellation Module *-T* generates polycrystals as tessellations. The two main capabilities are: 
+
+  (i) the generation of tessellations from cell properties (e.g. a size distribution) 
+  (ii) the genera- tion of multiscale tessellations (i.e. including cell subdivisions). 
+
+These capabilities can also be used together. Tessellations are Laguerre (or Voronoi) tessellations and are therefore composed of convex cells. Once generated, the tessellations can be “regularized” by removing their smallest features (edges and faces), which then enables good-quality meshing with module -M. Periodicity conditions can be prescribed. Crystal orientations are pro- vided for the cells.
+
+ The output is a tessellation file written at a scalar (vectorial) or raster format. Scalar tessellations are intended to be passed to modules -M and -V while raster tessellations can be used by FFT solvers.
+
+    ]]></help>
+    <expand macro="citations" />
+</tool>
