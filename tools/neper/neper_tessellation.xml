@@ -1,4 +1,4 @@
-<tool id="neper_tessellation" name="Neper Tessellation" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" python_template_version="3.5">
+<tool id="neper_tessellation" name="Neper Tessellation" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@" python_template_version="3.5">
     <description>generates polycrystals as tessellations</description>
     <macros>
         <import>macros.xml</import>
