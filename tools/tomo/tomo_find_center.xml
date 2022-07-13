@@ -1,4 +1,4 @@
-<tool id="tomo_find_center" name="Tomo Find Center Axis" version="0.1.2" python_template_version="3.9">
+<tool id="tomo_find_center" name="Tomo Find Center Axis" version="0.2.0" python_template_version="3.9">
     <description>Find the center axis for a tomography reconstruction</description>
     <macros>
         <import>tomo_macros.xml</import>

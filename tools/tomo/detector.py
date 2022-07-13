@@ -1,0 +1,1 @@
+../../../msnctools/msnctools/detector.py

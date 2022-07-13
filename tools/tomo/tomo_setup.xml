@@ -1,4 +1,4 @@
-<tool id="tomo_setup" name="Tomo Setup" version="0.1.2" python_template_version="3.9">
+<tool id="tomo_setup" name="Tomo Setup" version="0.2.0" python_template_version="3.9">
     <description>Preprocess tomography images</description>
     <macros>
         <import>tomo_macros.xml</import>
