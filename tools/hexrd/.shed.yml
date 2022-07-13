@@ -6,18 +6,27 @@ long_description: High energy diffraction data analysis. Process rotation image 
   to find grain orientations, and extracts G vectors, grain position and strain
 name: hexrd
 owner: ximgchess
-remote_repository_url: https://github.com/ximg-chess/galaxytools/tools/hexrd
+remote_repository_url: https://github.com/ximg-chess/galaxytools/tree/master/tools/hexrd
 exclude:
-  - test-data/RUBY_0000-fc_GE.npz
-  - test-data/RUBY_0001-fc_GE.npz
-  - test-data/RUBY_0002-fc_GE.npz
-  - test-data/RUBY_0003-fc_GE.npz
-  - test-data/RUBY_0004-fc_GE.npz
-  - test-data/RUBY_0005-fc_GE.npz
-  - test-data/accepted_orientations_analysis_ruby.dat
-  - test-data/analysis_ruby_eta-ome_maps.npz
-  - test-data/ge_detector.yml
-  - test-data/grains.out
-  - test-data/materials.h5
-  - test-data/ruby_combo_image_panel.tsv
-  - test-data/ruby_config.yml
+  - test-data/multiruby_dexelas/mruby-0129_000004_ff1_000012-cachefile.npz
+  - test-data/multiruby_dexelas/accepted_orientations_analysis_ruby.dat
+  - test-data/multiruby_dexelas/materials.h5
+  - test-data/multiruby_dexelas/dexelas_id3a_20200130.yml
+  - test-data/multiruby_dexelas/mruby_monolithic_eta-ome_maps.npz
+  - test-data/multiruby_dexelas/grains_estimate.out
+  - test-data/multiruby_dexelas/mruby-0129_000004_ff2_000012-cachefile.npz
+  - test-data/multiruby_dexelas/mruby_config_monolithic.yml
+  - test-data/single_GE/RUBY_0000-fc_GE.npz
+  - test-data/single_GE/ruby_combo_image_panel.tsv
+  - test-data/single_GE/ruby_config.yml
+  - test-data/single_GE/RUBY_0001-fc_GE.npz
+  - test-data/single_GE/accepted_orientations_analysis_ruby.dat
+  - test-data/single_GE/materials.h5
+  - test-data/single_GE/RUBY_0002-fc_GE.npz
+  - test-data/single_GE/grains.out
+  - test-data/single_GE/grains_estimate.out
+  - test-data/single_GE/RUBY_0004-fc_GE.npz
+  - test-data/single_GE/RUBY_0003-fc_GE.npz
+  - test-data/single_GE/analysis_ruby_eta-ome_maps.npz
+  - test-data/single_GE/RUBY_0005-fc_GE.npz
+  - test-data/single_GE/ge_detector.yml

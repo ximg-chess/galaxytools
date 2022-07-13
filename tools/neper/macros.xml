@@ -1,0 +1,148 @@
+<macros>
+    <token name="@TOOL_VERSION@">4.1.2</token>
+    <token name="@PROFILE@">22.01</token>
+    <xml name="requirements">
+        <requirements>
+            <requirement type="package" version="@TOOL_VERSION@">neper</requirement>
+            <requirement type="package" version="4.8.4">gmsh</requirement>
+            <requirement type="package" version="3.7.0.8">povray</requirement>
+            <yield/>
+        </requirements>
+    </xml>
+    <xml name="citations">
+        <citations>
+            <citation type="doi">10.1016/j.cma.2011.01.002</citation>
+            <citation type="doi">10.1016/j.cma.2017.10.029</citation>
+            <citation type="doi">10.1107/S1600576718009019</citation>
+            <yield />
+        </citations>
+    </xml>
+    <xml name="version_command">
+        <version_command>neper --version</version_command>
+    </xml>
+
+    <xml name="optional_yn" token_arg="-x" token_label="Show" token_help="">
+        <param argument="@ARG@" type="select" optional="true" label="@LABEL@"  help="@HELP@">
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+        </param>
+    </xml>
+
+    <xml name="coords2d" token_label="Set" token_x="1.0" token_y="1.0">
+        <param name="x" type="float" value="@X@" label="@LABEL@ x"/>
+        <param name="y" type="float" value="@Y@" label="@LABEL@ y"/>
+    </xml>
+    <xml name="coords3d" token_label="Set" token_x="1.0" token_y="1.0" token_z="1.0">
+        <param name="x" type="float" value="@X@" label="@LABEL@ x"/>
+        <param name="y" type="float" value="@Y@" label="@LABEL@ y"/>
+        <param name="z" type="float" value="@Z@" label="@LABEL@ z"/>
+    </xml>
+
+    <xml name="size2d" token_label="Set" token_xl="x" token_yl="y" token_x="1" token_y="1">
+        <param name="x" type="integer" value="@X@" min="0" label="@LABEL@ @XL@"/>
+        <param name="y" type="integer" value="@Y@" min="0" label="@LABEL@ @YL@"/>
+    </xml>
+    <xml name="size3d" token_label="Set" token_xl="x" token_yl="y" token_zl="z" token_x="1" token_y="1" token_z="1">
+        <param name="x" type="integer" value="@X@" min="0" label="@LABEL@ @XL@"/>
+        <param name="y" type="integer" value="@Y@" min="0" label="@LABEL@ @YL@"/>
+        <param name="z" type="integer" value="@Z@" min="0" label="@LABEL@ @ZL@"/>
+    </xml>
+
+    <xml name="tx2d" token_label="Set" token_xl="x" token_yl="y" token_x="1" token_y="1">
+        <param name="x" type="float" value="@X@" label="@LABEL@ @XL@"/>
+        <param name="y" type="float" value="@Y@" label="@LABEL@ @YL@"/>
+        <yield/>
+    </xml>
+    <xml name="tx3d" token_label="Set" token_xl="x" token_yl="y" token_zl="z" token_x="1" token_y="1" token_z="1">
+        <expand macro="tx2d" label="@LABEL@" xl="@XL@" yl="@YL@" x="@X@" y="@Y@">
+        <param name="z" type="float" value="@Z@" label="@LABEL@ @ZL@"/>
+        </expand>
+    </xml>
+    <xml name="tx4d" token_label="Set" token_xl="x" token_yl="y" token_zl="z" token_al="a" token_x="1" token_y="1" token_z="1" token_a="1">
+        <expand macro="tx3d" label="@LABEL@" xl="@XL@" yl="@YL@" zl="@ZL@" x="@X@" y="@Y@" z="@Z@">
+        <param name="a" type="float" value="@A@" label="@LABEL@ @AL@"/>
+        </expand>
+    </xml>
+    <xml name="set_ny" token_name="scale" token_label="Scale">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="@LABEL@">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="yes">
+                        <yield/>
+                    </when>
+                </conditional>
+    </xml>
+    <xml name="set_nv" token_name="option" token_label="Option">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="@LABEL@">
+                        <option value="no">No</option>
+                        <option value="by_value">by value </option>
+                    </param>
+                    <when value="no"/>
+                    <when value="by_value">
+                        <yield/>
+                    </when>
+                </conditional>
+    </xml>
+    <xml name="set_nve" token_name="option" token_label="Option">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="@LABEL@">
+                        <option value="no">No</option>
+                        <option value="by_value">by value </option>
+                        <option value="by_expr">by expression</option>
+                    </param>
+                    <when value="no"/>
+                    <when value="by_value">
+                        <yield/>
+                    </when>
+                    <when value="by_expr">
+                        <yield/>
+                    </when>
+                </conditional>
+    </xml>
+
+    <xml name="transform">
+        <section name="transform" expanded="false" title="Set Transforms">
+            <expand macro="set_ny" name="scale" label="Set scale">
+                <expand macro="tx3d" label="scale" lx="x factor" ly="y factor" lz="z factor"/>
+            </expand>
+            <expand macro="set_ny" name="rotate" label="Set rotate">
+                <expand macro="tx4d" label="rotate" lx="x axis" ly="y axis" lz="z axis" la="angle"/>
+            </expand>
+            <expand macro="set_ny" name="translate" label="Set translate">
+                <expand macro="tx3d" label="translate" lx="x distance" ly="y distance" lz="z distance"/>
+            </expand>
+        </section>
+    </xml>
+    <token name="@TRANSFORM@">
+#set $transforms = []
+#if $transform.scale.set_scale == 'yes'
+#silent $transforms.append('scale(' + str($transform.scale.x) + ',' + str($transform.scale.y) + ',' + str($transform.scale.z) + ')')
+#end if
+#if $transform.rotate.set_rotate == 'yes'
+#silent $transforms.append('rotate(' + str($transform.rotate.x) + ',' + str($transform.rotate.y) + ',' + str($transform.rotate.z) + ',' + str($transform.rotate.a) + ')')
+#end if
+#if $transform.translate.set_translate == 'yes'
+#silent $transforms.append('translate(' + str($transform.translate.x) + ',' + str($transform.translate.y) + ',' + str($transform.translate.z) + ')')
+#end if
+#if $transforms
+  #set $txargs = ','.join($transforms)
+ -transform "$txargs"
+#end if
+</token>
+
+    <token name="@NEPER_HELP@">
+Neper_ is a software package for polycrystal generation and meshing. The polycrystals can be 2D or 3D.
+See the neper user manual for a complete description: https://neper.info/docs/neper.pdf
+
+*Only a small number of the neper options are currently implemented in this galaxy tool.  
+If there is an option you need, please create an issue at:* https://github.com/ximg-chess/galaxytools/issues 
+
+
+.. _Neper: https://github.com/rquey/neper
+
+    </token>
+</macros>
