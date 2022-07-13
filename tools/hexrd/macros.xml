@@ -1,7 +1,7 @@
 <macros>
-    <token name="@TOOL_VERSION@">0.8.18</token>
+    <token name="@TOOL_VERSION@">0.8.19</token>
     <token name="@VERSION_SUFFIX@">0</token>
-    <token name="@PROFILE@">21.09</token>
+    <token name="@PROFILE@">22.01</token>
     <xml name="requirements">
         <requirements>
         <requirement type="package" version="@TOOL_VERSION@">hexrd</requirement>
@@ -60,6 +60,9 @@
     </token>
 
     <xml name="common_config" token_multiple_inputs="true" >
+        <param name="analysis_name" type="text" value="analysis" label="analysis name">
+            <validator type="empty_field" />
+        </param>
         <param name="inputs" type="data" format="hexrd.images.npz" multiple="true" label="Image series frame-cache"/>
         <conditional name="detector">
             <param name="panel_assignment" type="select" label="Assign detector panel to images">
@@ -73,7 +76,7 @@
                 </param>
             </when>
         </conditional>
-        <param name="instrument" type="data" format="yaml" label="instrument"/>
+        <param name="instrument" type="data" format="hexrd.yml" label="instrument"/>
         <param name="material" type="data" format="hexrd.materials.h5" label="material"/>
         <param name="active_material" type="select" label="active material name">
             <options>
@@ -101,7 +104,9 @@ ln -s '$input' imageseries/$ln_name($input,'npz') &&
     </token>
     <token name="@FIT_GRAIN_LINKS@"><![CDATA[@CMD_LINKS@
 ln -s '$ome_map' $ln_name($ome_map,'npz') &&
-ln -s '$accepted_orientations' $ln_name($accepted_orientations,'dat') &&
+## hexrd looks for file named: accepted_orientations_{analysis_id}_{active_material}.dat
+#set $accepted_orientations_name = 'accepted_orientations_analysis_' + str($active_material) + '.dat'
+ln -s '$accepted_orientations' '$accepted_orientations_name' &&
 ##mkdir -p analysis &&
 ##cp '$grains_estimate' analysis/$ln_name($grains_estimate,'out') &&
 ]]>
@@ -301,7 +306,7 @@ find_orientations:
     <xml name="fit_grains_config">
         <expand macro="common_config" token_multiple_inputs="true"/>
         <param name="ome_map" type="data" format="hexrd.eta_ome.npz" label="analysis eta-ome_maps.npz from find_orientations"/>
-        <param name="accepted_orientations" type="data" format="tabular" label="accepted_orientations from find_orientations"/>
+        <param name="accepted_orientations" type="data" format="hexrd.accepted_orientations" label="accepted_orientations from find_orientations"/>
         <param name="grains_estimate" type="data" format="tabular" label="grains.out from find_orientations"/>
         <param name="do_fit" type="boolean" truevalue="true" falsevalue="false" checked="true" label="fit grains" help="if false, extracts grains but doesn't fit"/>
         <param name="npdiv" type="integer" value="2" min="1" label="number of polar pixel grid subdivisions"/>
@@ -313,7 +318,7 @@ find_orientations:
                 <param name="omega" type="float" value="" min="0" label="omega"/>
             </repeat>
             <param name="refit" type="text" value="1" label="refit" help="float values separated by commas">
-                <validator type="regex" message="">^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?(,[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)*$</validator>
+                <validator type="regex" message="">^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?(,[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?)+$</validator>
             </param>
             <conditional name="max_tth">
                 <param name="tth_max_value" type="select" label="Set tth_max">
@@ -345,7 +350,8 @@ fit_grains:
 #set $tth = []
 #set $eta = []
 #set $omega = []
-#set $refit = '[' + str($tolerance.refit) + ']'
+## #set $refit_tol = str($tolerance.refit)
+## #set $refit = '[' + $refit_tol + ']'
 #for $tol in $tolerance.tolerance_lists
 #silent $tth.append(float($tol.tth))
 #silent $eta.append(float($tol.eta))
@@ -356,7 +362,7 @@ fit_grains:
     eta: $eta
     omega: $omega
 
-  refit: $refit
+  refit: [${tolerance.refit}]
   #if $tolerance.max_tth.tth_max_value == 'entered':
   tth_max: $tolerance.max_tth.tth_max # true, false, or a non-negative value, defaults to true
   #else

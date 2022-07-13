@@ -1,0 +1,482 @@
+<tool id="neper_visualization" name="Neper Visualization" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@" python_template_version="3.5">
+    <description></description>
+    <macros>
+        <import>macros.xml</import>
+        <import>color_macros.xml</import>
+        <token name="@VERSION_SUFFIX@">0</token>
+
+<!-- Mesh Keys 
+id#identifier#node, @var{n}D elt, @var{n}D elset
+x#x coordinate#node, @var{n}D elt, @var{n}D elset
+y#y coordinate#node, @var{n}D elt, @var{n}D elset
+z#z coordinate#node, @var{n}D elt, @var{n}D elset
+coo#x, y and z coordinates#node, @var{n}D elt, @var{n}D elset
+dim#dimension (= lowest parent elt dimension)#node
+elset0d#0D elset#0D elt
+elset1d#1D elset#1D elt
+elset2d#2D elset#2D elt
+elset3d#3D elset#3D elt
+part#partition#@var{n}D elt, node
+group#group#@var{n}D elt, @var{n}D elset
+cyl#whether or not is used to describe the circular part of a cylinder domain#1D elt, 1D elset
+vol#volume#3D elt, 3D elset
+area#surface area#2D elt
+diameq#equivalent diameter@footnote{Equivalent diameter = diameter of the circle of equivalent area/volume in 2D/3D.#2D elt, 3D elt, 2D elset, 3D elset
+radeq#equivalent radius@footnote{Equivalent radius = radius of the circle of equivalent area/volume in 2D/3D.}#2D elt, 3D elt, 2D elset, 3D elset
+length#average edge length#@math{n}D elt, 1D elset
+lengths#edge lengths#2D elt, 3D elt
+elsetvol#elset volume#3D elt
+elsetarea#elset area#2D elt
+elsetlength#elset length#1D elt
+rr#radius ratio#3D elt
+rrav}, @code{rrmin}, @code{rrmax}
+#average, min and max radius ratios @tab 3D elset
+Osize#Osize#3D elset
+eltnb#number of elements#@var{n}D elset
+true#true level#@var{n}D elt, @var{n}D elset
+body#body level#@var{n}D elt, @var{n}D elset
+domtype#type of domain (0 if on a domain vertex, 1 if on a domain edge and 2 if on a domain face)#@w{2D elset}, @w{1D elset}, @w{0D elset}, @w{2D elt}, @w{1D elt}, @w{0D elt}
+2dmeshp#coordinates of the closest point of the 2D mesh#node, 3D elt
+2dmeshd#distance to @samp{2dmeshp}#node, 3D elt
+2dmeshv#vector to @samp{2dmeshp}#node, 3D elt
+2dmeshn#outgoing normal vector of the 2D mesh at @samp{2dmeshp#node, 3D elt
+per#periodic (1 if periodic, 0 otherwise)#0D elt, 1D elt, 2D elt (in 3D), 0D elset, 1D elset, 2D elset (in 3D)
+col_rodrigues#color according to the Rodrigues vector color convention@footnote{Applies to a mesh of Rodrigues space.}#node
+col_stdtriangle#color according to the stereographic triangle (IPF) color convention@footnote{Applies to a mesh of the stereographic triangle.}#node
+-->
+
+        <xml name="set_elt" token_name="option">
+            <conditional name="@NAME@">
+                <param name="set_@NAME@" type="select" label="Set @NAME@">
+                    <option value="default">use default</option>
+                    <option value="by_value">by value </option>
+                    <option value="from_file">from file</option>
+                </param>
+                <when value="default"/>
+                <when value="by_value">
+                    <param name="@NAME@" argument="-@NAME@" type="text" label="@NAME@">
+                        <option value="all">all</option>
+                        <option value="none">none</option>
+                        <yield/>
+                    </param>
+                </when>
+                <when value="from_file">
+                    <param name="elements_file" argument="-@NAME@" type="data" format="txt" label="Elements file"/>
+                </when>
+            </conditional>
+        </xml>
+
+        <xml name="elt_elset">
+            <param name="by_set" type="boolean" truevalue="elset" falsevalue="elt" checked="false" label="apply to element set"/>
+        </xml>
+        <xml name="set_el_color" token_name="option">
+                <conditional name="@NAME@">
+                    <param name="set_@NAME@" type="select" label="Set @NAME@ by">
+                        <option value="default" selected="true">Use default</option>
+                        <option value="data_value">data value</option>
+                        <option value="color">color</option>
+                        <option value="from_file">from file</option>
+                    </param>
+                    <when value="default"/>
+                    <when value="data_value">
+                        <param argument="-@NAME@" type="text" label="Set @NAME@ by element or element set">
+                            <yield/>
+                        </param>
+                        <expand macro="elt_elset"/>
+                    </when> 
+                    <when value="color">
+                        <expand macro="color_selector" argument="-@NAME@" label="Set @NAME@ color"/>
+                        <expand macro="elt_elset"/>
+                    </when> 
+                    <when value="from_file">
+                        <param name="color_file" argument="-@NAME@" type="data" format="txt" label="Color file"/>
+                    </when> 
+                </conditional>
+        </xml>
+
+        <xml name="tess_data">
+            <section name="tess" expanded="false" title="Tessellation Rendering">
+                <conditional name="datacellcol">
+                    <param name="set_datacellcol" argument="-datacellcol" type="select" label="Set datacell color">
+                        <option value="none">None</option>
+                        <option value="id" selected="true">id</option>
+                        <option value="mode">mode</option>
+                        <option value="by_value">By value</option>
+                    </param>
+                    <when value="none"/>
+                    <when value="id"/>
+                    <when value="mode"/>
+                    <when value="by_value">
+                        <expand macro="color_selector" name="datacellcolor" label="Select datacell color"/>
+                    </when> 
+                    <when value="by_value">
+                    </when> 
+                </conditional>
+            </section>
+        </xml>
+        <token name="@TESS_DATA@">
+        #if $tess.datacellcol.set_datacellcol in ['id','mode']
+            -datacellcol $tess.datacellcol.set_datacellcol
+        #elif $tess.datacellcol.set_datacellcol == 'by_value'
+            -datacellcol $tess.datacellcol.datacellcolor
+        #end if
+        </token>
+
+<!--
+neper -V example_mesh.msh -showelt1d all -dataelset3dcol id -dataelt1drad 0.0025 -dataelt3dedgerad 0.0025
+-->
+
+        <xml name="mesh_data">
+            <section name="mesh_data" expanded="false" title="Mesh Data Loading">
+                <!-- NOTE: elt or elset -->  
+                <!-- datanodecoo -->
+                <!-- datanodecoofact -->
+                <!-- datanoderad -->
+                <!-- datanodecol -->
+                <!-- datanodecolscheme -->
+                <!-- datanodescale -->
+                <!-- datanodescaletitle -->
+            </section>
+        </xml>
+        <token name="@MESH_DATA@">
+        </token>
+
+        <xml name="mesh_color">
+            <section name="mesh_color" expanded="false" title="Mesh Data Rendering">
+                <!-- NOTE: elt or elset -->  
+                <!-- dataelt3dcol -->    
+                <expand macro="set_el_color" name="dataelt3dcol">
+                </expand>
+                <!-- dataelt3dcolscheme -->    
+                <!-- dataelt3dcolscale -->    
+                <!-- dataelt3dcolscaletitle -->    
+                <!-- dataelt3dedgerad -->    
+                <param argument="-dataelt3dedgerad" type="float" value="" min="0.0" optional="true" label="data element 3d edge radius"/>
+                <!-- dataelt3dedgecol -->    
+
+                <!-- dataelt2dcol -->    
+                <expand macro="set_el_color" name="dataelt2dcol">
+                </expand>
+                <!-- dataelt2dcolscheme -->    
+                <!-- dataelt2dcolscale -->    
+                <!-- dataelt2dcolscaletitle -->    
+                <!-- dataelt2dedgerad -->    
+                <param argument="-dataelt2dedgerad" type="float" value="" min="0.0" optional="true" label="data element 2d edge radius"/>
+                <!-- dataelt2dedgecol -->    
+
+                <!-- dataelt1dcol -->    
+                <expand macro="set_el_color" name="dataelt1dcol">
+                </expand>
+                <!-- dataelt1dcolscheme -->    
+                <!-- dataelt1dcolscale -->    
+                <!-- dataelt1dcolscaletitle -->    
+                <!-- dataelt1drad -->    
+                <param argument="-dataelt1drad" type="float" value="" min="0.0" optional="true" label="data element 1d radius"/>
+
+                <!-- dataelt0dcol -->    
+                <expand macro="set_el_color" name="dataelt0dcol">
+                </expand>
+                <!-- dataelt0dcolscheme -->    
+                <!-- dataelt0dcolscale -->    
+                <!-- dataelt0dcolscaletitle -->    
+                <!-- dataelt0drad -->    
+                <param argument="-dataelt0drad" type="float" value="" min="0.0" optional="true" label="data element 1d radius"/>
+            </section>
+        </xml>
+        <token name="@MESH_COLOR@">
+        #if $mesh_color.dataelt3dcol.set_dataelt3dcol == 'from_file'
+            #pass
+        #elif $mesh_color.dataelt3dcol.set_dataelt3dcol != 'default'
+            #set opt = '-dataelt3dcol'.replace('elt',str($mesh_color.dataelt3dcol.by_set))
+            $opt '$mesh_color.dataelt3dcol.dataelt3dcol'
+        #end if
+        #if $mesh_color.dataelt2dcol.set_dataelt2dcol == 'from_file'
+            #pass
+        #elif $mesh_color.dataelt2dcol.set_dataelt2dcol != 'default'
+            #set opt = '-dataelt2dcol'.replace('elt',str($mesh_color.dataelt2dcol.by_set))
+            $opt '$mesh_color.dataelt2dcol.dataelt2dcol'
+        #end if
+        #if $mesh_color.dataelt1dcol.set_dataelt1dcol == 'from_file'
+            #pass
+        #elif $mesh_color.dataelt1dcol.set_dataelt1dcol != 'default'
+            #set opt = '-dataelt1dcol'.replace('elt',str($mesh_color.dataelt1dcol.by_set))
+            $opt '$mesh_color.dataelt1dcol.dataelt1dcol'
+        #end if
+        #if $mesh_color.dataelt0dcol.set_dataelt0dcol == 'from_file'
+            #pass
+        #elif $mesh_color.dataelt0dcol.set_dataelt0dcol != 'default'
+            #set opt = '-dataelt0dcol'.replace('elt',str($mesh_color.dataelt0dcol.by_set))
+            $opt '$mesh_color.dataelt0dcol.dataelt3dcol'
+        #end if
+
+        #if $mesh_color.dataelt3dedgerad
+            -dataelt3dedgerad $mesh_color.dataelt3dedgerad
+        #end if
+        #if $mesh_color.dataelt2dedgerad
+            -dataelt2dedgerad $mesh_color.dataelt2dedgerad
+        #end if
+        #if $mesh_color.dataelt1drad
+            -dataelt1drad $mesh_color.dataelt1drad
+        #end if
+        #if $mesh_color.dataelt0drad
+            -dataelt0drad $mesh_color.dataelt0drad
+        #end if
+        </token>
+
+        <xml name="show_settings">
+            <section name="show" expanded="false" title="Show Settings">
+                <expand macro="optional_yn" arg="-showtess" label="Show tess" help="test"/>
+                <expand macro="optional_yn" arg="-showtesr" label="Show tesr" help="test"/>
+                <expand macro="optional_yn" arg="-showmesh" label="Show mesh" help="test"/>
+                <expand macro="optional_yn" arg="-showmeshslice" label="Show mesh slice" help="test"/>
+                <!-- showpoint -->
+            </section>
+        </xml>
+        <token name="@SHOW_SETTINGS@">
+        #if $show.showtess
+            -showtess $show.showtess
+        #end if
+        #if $show.showtesr
+            -showtesr $show.showtesr
+        #end if
+        #if $show.showmesh
+            -showmesh $show.showmesh
+        #end if
+        #if $show.showmeshslice
+            -showmeshslice $show.showmeshslice
+        #end if
+        ## -showpoint
+        </token>
+
+        <xml name="show_tess_settings">
+            <section name="show_tess" expanded="false" title="Show Tessellation Settings">
+                <!-- showcell -->
+                <!-- showpoly -->
+                <!-- showface -->
+                <!-- showedge -->
+                <!-- showver -->
+                <!-- showseed -->
+                <!-- showfaceinter -->
+                <expand macro="optional_yn" arg="-showfaceinter" label="Show the interpolations of the tessellation faces" help=""/>
+                <!-- RASTER tesr -->
+                <!-- showvoidvox -->
+            </section>
+        </xml>
+        <token name="@SHOW_TESS_SETTINGS@">
+        #if $show_tess.showfaceinter
+            -showfaceinter $show_tess.showfaceinter
+        #end if
+        </token>
+
+        <xml name="show_mesh_settings">
+            <section name="show_mesh" expanded="false" title="Show Mesh Settings">
+                <expand macro="set_elt" name="showelt3d"/>
+                <expand macro="set_elt" name="showelt2d">
+                    <option value="elt3d_shown">elt3d_shown</option>
+                </expand>
+                <expand macro="set_elt" name="showelt1d">
+                    <option value="elt2d_shown">elt2d_shown</option>
+                    <option value="elt3d_shown">elt3d_shown</option>
+                </expand>
+                <expand macro="set_elt" name="showelt0d">
+                    <option value="elt1d_shown">elt1d_shown</option>
+                    <option value="elt2d_shown">elt2d_shown</option>
+                    <option value="elt3d_shown">elt3d_shown</option>
+                </expand>
+                <!-- shownode -->
+                <expand macro="optional_yn" arg="-showcys" label="Show the coordinate system" help=""/>
+                <expand macro="optional_yn" arg="-showshadow" label="Show the shadows" help=""/>
+            </section>
+        </xml>
+        <token name="@SHOW_MESH_SETTINGS@">
+        #if $show_mesh.showelt3d.set_showelt3d == 'by_value'
+            -showelt3d '$show_mesh.showelt3d.showelt3d'
+        #elif $show_mesh.showelt3d.set_showelt3d == 'from_file'
+            -showelt3d 'file($show_mesh.showelt3d.elements_file)'
+        #end if
+        #if $show_mesh.showelt2d.set_showelt2d == 'by_value'
+            -showelt2d '$show_mesh.showelt2d.showelt2d'
+        #elif $show_mesh.showelt2d.set_showelt2d == 'from_file'
+            -showelt2d 'file($show_mesh.showelt2d.elements_file)'
+        #end if
+        #if $show_mesh.showelt1d.set_showelt1d == 'by_value'
+            -showelt1d '$show_mesh.showelt1d.showelt1d'
+        #elif $show_mesh.showelt1d.set_showelt1d == 'from_file'
+            -showelt1d 'file($show_mesh.showelt1d.elements_file)'
+        #end if
+        #if $show_mesh.showelt0d.set_showelt0d == 'by_value'
+            -showelt0d '$show_mesh.showelt0d.showelt0d'
+        #elif $show_mesh.showelt0d.set_showelt0d == 'from_file'
+            -showelt0d 'file($show_mesh.showelt0d.elements_file)'
+        #end if
+        ## shownode
+        #if $show_mesh.showcys
+            -showcys $show_mesh.showcys
+        #end if
+        #if $show_mesh.showshadow
+            -showshadow $show_mesh.showshadow
+        #end if
+        </token>
+
+        <xml name="camera_settings">
+            <section name="camera" expanded="false" title="Camera Settings">
+                <expand macro="set_nv" name="cameracoo" label="Specify the camera coordinates">
+                    <expand macro="tx3d" label="Camera position" lx="x" ly="y" lz="z"/>
+                </expand>
+                <expand macro="set_nv" name="cameralookat" label="Specify the camera look-at point">
+                    <expand macro="tx3d" label="Camera lookat" lx="x" ly="y" lz="z"/>
+                </expand>
+                <param name="cameraangle" type="float" value="" min="1" max="179" optional="true" label="Set the opening angle of the camera along the horizontal direction (in degrees)"/>
+                <expand macro="set_nv" name="camerasky" label="Specify the sky vector of the camera (vertical direction)">
+                    <expand macro="tx3d" label="Camera Sky vector" lx="x" ly="y" lz="z" x="0" y="0" z="1"/>
+                </expand>
+                <param name="cameraprojection" type="select" optional="true" label="Camera Projection">
+                    <help>Default value: perspective for 3D and orthographic for 2D</help>
+                    <option value="perspective">perspective</option>
+                    <option value="orthographic">orthographic</option>
+                </param>
+            </section>
+        </xml>
+        <token name="@CAMERA_SETTINGS@">
+        #if $camera.cameracoo.set_cameracoo == 'by_value'
+            -cameracoo "${camera.cameracoo.x}:${camera.cameracoo.y}:${camera.cameracoo.z}"
+        #end if
+        #if $camera.cameralookat.set_cameralookat == 'by_value'
+            -cameralookat "${camera.cameralookat.x}:${camera.cameralookat.y}:${camera.cameralookat.z}"
+        #end if
+        #if $camera.cameraangle
+            -cameraangle $camera.cameraangle
+        #end if
+        #if $camera.camerasky.set_camerasky == 'by_value'
+            -camerasky "${camera.camerasky.x}:${camera.camerasky.y}:${camera.camerasky.z}"
+        #end if
+        #if $camera.cameraprojection
+        -cameraprojection $camera.cameraprojection
+        #end if
+        </token>
+
+        <xml name="image_settings">
+            <section name="image" expanded="false" title="Image Settings">
+                <expand macro="set_ny" name="imagesize" label="Set the image size">
+                    <expand macro="size2d" label="Image size" lx="width" ly="height"/>
+                </expand>
+                <expand macro="color_selector" name="imagebackground" label="Image background color"/>
+                <param name="imageantialias" type="boolean" truevalue="" falsevalue="-imageantialias 0" checked="true" label="Use antialiasing" 
+                    help="Use antialiasing to produce a smoother image. Switch antialiasing off for faster image gener- ation or smaller image file"/>
+            </section>
+        </xml>
+        <token name="@IMAGE_SETTINGS@">
+        #if $image.imagesize.set_imagesize == 'yes'
+            -imagesize "${image.imagesize.x}:${image.imagesize.y}"
+        #end if
+        #if $image.imagebackground
+            -imagebackground "$image.imagebackground"
+        #end if
+        $image.imageantialias
+        </token>
+
+    </macros>
+    <expand macro="requirements" />
+    <expand macro="version_command" />
+    <command detect_errors="exit_code"><![CDATA[
+        #*
+        #set $tessfiles = []
+        #set $mshfiles = []
+        #for $input in $inputs
+            #if $input.is_of_type('neper.msh')
+                #silent $mshfiles.append(str($input))
+            #else
+                #silent $tessfiles.append(str($input))
+            #end if
+        #end for
+        #set $ds = ','.join($tessfiles + $mshfiles)
+        neper -V 
+        '$ds'
+        *#
+        neper -V 
+        '$inputs'
+        @TESS_DATA@
+        @TRANSFORM@
+        @MESH_COLOR@
+        @SHOW_SETTINGS@
+        @SHOW_TESS_SETTINGS@
+        @SHOW_MESH_SETTINGS@
+        @CAMERA_SETTINGS@
+        @IMAGE_SETTINGS@
+        -imageformat "$imageformat"
+        -print output
+        | grep -v '%$' | tee 'neper.log'
+        #if 'png' in $imageformat
+          && test -s output.png
+        #end if
+        #if 'vtk' in $imageformat
+          && test -s output.vtk
+        #end if
+    ]]></command>
+    <inputs>
+        <param name="inputs" type="data" format="neper.tesr,neper.tess,gmsh.msh" multiple="true" label="Input to visualize"/> 
+        <expand macro="tess_data"/>
+        <expand macro="transform"/>
+        <expand macro="mesh_color"/>
+        <expand macro="show_settings"/>
+        <expand macro="show_tess_settings"/>
+        <expand macro="show_mesh_settings"/>
+        <expand macro="camera_settings"/>
+        <expand macro="image_settings"/>
+        <param name="imageformat" argument="-imageformat" type="select" multiple="true" optional="false" label="Image formats">
+            <option value="png" selected="true">PNG</option>
+            <option value="vtk">VTK</option>
+            <option value="pov">POV</option>
+        </param>
+    </inputs>
+    <outputs>
+        <data name="log" format="txt" label="${tool.name} on ${on_string} log" from_work_dir="neper.log"/>
+        <data name="output_png" format="png" label="${tool.name} on ${on_string} png" from_work_dir="output.png">
+            <filter>'png' in imageformat</filter>
+        </data>
+        <data name="output_vtk" format="vtkascii" label="${tool.name} on ${on_string} vtk" from_work_dir="output.vtk">
+            <filter>'vtk' in imageformat</filter>
+        </data>
+        <data name="output_pov" format="pov" label="${tool.name} on ${on_string} pov" from_work_dir="output.pov">
+            <filter>'pov' in imageformat</filter>
+        </data>
+    </outputs>
+    <tests>
+        <!-- Test-1  neper -V neper.tess -datacellcol id -imageformat "png" -->
+        <test>
+            <param name="inputs" ftype="neper.tess" value="neper.tess"/>
+            <output name="log">
+                <assert_contents>
+                    <has_text text="Wrote file `output.png'." />
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test-2  neper -V gmsh.msh -datacellcol id -imageformat "png,vtk" -->
+        <test>
+            <param name="inputs" ftype="neper.tess" value="gmsh.msh"/>
+            <param name="imageformat" value="png,vtk"/>
+            <output name="log">
+                <assert_contents>
+                    <has_text text="Wrote file `output.png'." />
+                    <has_text text="Wrote file `output.vtk'." />
+                </assert_contents>
+            </output>
+            <output name="output_vtk">
+                <assert_contents>
+                    <has_text text="vtk DataFile" />
+                    <has_text text="DATASET UNSTRUCTURED_GRID" />
+                </assert_contents>
+            </output>
+        </test>
+
+    </tests>
+    <help><![CDATA[
+**Neper Visualization**
+
+@NEPER_HELP@
+
+Module -V is the module for visualizing tessellations, meshes and simulation results as publication-quality PNG images1 or as VTK files, for interactive visualization. Results can be defined from internal data, data loaded from external files or a simulation directory as generated by module -S. For the PNG images, it is possible to set different attributes of the tessellations and meshes such as the node coordinates, or the colors and transparencies of the different entities. Point data can also be represented, using symbols of specified sizes and colors. Slice views can also be generated.
+
+    ]]></help>
+    <expand macro="citations" />
+</tool>
