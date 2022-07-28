@@ -110,6 +110,9 @@ def __main__():
                 for filetype, filepath in zip(args.inputfile_types, args.inputfiles)]
     logging.debug(f'collections:\n{collections}')
     if len(args.tomo_ranges) != 2*len(collections):
+        print(f'datasets ({type(datasets)} {len(datasets)}):\n{datasets}')
+        print(f'collections ({type(collections)} {len(collections)}):\n{collections}')
+        print(f'ranges ({type(args.tomo_ranges)} {len(args.tomo_ranges)}):\n{args.tomo_ranges}')
         raise ValueError('Inconsistent tomo ranges size.')
 
     # Instantiate Tomo object
