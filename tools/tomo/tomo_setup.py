@@ -68,7 +68,7 @@ def __main__():
     print(f'inputfiles ({type(args.inputfiles)}):\n{args.inputfiles}')
     print(f'inputfile_types ({type(args.inputfile_types)}):\n{args.inputfile_types}')
     if isinstance(args.inputfile_types, list):
-        if if len(args.inputfile_types) == 1 and args.inputfile_types[0] == 'collection':
+        if len(args.inputfile_types) == 1 and args.inputfile_types[0] == 'collection':
             if len(args.inputfiles) != 1 or args.inputfiles[0] != 'inputfiles.txt':
                 raise ValueError('Inconsistent inputfiles and inputfile_types:\n'+
                         f'inputfiles ({type(inputfiles)}):\n{inputfiles}\n'+
