@@ -20,20 +20,25 @@ def __main__():
     parser = argparse.ArgumentParser(
             description='Setup tomography reconstruction')
     parser.add_argument('-i', '--inputfiles',
+            nargs='+',
             default='inputfiles.txt',
-            help='Input file collections')
+            help='Input file datasets or collections')
     parser.add_argument('-c', '--config',
             help='Input config')
+    parser.add_argument('-l', '--log', 
+            type=argparse.FileType('w'),
+            default=sys.stdout,
+            help='Log file')
+    parser.add_argument('-t', '--inputfile_types',
+            nargs='+',
+            default='collection',
+            help='Input files type (collection or a list of set types: dark, bright, or data)')
     parser.add_argument('--theta_range',
             help='Theta range (lower bound, upper bound, number of angles)')
     parser.add_argument('--output_config',
             help='Output config')
     parser.add_argument('--output_data',
             help='Preprocessed tomography data')
-    parser.add_argument('-l', '--log', 
-            type=argparse.FileType('w'),
-            default=sys.stdout,
-            help='Log file')
     parser.add_argument('tomo_ranges', metavar='N', type=int, nargs='+')
     args = parser.parse_args()
 
@@ -50,43 +55,59 @@ def __main__():
             handlers=[logging.StreamHandler()])
 
     logging.debug(f'config = {args.config}')
+    logging.debug(f'inputfiles = {args.inputfiles}')
+    logging.debug(f'inputfile_types = {args.inputfile_types}')
+    logging.debug(f'log = {args.log}')
+    logging.debug(f'is log stdout? {args.log is sys.stdout}')
     logging.debug(f'theta_range = {args.theta_range.split()}')
     logging.debug(f'output_config = {args.output_config}')
     logging.debug(f'output_data = {args.output_data}')
-    logging.debug(f'log = {args.log}')
-    logging.debug(f'is log stdout? {args.log is sys.stdout}')
     logging.debug(f'tomoranges = {args.tomo_ranges}')
 
-    # Read input files and collect data files info
-    datasets = []
-    with open(args.inputfiles) as cf:
-        for line in cf:
-            if not line.strip() or line.startswith('#'):
-                continue
-            fields = [x.strip() for x in line.split('\t')]
-            filepath = fields[0]
-            element_identifier = fields[1] if len(fields) > 1 else fields[0].split('/')[-1]
-            datasets.append({'element_identifier' : fields[1], 'filepath' : filepath})
-    logging.debug(f'datasets:\n{datasets}')
+    # Check input file type
+    if isinstance(args.inputfile_types, str) and args.inputfile_types == 'collection':
+        input_as_collection = True
+    elif isinstance(args.inputfile_types, list):
+        input_as_collection = False
+    else:
+        raise ValueError(f'Invalid args.inputfile_types: {args.inputfile_types} '+
+                f'{type(args.inputfile_types)}')
 
-    # Read and sort data files
+    datasets = []
     collections = []
-    for dataset in datasets:
-        element_identifier = [x.strip() for x in dataset['element_identifier'].split('_')]
-        if len(element_identifier) > 1:
-            name = element_identifier[0]
-        else:
-            name = 'other'
-        filepath = dataset['filepath']
-        if not len(collections):
-            collections = [{'name' : name, 'filepaths' : [filepath]}]
-        else:
-            collection = [c for c in collections if c['name'] == name]
-            if len(collection):
-                collection[0]['filepaths'].append(filepath)
+    if input_as_collection:
+        # Read input file collections and collect data files info
+        with open(args.inputfiles) as cf:
+            for line in cf:
+                if not line.strip() or line.startswith('#'):
+                    continue
+                fields = [x.strip() for x in line.split('\t')]
+                filepath = fields[0]
+                element_identifier = fields[1] if len(fields) > 1 else fields[0].split('/')[-1]
+                datasets.append({'element_identifier' : fields[1], 'filepath' : filepath})
+        logging.debug(f'datasets:\n{datasets}')
+
+        # Read and sort data files
+        for dataset in datasets:
+            element_identifier = [x.strip() for x in dataset['element_identifier'].split('_')]
+            if len(element_identifier) > 1:
+                name = element_identifier[0]
             else:
-                collection = {'name' : name, 'filepaths' : [filepath]}
-                collections.append(collection)
+                name = 'other'
+            filepath = dataset['filepath']
+            if not len(collections):
+                collections = [{'name' : name, 'filepaths' : [filepath]}]
+            else:
+                collection = [c for c in collections if c['name'] == name]
+                if len(collection):
+                    collection[0]['filepaths'].append(filepath)
+                else:
+                    collection = {'name' : name, 'filepaths' : [filepath]}
+                    collections.append(collection)
+    else:
+        # Collect input file datasets info
+        collections = [{'name' : filetype, 'filepaths' : [filepath]} 
+                for filetype, filepath in zip(args.inputfile_types, args.inputfiles)]
     logging.debug(f'collections:\n{collections}')
     if len(args.tomo_ranges) != 2*len(collections):
         raise ValueError('Inconsistent tomo ranges size.')
@@ -141,7 +162,12 @@ def __main__():
     for stack in stack_info['stacks']:
         stack['img_offset'] = args.tomo_ranges[2*num_collections]
         stack['num'] = args.tomo_ranges[2*num_collections+1]
-        tomo_files = [c['filepaths'] for c in collections if c['name'] == f'set{stack["index"]}']
+        if input_as_collection:
+            tomo_files = [c['filepaths'] for c in collections
+                if c['name'] == f'set{stack["index"]}']
+        else:
+            assert(collections[num_collections]['name'] == 'data')
+            tomo_files = [collections[num_collections]['filepaths']]
         if len(tomo_files) != 1 or len(tomo_files[0]) < 1:
             exit(f'Unable to obtain tomography images for set {stack["index"]}')
         tomo_stack_files.append(tomo_files[0])
