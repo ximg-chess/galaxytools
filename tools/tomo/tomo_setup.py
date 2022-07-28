@@ -67,10 +67,15 @@ def __main__():
     # Check input file type
     print(f'inputfiles ({type(args.inputfiles)}):\n{args.inputfiles}')
     print(f'inputfile_types ({type(args.inputfile_types)}):\n{args.inputfile_types}')
-    if isinstance(args.inputfile_types, str) and args.inputfile_types == 'collection':
-        input_as_collection = True
-    elif isinstance(args.inputfile_types, list):
-        input_as_collection = False
+    if isinstance(args.inputfile_types, list):
+        if args.inputfile_types[0] == 'collection':
+            input_as_collection = True
+            if len(args.inputfiles) != 1 or args.inputfiles[0] != inputfiles.txt:
+                raise ValueError('Inconsistent inputfiles and inputfile_types:\n'+
+                        f'inputfiles ({type(inputfiles)}):\n{inputfiles}\n'+
+                        f'inputfile_types ({type(inputfile_types)}):\n{inputfile_types}')
+        else:
+            input_as_collection = False
     else:
         raise ValueError(f'Invalid args.inputfile_types: {args.inputfile_types} '+
                 f'{type(args.inputfile_types)}')
