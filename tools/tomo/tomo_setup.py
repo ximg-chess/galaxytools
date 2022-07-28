@@ -65,6 +65,8 @@ def __main__():
     logging.debug(f'tomoranges = {args.tomo_ranges}')
 
     # Check input file type
+    print(f'inputfiles ({type(args.inputfiles)}):\n{args.inputfiles}')
+    print(f'inputfile_types ({type(args.inputfile_types)}):\n{args.inputfile_types}')
     if isinstance(args.inputfile_types, str) and args.inputfile_types == 'collection':
         input_as_collection = True
     elif isinstance(args.inputfile_types, list):

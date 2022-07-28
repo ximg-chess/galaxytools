@@ -12,7 +12,7 @@
             #end if
             $__tool_directory__/tomo_setup.py
             #if str( $input.type_selector ) == "collection"
-                -i inputfiles.txt
+                -i 'inputfiles.txt'
                 -t 'collection'
             #else:
                 -i #for $s in $input.tomo_sets# '${s.inputs}' #end for#
