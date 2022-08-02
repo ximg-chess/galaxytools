@@ -23,10 +23,12 @@
             --output_data 'output_data.npz'
             --output_config 'output_config.yaml'
             -l '$log'
-            #for $s in $input.tomo_sets# ${s.offset} ${s.num} ${s.ref_height} #end for
 
         ]]>
     </command>
+    <!--
+    #for $s in $input.tomo_sets# ${s.offset} ${s.num} ${s.ref_height} #end for
+    -->
     <configfiles>
          <configfile name="inputfiles">
              <![CDATA[#slurp
