@@ -16,14 +16,14 @@
                 -t 'collection'
             #else:
                 -i #for $s in $input.tomo_sets# '${s.inputs}' #end for#
-                -t #for $s in $input.tomo_sets# '${s.set_type.type_selector}' #end for#
+                -t #for $s in $input.tomo_sets# '${s.set_type.set_selector}' #end for#
             #end if
             -c '$config'
             --theta_range '$thetas.theta_start $thetas.theta_end $thetas.num_thetas'
             --output_data 'output_data.npz'
             --output_config 'output_config.yaml'
             -l '$log'
-            #for $s in $input.tomo_sets# ${s.offset} ${s.num} #end for
+            #for $s in $input.tomo_sets# ${s.offset} ${s.num} ${s.ref_height} #end for
 
         ]]>
     </command>
@@ -43,10 +43,10 @@
     <inputs>
         <conditional name="config_type">
             <param name="config_selector" type="select" label="Read config from file or enter manually">
-                <option value="file" selected="true">Read config from file</option>
-                <option value="manual">Manually enter config parameters</option>
+                <option value="config_file" selected="true">Read config from file</option>
+                <option value="config_manual">Manually enter config parameters</option>
             </param>
-            <when value="file">
+            <when value="config_file">
                 <expand macro="common_inputs"/>
                 <param name="num_stack" type="select" label="number of stacks">
                     <options>
@@ -68,50 +68,55 @@
                 </section>
                 <conditional name="input">
                     <param name="type_selector" type="select" label="Choose the dataset format">
-                        <option value="collection">datasets as collections</option>
-                        <option value="file">datasets as files</option>
+                        <option value="collections">datasets as collections</option>
+                        <option value="files">datasets as files</option>
                     </param>
-                    <when value="collection">
+                    <when value="collections">
                         <repeat name='tomo_sets' title="Tomography image collections">
                             <param name="inputs" type="data_collection" label="Image file collection"/>
                             <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                            <!--
                             <param name="ref_height" type="select" label="Reference height (from config)">
                                 <options>
                                     <filter type="data_meta" ref="config" key="ref_height"/>
                                 </options>
                             </param>
-                            <!--
-                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
                             -->
                         </repeat>
                     </when>
-                    <when value="file">
+                    <when value="files">
                         <repeat name='tomo_sets' title="Tomography image datasets">
+                            <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
                             <conditional name="set_type">
-                                <param name="type_selector" type="select" label="Choose the dataset type">
+                                <param name="set_selector" type="select" label="Choose the dataset type">
                                     <option value="tdf">dark field</option>
                                     <option value="tbf">bright field</option>
                                     <option value="data">tomography field</option>
                                 </param>
-                                <when value="tdf"/>
-                                <when value="tbf"/>
-                                <when value="data"/>
+                                <when value="tdf">
+                                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                                    <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                                </when>
+                                <when value="tbf">
+                                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                                    <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                                </when>
+                                <when value="data">
+                                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                                    <!--
+                                    <param name="ref_height" type="select" label="Reference height (from config)">
+                                        <options>
+                                            <filter type="data_meta" ref="config" key="ref_height"/>
+                                        </options>
+                                    </param>
+                                    -->
+                                </when>
                             </conditional>
-                            <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
-                            <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
-                            <param name="ref_height" type="select" label="Reference height (from config)">
-                                <options>
-                                    <filter type="data_meta" ref="config" key="ref_height"/>
-                                </options>
-                            </param>
-                            <!--
-                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
-                            -->
                         </repeat>
                     </when>
                 </conditional>
             </when>
-            <when value="manual">
+            <when value="config_manual">
                 <param name="num_stack" type="integer" min="1" value="1" label="Number of stacks"/>
                 <section name="thetas" title="Tomography angles">
                     <param name="theta_start" type="float" min="0.0" max="360.0" value="0.0" label="Lower bound"/>
@@ -120,37 +125,38 @@
                 </section>
                 <conditional name="input">
                     <param name="type_selector" type="select" label="Choose the dataset format">
-                        <option value="collection">datasets as collections</option>
-                        <option value="file">datasets as files</option>
+                        <option value="collections">datasets as collections</option>
+                        <option value="files">datasets as files</option>
                     </param>
-                    <when value="collection">
+                    <when value="collections">
                         <repeat name='tomo_sets' title="Tomography image collections">
                             <param name="inputs" type="data_collection" label="Image file collection"/>
                             <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
                             <param name="ref_height" type="float" value="0.0" label="Reference height"/>
-                            <!--
-                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
-                            -->
                         </repeat>
                     </when>
-                    <when value="file">
+                    <when value="files">
                         <repeat name='tomo_sets' title="Tomography image datasets">
+                            <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
                             <conditional name="set_type">
-                                <param name="type_selector" type="select" label="Choose the dataset type">
+                                <param name="set_selector" type="select" label="Choose the dataset type">
                                     <option value="tdf">dark field</option>
                                     <option value="tbf">bright field</option>
                                     <option value="data">tomography field</option>
                                 </param>
-                                <when value="tdf"/>
-                                <when value="tbf"/>
-                                <when value="data"/>
+                                <when value="tdf">
+                                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                                    <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                                </when>
+                                <when value="tbf">
+                                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                                    <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                                </when>
+                                <when value="data">
+                                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                                    <param name="ref_height" type="float" value="0.0" label="Reference height"/>
+                                </when>
                             </conditional>
-                            <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
-                            <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
-                            <param name="ref_height" type="float" value="0.0" label="Reference height"/>
-                            <!--
-                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
-                            -->
                         </repeat>
                     </when>
                 </conditional>
@@ -160,7 +166,7 @@
     <outputs>
         <expand macro="common_outputs"/>
         <data name="inputfiles" format="txt" label="Input files" from_work_dir="inputfiles.txt" hidden="true">
-            <filter>input['type_selector'] == 'collection'</filter>
+            <filter>input['type_selector'] == 'collections'</filter>
         </data>
         <collection name="setup_pngs" type="list" label="Tomo setup images">
             <discover_datasets pattern="__name_and_ext__" directory="setup_pngs"/>
