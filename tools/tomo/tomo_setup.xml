@@ -1,4 +1,4 @@
-<tool id="tomo_setup" name="Tomo Setup" version="0.2.0" python_template_version="3.9">
+<tool id="tomo_setup" name="Tomo Setup" version="0.2.1" python_template_version="3.9">
     <description>Preprocess tomography images</description>
     <macros>
         <import>tomo_macros.xml</import>
@@ -24,55 +24,136 @@
             --output_config 'output_config.yaml'
             -l '$log'
             #for $s in $input.tomo_sets# ${s.offset} ${s.num} #end for
+
         ]]>
     </command>
     <configfiles>
-         <configfile name="inputfiles"><![CDATA[#slurp
-#if str( $input.type_selector ) == "collection"
-#for $s in $input.tomo_sets
-#for $input in $s.inputs
-#echo str($input) + '\t' + $input.element_identifier #
-#end for
-#end for
-#end if
-]]></configfile>
+         <configfile name="inputfiles">
+             <![CDATA[#slurp
+                #if str( $input.type_selector ) == "collection"
+                    #for $s in $input.tomo_sets
+                        #for $input in $s.inputs
+                            #echo str($input) + '\t' + $input.element_identifier #
+                        #end for
+                    #end for
+                #end if
+            ]]>
+        </configfile>
     </configfiles>
     <inputs>
-        <expand macro="common_inputs"/>
-        <section name="thetas" title="Tomography angles">
-            <param name="theta_start" type="float" min="0.0" max="360.0" value="0.0" label="Lower bound"/>
-            <param name="theta_end" type="float" min="0.0" max="360.0" value="0.0" label="Upper bound"/>
-            <param name="num_thetas" type="integer" min="1" value="1" label="Number of angles"/>
-        </section>
-
-        <conditional name="input">
-            <param name="type_selector" type="select" label="Choose the dataset format">
-                <option value="collection">datasets as collections</option>
-                <option value="file">datasets as files</option>
+        <conditional name="config_type">
+            <param name="config_selector" type="select" label="Read config from file or enter manually">
+                <option value="file" selected="true">Read config from file</option>
+                <option value="manual">Manually enter config parameters</option>
             </param>
-            <when value="collection">
-                <repeat name='tomo_sets' title="Tomography image collections">
-                    <param name="inputs" type="data_collection" label="Image file collection"/>
-                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
-                    <param name="num" type="integer" min="1" value="1" label="Number of images"/>
-                </repeat>
-            </when>
             <when value="file">
-                <repeat name='tomo_sets' title="Tomography image datasets">
-                    <conditional name="set_type">
-                        <param name="type_selector" type="select" label="Choose the dataset type">
-                            <option value="tdf">dark field</option>
-                            <option value="tbf">bright field</option>
-                            <option value="data">tomography field</option>
-                        </param>
-                        <when value="tdf"/>
-                        <when value="tbf"/>
-                        <when value="data"/>
-                    </conditional>
-                    <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
-                    <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
-                    <param name="num" type="integer" min="1" value="1" label="Number of images"/>
-                </repeat>
+                <expand macro="common_inputs"/>
+                <param name="num_stack" type="select" label="number of stacks">
+                    <options>
+                        <filter type="data_meta" ref="config" key="num_stack"/>
+                    </options>
+                </param>
+                <section name="thetas" title="Tomography angles">
+                    <param name="theta_start" type="select" label="Lower theta range value (from config)">
+                        <options>
+                            <filter type="data_meta" ref="config" key="theta_start"/>
+                        </options>
+                    </param>
+                    <param name="theta_end" type="select" label="Upper theta range value (from config)">
+                        <options>
+                            <filter type="data_meta" ref="config" key="theta_end"/>
+                        </options>
+                    </param>
+                    <param name="num_thetas" type="integer" min="1" value="1" optional="false" label="Number of angles"/>
+                </section>
+                <conditional name="input">
+                    <param name="type_selector" type="select" label="Choose the dataset format">
+                        <option value="collection">datasets as collections</option>
+                        <option value="file">datasets as files</option>
+                    </param>
+                    <when value="collection">
+                        <repeat name='tomo_sets' title="Tomography image collections">
+                            <param name="inputs" type="data_collection" label="Image file collection"/>
+                            <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                            <param name="ref_height" type="select" label="Reference height (from config)">
+                                <options>
+                                    <filter type="data_meta" ref="config" key="ref_height"/>
+                                </options>
+                            </param>
+                            <!--
+                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                            -->
+                        </repeat>
+                    </when>
+                    <when value="file">
+                        <repeat name='tomo_sets' title="Tomography image datasets">
+                            <conditional name="set_type">
+                                <param name="type_selector" type="select" label="Choose the dataset type">
+                                    <option value="tdf">dark field</option>
+                                    <option value="tbf">bright field</option>
+                                    <option value="data">tomography field</option>
+                                </param>
+                                <when value="tdf"/>
+                                <when value="tbf"/>
+                                <when value="data"/>
+                            </conditional>
+                            <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
+                            <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                            <param name="ref_height" type="select" label="Reference height (from config)">
+                                <options>
+                                    <filter type="data_meta" ref="config" key="ref_height"/>
+                                </options>
+                            </param>
+                            <!--
+                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                            -->
+                        </repeat>
+                    </when>
+                </conditional>
+            </when>
+            <when value="manual">
+                <param name="num_stack" type="integer" min="1" value="1" label="Number of stacks"/>
+                <section name="thetas" title="Tomography angles">
+                    <param name="theta_start" type="float" min="0.0" max="360.0" value="0.0" label="Lower bound"/>
+                    <param name="theta_end" type="float" min="0.0" max="360.0" value="0.0" label="Upper bound"/>
+                    <param name="num_thetas" type="integer" min="1" value="1" label="Number of angles"/>
+                </section>
+                <conditional name="input">
+                    <param name="type_selector" type="select" label="Choose the dataset format">
+                        <option value="collection">datasets as collections</option>
+                        <option value="file">datasets as files</option>
+                    </param>
+                    <when value="collection">
+                        <repeat name='tomo_sets' title="Tomography image collections">
+                            <param name="inputs" type="data_collection" label="Image file collection"/>
+                            <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                            <param name="ref_height" type="float" value="0.0" label="Reference height"/>
+                            <!--
+                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                            -->
+                        </repeat>
+                    </when>
+                    <when value="file">
+                        <repeat name='tomo_sets' title="Tomography image datasets">
+                            <conditional name="set_type">
+                                <param name="type_selector" type="select" label="Choose the dataset type">
+                                    <option value="tdf">dark field</option>
+                                    <option value="tbf">bright field</option>
+                                    <option value="data">tomography field</option>
+                                </param>
+                                <when value="tdf"/>
+                                <when value="tbf"/>
+                                <when value="data"/>
+                            </conditional>
+                            <param name="inputs" type="data" format='h5' optional='false' label="Image file"/>
+                            <param name="offset" type="integer" min="0" value="0" label="Image index offset"/>
+                            <param name="ref_height" type="float" value="0.0" label="Reference height"/>
+                            <!--
+                            <param name="num" type="integer" min="1" value="1" label="Number of images"/>
+                            -->
+                        </repeat>
+                    </when>
+                </conditional>
             </when>
         </conditional>
     </inputs>
@@ -87,8 +168,10 @@
         <data name="output_config" format="yaml" label="Output config setup" from_work_dir="output_config.yaml"/>
         <data name="output_data" format="npz" label="Preprocessed tomography data" from_work_dir="output_data.npz"/>
     </outputs>
-    <help><![CDATA[
-        Preprocess tomography images.
-    ]]></help>
+    <help>
+        <![CDATA[
+            Preprocess tomography images.
+        ]]>
+    </help>
     <expand macro="citations"/>
 </tool>
