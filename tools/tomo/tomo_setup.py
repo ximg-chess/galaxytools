@@ -19,27 +19,26 @@ def __main__():
     # Parse command line arguments
     parser = argparse.ArgumentParser(
             description='Setup tomography reconstruction')
-    parser.add_argument('-i', '--inputfiles',
-            nargs='+',
+    parser.add_argument('--inputconfig',
+            default='inputconfig.txt',
+            help='Input config from tool form')
+    parser.add_argument('--inputfiles',
             default='inputfiles.txt',
-            help='Input file datasets or collections')
+            help='Input file collections')
     parser.add_argument('-c', '--config',
-            help='Input config')
-    parser.add_argument('-l', '--log', 
-            type=argparse.FileType('w'),
-            default=sys.stdout,
-            help='Log file')
-    parser.add_argument('-t', '--inputfile_types',
-            nargs='+',
-            default='collection',
-            help='Input files type (collection or a list of set types: dark, bright, or data)')
+            help='Input config file')
+    parser.add_argument('--num_theta',
+            help='Number of theta angles')
     parser.add_argument('--theta_range',
-            help='Theta range (lower bound, upper bound, number of angles)')
+            help='Theta range (lower bound, upper bound)')
     parser.add_argument('--output_config',
             help='Output config')
     parser.add_argument('--output_data',
             help='Preprocessed tomography data')
-    parser.add_argument('tomo_ranges', metavar='N', type=int, nargs='+')
+    parser.add_argument('-l', '--log', 
+            type=argparse.FileType('w'),
+            default=sys.stdout,
+            help='Log file')
     args = parser.parse_args()
 
     # Starting memory monitoring
@@ -54,72 +53,78 @@ def __main__():
     logging.basicConfig(format=logging_format, level=level, force=True,
             handlers=[logging.StreamHandler()])
 
-    logging.debug(f'config = {args.config}')
-    logging.debug(f'inputfiles = {args.inputfiles}')
-    logging.debug(f'inputfile_types = {args.inputfile_types}')
-    logging.debug(f'log = {args.log}')
+    logging.info(f'config = {args.config}')
+    logging.info(f'num_theta = {args.num_theta}')
+    if args.theta_range is None:
+        logging.info(f'theta_range = {args.theta_range}')
+    else:
+        logging.info(f'theta_range = {args.theta_range.split()}')
+    logging.info(f'output_config = {args.output_config}')
+    logging.info(f'output_data = {args.output_data}')
+    logging.info(f'log = {args.log}')
     logging.debug(f'is log stdout? {args.log is sys.stdout}')
-    logging.debug(f'theta_range = {args.theta_range.split()}')
-    logging.debug(f'output_config = {args.output_config}')
-    logging.debug(f'output_data = {args.output_data}')
-    logging.debug(f'tomoranges = {args.tomo_ranges}')
 
-    # Check input file type
-    if isinstance(args.inputfile_types, list):
-        if len(args.inputfile_types) == 1 and args.inputfile_types[0] == 'collection':
-            if len(args.inputfiles) != 1 or args.inputfiles[0] != 'inputfiles.txt':
-                raise ValueError('Inconsistent inputfiles and inputfile_types:\n'+
-                        f'inputfiles ({type(inputfiles)}):\n{inputfiles}\n'+
-                        f'inputfile_types ({type(inputfile_types)}):\n{inputfile_types}')
-            input_as_collection = True
-        else:
-            if len(args.inputfiles) != len(args.inputfile_types):
-                raise ValueError('Inconsistent inputfiles and inputfile_types:\n'+
-                        f'inputfiles ({type(inputfiles)}):\n{inputfiles}\n'+
-                        f'inputfile_types ({type(inputfile_types)}):\n{inputfile_types}')
-            input_as_collection = False
+    # Read tool config input
+    inputconfig = []
+    with open(args.inputconfig) as f:
+        inputconfig = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+    assert(len(inputconfig) >= 6)
+    config_type = inputconfig[0]
+    input_type = inputconfig[1]
+    num_stack = int(inputconfig[2])
+    stack_types = [x.strip() for x in inputconfig[3].split()]
+    num_imgs = [int(x.strip()) for x in inputconfig[4].split()]
+    img_offsets = [int(x.strip()) for x in inputconfig[5].split()]
+    if config_type == 'config_manual':
+        assert(len(inputconfig) == 7)
+        ref_heights = [float(x.strip()) for x in inputconfig[6].split()]
     else:
-        raise ValueError(f'Invalid args.inputfile_types: {args.inputfile_types} '+
-                f'{type(args.inputfile_types)}')
+        ref_heights = None
+    logging.info(f'config_type = {config_type} {type(config_type)}')
+    logging.info(f'input_type = {input_type} {type(input_type)}')
+    logging.info(f'num_stack = {num_stack} {type(num_stack)}')
+    logging.info(f'stack_types = {stack_types} {type(stack_types)}')
+    logging.info(f'num_imgs = {num_imgs} {type(num_imgs)}')
+    logging.info(f'img_offsets = {img_offsets} {type(img_offsets)}')
+    logging.info(f'ref_heights = {ref_heights} {type(ref_heights)}')
 
+    # Read input files and collect data files info
     datasets = []
-    collections = []
-    if input_as_collection:
-        # Read input file collections and collect data files info
-        with open(args.inputfiles[0]) as cf:
-            for line in cf:
-                if not line.strip() or line.startswith('#'):
-                    continue
-                fields = [x.strip() for x in line.split('\t')]
-                filepath = fields[0]
-                element_identifier = fields[1] if len(fields) > 1 else fields[0].split('/')[-1]
-                datasets.append({'element_identifier' : fields[1], 'filepath' : filepath})
-        logging.debug(f'datasets:\n{datasets}')
+    with open(args.inputfiles) as f:
+        for line in f:
+            if not line.strip() or line.startswith('#'):
+                continue
+            fields = [x.strip() for x in line.split('\t')]
+            filepath = fields[0]
+            element_identifier = fields[1] if len(fields) > 1 else fields[0].split('/')[-1]
+            datasets.append({'element_identifier' : fields[1], 'filepath' : filepath})
+    logging.debug(f'datasets:\n{datasets}')
+    print(f'datasets:\n{datasets}')
 
-        # Read and sort data files
-        for dataset in datasets:
-            element_identifier = [x.strip() for x in dataset['element_identifier'].split('_')]
-            if len(element_identifier) > 1:
-                name = element_identifier[0]
+    # Read and sort data files
+    collections = []
+    for dataset in datasets:
+        element_identifier = [x.strip() for x in dataset['element_identifier'].split('_')]
+        if len(element_identifier) > 1:
+            name = element_identifier[0]
+        else:
+            name = 'other'
+        filepath = dataset['filepath']
+        print(f'element_identifier = {element_identifier} {len(element_identifier)}')
+        print(f'name = {name}')
+        print(f'filepath = {filepath}')
+        if not len(collections):
+            collections = [{'name' : name, 'filepaths' : [filepath]}]
+        else:
+            collection = [c for c in collections if c['name'] == name]
+            if len(collection):
+                collection[0]['filepaths'].append(filepath)
             else:
-                name = 'other'
-            filepath = dataset['filepath']
-            if not len(collections):
-                collections = [{'name' : name, 'filepaths' : [filepath]}]
-            else:
-                collection = [c for c in collections if c['name'] == name]
-                if len(collection):
-                    collection[0]['filepaths'].append(filepath)
-                else:
-                    collection = {'name' : name, 'filepaths' : [filepath]}
-                    collections.append(collection)
-    else:
-        # Collect input file datasets info
-        collections = [{'name' : filetype, 'filepaths' : [filepath]} 
-                for filetype, filepath in zip(args.inputfile_types, args.inputfiles)]
+                collection = {'name' : name, 'filepaths' : [filepath]}
+                collections.append(collection)
     logging.debug(f'collections:\n{collections}')
-    if len(args.tomo_ranges) != 2*len(collections):
-        raise ValueError('Inconsistent tomo ranges size.')
+    print(f'collections:\n{collections}')
+    return
 
     # Instantiate Tomo object
     tomo = Tomo(config_file=args.config, config_out=args.output_config, log_level=log_level,
@@ -171,12 +176,7 @@ def __main__():
     for stack in stack_info['stacks']:
         stack['img_offset'] = args.tomo_ranges[2*num_collections]
         stack['num'] = args.tomo_ranges[2*num_collections+1]
-        if input_as_collection:
-            tomo_files = [c['filepaths'] for c in collections
-                if c['name'] == f'set{stack["index"]}']
-        else:
-            assert(collections[num_collections]['name'] == 'data')
-            tomo_files = [collections[num_collections]['filepaths']]
+        tomo_files = [c['filepaths'] for c in collections if c['name'] == f'set{stack["index"]}']
         if len(tomo_files) != 1 or len(tomo_files[0]) < 1:
             exit(f'Unable to obtain tomography images for set {stack["index"]}')
         tomo_stack_files.append(tomo_files[0])
