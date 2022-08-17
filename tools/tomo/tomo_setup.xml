@@ -16,6 +16,7 @@
                 -c '$config'
                 --num_theta '$config_type.num_theta'
             #else
+                --detector '$config_type.detector.num_row $config_type.detector.num_column $config_type.detector.pixel_size'
                 --num_theta '$config_type.thetas.num_theta'
                 --theta_range '$config_type.thetas.theta_start $config_type.thetas.theta_end'
             #end if
@@ -72,7 +73,7 @@
                     #end for
                 #else
                     #for $s in $config_type.input.tomo_sets
-                        #echo str($s.inputs) + '\t' + str($s.set_type.set_selector) #
+                        #echo str($s.inputs) #
                     #end for
                 #end if
              ]]>
@@ -145,6 +146,11 @@
                     <param name="num_theta" type="integer" min="1" value="0" optional="false" label="Number of angles"/>
                     <param name="theta_start" type="float" min="0.0" max="360.0" value="0.0" optional="false" label="Start angle"/>
                     <param name="theta_end" type="float" min="0.0" max="360.0" value="180.0" optional="false" label="End angle"/>
+                </section>
+                <section name="detector" title="Detector parameters">
+                    <param name="num_row" type="integer" min="1" value="0" optional="false" label="Number of pixel rows"/>
+                    <param name="num_column" type="integer" min="1" value="0" optional="false" label="Number of pixel columns"/>
+                    <param name="pixel_size" type="float" min="0.0" value="0.0" optional="false" label="Pixel size (corrected for lens magnification)(RV: needs unit)"/>
                 </section>
                 <conditional name="input">
                     <param name="type_selector" type="select" label="Choose the dataset format">

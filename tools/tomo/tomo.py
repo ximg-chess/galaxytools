@@ -45,7 +45,7 @@ from fit import Fit
 from general import illegal_value, is_int, is_num, is_index_range, get_trailing_int, \
         input_int, input_num, input_yesno, input_menu, findImageFiles, loadImageStack, clearPlot, \
         draw_mask_1d, quickPlot, clearImshow, quickImshow, combine_tiffs_in_h5, Config
-from general import selectArrayBounds,selectImageRange, selectImageBounds
+from general import selectImageRange, selectImageBounds
 
 # the following tomopy routines don't run with more than 24 cores on Galaxy-Dev
 #   - tomopy.find_center_vo
@@ -429,14 +429,8 @@ class Tomo:
             raise OSError(f'Invalid config_file input {config_file} {type(config_file)}')
         if config_dict is not None and not isinstance(config_dict, dict):
             raise ValueError(f'Invalid config_dict input {config_dict} {type(config_dict)}')
-        if config_out is not None:
-            if isinstance(config_out, str):
-                if isinstance(log_stream, str):
-                    path = os.path.split(log_stream)[0]
-                    if path and not os.path.isdir(path):
-                        raise OSError(f'Invalid log_stream path')
-            else:
-                raise OSError(f'Invalid config_out input {config_out} {type(config_out)}')
+        if self.config_out is not None and not isinstance(self.config_out, str):
+            raise OSError(f'Invalid config_out input {self.config_out} {type(self.config_out)}')
         if not os.path.isdir(output_folder):
             os.mkdir(os.path.abspath(output_folder))
         if isinstance(log_stream, str):
@@ -447,8 +441,8 @@ class Tomo:
                 log_stream = f'{output_folder}/{log_stream}'
         if not isinstance(galaxy_flag, bool):
             raise ValueError(f'Invalid galaxy_flag input {galaxy_flag} {type(galaxy_flag)}')
-        if not isinstance(test_mode, bool):
-            raise ValueError(f'Invalid test_mode input {test_mode} {type(test_mode)}')
+        if not isinstance(self.test_mode, bool):
+            raise ValueError(f'Invalid test_mode input {self.test_mode} {type(self.test_mode)}')
         if not isinstance(num_core, int) or num_core < -1 or num_core == 0:
             raise ValueError(f'Invalid num_core input {num_core} {type(num_core)}')
         if num_core == -1:
@@ -665,11 +659,16 @@ class Tomo:
         self.tdf = np.median(tdf_stack, axis=0)
         del tdf_stack
 
-        # RV make input of some kind (not always needed)
-        tdf_cutoff = 21
-        self.tdf[self.tdf > tdf_cutoff] = np.nan
+        # Remove dark field intensities above the cutoff
+        tdf_cutoff = dark_field.get('cutoff')
+        if tdf_cutoff is not None:
+            if not is_num(tdf_cutoff, 0):
+                logging.warning(f'Ignoring illegal value of tdf_cutoff {tdf_cutoff}')
+            else:
+                self.tdf[self.tdf > tdf_cutoff] = np.nan
+                logging.debug(f'tdf_cutoff = {tdf_cutoff}')
+
         tdf_mean = np.nanmean(self.tdf)
-        logging.debug(f'tdf_cutoff = {tdf_cutoff}')
         logging.debug(f'tdf_mean = {tdf_mean}')
         np.nan_to_num(self.tdf, copy=False, nan=tdf_mean, posinf=tdf_mean, neginf=0.)
         if self.galaxy_flag:
@@ -1242,23 +1241,44 @@ class Tomo:
         logging.debug(f'inverting sinogram took {time()-t0:.2f} seconds!')
         del sinogram
 
-        # Removing ring artifacts
-        # RV parameters for the denoise, gaussian, and ring removal will be different for different feature sizes
+        # Performing Gaussian filtering and removing ring artifacts
+        recon_parameters = self.config.get('recon_parameters')
+        if recon_parameters is None:
+            sigma = 1.0
+            ring_width = 15
+        else:
+            sigma = recon_parameters.get('gaussian_sigma', 1.0)
+            if not is_num(sigma, 0.0):
+                logging.warning(f'Illegal gaussian_sigma ({sigma}) in _reconstructOnePlane, '+
+                        'set to a default value of 1.0')
+                sigma = 1.0
+            ring_width = recon_parameters.get('ring_width', 15)
+            if not is_int(ring_width, 0):
+                logging.warning(f'Illegal ring_width ({ring_width}) in _reconstructOnePlane, '+
+                        'set to a default value of 15')
+                ring_width = 15
         t0 = time()
-#        recon_sinogram = filters.gaussian(recon_sinogram, 3.0)
-        recon_sinogram = spi.gaussian_filter(recon_sinogram, 0.5)
+        recon_sinogram = spi.gaussian_filter(recon_sinogram, sigma, mode='nearest')
         recon_clean = np.expand_dims(recon_sinogram, axis=0)
         del recon_sinogram
         t1 = time()
         logging.debug(f'running remove_ring on {num_core} cores ...')
-        recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=17, ncore=num_core)
+        recon_clean = tomopy.misc.corr.remove_ring(recon_clean, rwidth=ring_width, ncore=num_core)
         logging.debug(f'... remove_ring took {time()-t1:.2f} seconds!')
         logging.debug(f'filtering and removing ring artifact took {time()-t0:.2f} seconds!')
         return recon_clean
 
-    def _plotEdgesOnePlane(self, recon_plane, title, path=None, weight=0.001):
-        # RV parameters for the denoise, gaussian, and ring removal will be different for different feature sizes
-        edges = denoise_tv_chambolle(recon_plane, weight = weight)
+    def _plotEdgesOnePlane(self, recon_plane, title, path=None):
+        vis_parameters = self.config.get('vis_parameters')
+        if vis_parameters is None:
+            weight = 0.1
+        else:
+            weight = vis_parameters.get('denoise_weight', 0.1)
+            if not is_num(weight, 0.0):
+                logging.warning(f'Illegal weight ({weight}) in _plotEdgesOnePlane, '+
+                        'set to a default value of 0.1')
+                weight = 0.1
+        edges = denoise_tv_chambolle(recon_plane, weight=weight)
         vmax = np.max(edges[0,:,:])
         vmin = -vmax
         if self.galaxy_flag:
@@ -1395,9 +1415,8 @@ class Tomo:
             center_offset = input_num('    Enter chosen center offset', -center, center)
         return float(center_offset)
 
-    def _reconstructOneTomoStack(self, tomo_stack, thetas, row_bounds=None,
-            center_offsets=[], sigma=0.1, rwidth=30, num_core=1, algorithm='gridrec',
-            run_secondary_sirt=False, secondary_iter=100):
+    def _reconstructOneTomoStack(self, tomo_stack, thetas, row_bounds=None, center_offsets=[],
+            num_core=1, algorithm='gridrec'):
         """reconstruct a single tomography stack.
         """
         # stack order: row,theta,column
@@ -1425,6 +1444,29 @@ class Tomo:
                 raise ValueError('center_offsets dimension mismatch in reconstructOneTomoStack')
             centers = center_offsets
         centers += tomo_stack.shape[2]/2
+
+        # Removing horizontal stripe and ring artifacts and perform secondary iterations
+        recon_parameters = self.config.get('recon_parameters')
+        if recon_parameters is None:
+            sigma = 2.0
+            secondary_iters = 0
+            ring_width = 15
+        else:
+            sigma = recon_parameters.get('stripe_fw_sigma', 2.0)
+            if not is_num(sigma, 0):
+                logging.warning(f'Illegal stripe_fw_sigma ({sigma}) in '+
+                        '_reconstructOneTomoStack, set to a default value of 2.0')
+                ring_width = 15
+            secondary_iters = recon_parameters.get('secondary_iters', 0)
+            if not is_int(secondary_iters, 0):
+                logging.warning(f'Illegal secondary_iters ({secondary_iters}) in '+
+                        '_reconstructOneTomoStack, set to a default value of 0 (skip them)')
+                ring_width = 0
+            ring_width = recon_parameters.get('ring_width', 15)
+            if not is_int(ring_width, 0):
+                logging.warning(f'Illegal ring_width ({ring_width}) in _reconstructOnePlane, '+
+                        'set to a default value of 15')
+                ring_width = 15
         if True:
             t0 = time()
             if num_core > num_core_tomopy_limit:
@@ -1445,16 +1487,16 @@ class Tomo:
         tomo_recon_stack = tomopy.recon(tomo_stack, thetas, centers, sinogram_order=True,
                 algorithm=algorithm, ncore=num_core)
         logging.debug(f'... recon took {time()-t0:.2f} seconds!')
-        if run_secondary_sirt and secondary_iter > 0:
-            logging.debug(f'running {secondary_iter} secondary iterations')
-            #options = {'method':'SIRT_CUDA', 'proj_type':'cuda', 'num_iter':secondary_iter}
+        if secondary_iters > 0:
+            logging.debug(f'running {secondary_iters} secondary iterations')
+            #options = {'method':'SIRT_CUDA', 'proj_type':'cuda', 'num_iter':secondary_iters}
             #RV: doesn't work for me: "Error: CUDA error 803: system has unsupported display driver /
             #                          cuda driver combination."
-            #options = {'method':'SIRT', 'proj_type':'linear', 'MinConstraint': 0, 'num_iter':secondary_iter}
+            #options = {'method':'SIRT', 'proj_type':'linear', 'MinConstraint': 0, 'num_iter':secondary_iters}
             #SIRT did not finish while running overnight
-            #options = {'method':'SART', 'proj_type':'linear', 'num_iter':secondary_iter}
+            #options = {'method':'SART', 'proj_type':'linear', 'num_iter':secondary_iters}
             options = {'method':'SART', 'proj_type':'linear', 'MinConstraint': 0,
-                    'num_iter':secondary_iter}
+                    'num_iter':secondary_iters}
             t0 = time()
             logging.debug(f'running recon on {num_core} cores ...')
             tomo_recon_stack  = tomopy.recon(tomo_stack, thetas, centers,
@@ -1464,7 +1506,7 @@ class Tomo:
         if True:
             t0 = time()
             logging.debug(f'running remove_ring on {num_core} cores ...')
-            tomopy.misc.corr.remove_ring(tomo_recon_stack, rwidth=rwidth, out=tomo_recon_stack,
+            tomopy.misc.corr.remove_ring(tomo_recon_stack, rwidth=ring_width, out=tomo_recon_stack,
                     ncore=num_core)
             logging.debug(f'... remove_ring took {time()-t0:.2f} seconds!')
         return tomo_recon_stack
@@ -1623,10 +1665,14 @@ class Tomo:
             tdf_files, tbf_files, tomo_stack_files = self.findImageFiles()
             if not self.is_valid:
                 return
+            if self.test_mode:
+                required = True
+            else:
+                required = False
             for i,stack in enumerate(stacks):
                 if not self.tomo_stacks[i].size and stack.get('preprocessed', False):
                     self.tomo_stacks[i], available_stacks[i] = \
-                            self._loadTomo('red stack', stack['index'])
+                            self._loadTomo('red stack', stack['index'], required=required)
 
         # Preprocess any unloaded stacks
         if False in available_stacks:
@@ -1928,7 +1974,7 @@ class Tomo:
                 if use_row:
                     center_offset = find_center.get('upper_center_offset')
                     if is_num(center_offset):
-                        use_center = input_yesrnNo('Current upper center offset = '+
+                        use_center = input_yesno('Current upper center offset = '+
                                 f'{center_offset}, use this value (y/n)?', 'y')
         if not use_center:
             if not use_row:
@@ -2128,35 +2174,46 @@ class Tomo:
             t0 = time()
             logging.debug(f'running _reconstructOneTomoStack on {num_core} cores ...')
             self.tomo_recon_stacks[i]= self._reconstructOneTomoStack(self.tomo_stacks[i],
-                    thetas, center_offsets=center_offsets, sigma=0.1, num_core=num_core,
-                    algorithm='gridrec', run_secondary_sirt=True, secondary_iter=25)
+                    thetas, center_offsets=center_offsets, num_core=num_core,
+                    algorithm='gridrec')
             logging.debug(f'... _reconstructOneTomoStack took {time()-t0:.2f} seconds!')
             logging.info(f'Reconstruction of stack {index} took {time()-t0:.2f} seconds!')
             if self.galaxy_flag:
-                x_slice = int(self.tomo_stacks[i].shape[0]/2) 
+                x_slice = int(self.tomo_recon_stacks[i].shape[0]/2) 
                 title = f'{basetitle} {index} xslice{x_slice}'
                 quickImshow(self.tomo_recon_stacks[i][x_slice,:,:], title=title,
                         path='center_slice_pngs', save_fig=True, save_only=True)
-                y_slice = int(self.tomo_stacks[i].shape[0]/2) 
+                y_slice = int(self.tomo_recon_stacks[i].shape[1]/2) 
                 title = f'{basetitle} {index} yslice{y_slice}'
                 quickImshow(self.tomo_recon_stacks[i][:,y_slice,:], title=title,
                         path='center_slice_pngs', save_fig=True, save_only=True)
-                z_slice = int(self.tomo_stacks[i].shape[0]/2) 
+                z_slice = int(self.tomo_recon_stacks[i].shape[2]/2) 
                 title = f'{basetitle} {index} zslice{z_slice}'
                 quickImshow(self.tomo_recon_stacks[i][:,:,z_slice], title=title,
                         path='center_slice_pngs', save_fig=True, save_only=True)
-            elif not self.test_mode:
-                x_slice = int(self.tomo_stacks[i].shape[0]/2) 
+            else:
+                x_slice = int(self.tomo_recon_stacks[i].shape[0]/2) 
                 title = f'{basetitle} {index} xslice{x_slice}'
                 quickImshow(self.tomo_recon_stacks[i][x_slice,:,:], title=title,
                         path=self.output_folder, save_fig=self.save_plots,
                         save_only=self.save_plots_only)
-                quickPlot(self.tomo_recon_stacks[i]
-                        [x_slice,int(self.tomo_recon_stacks[i].shape[2]/2),:],
-                        title=f'{title} cut{int(self.tomo_recon_stacks[i].shape[2]/2)}',
+                y_slice = int(self.tomo_recon_stacks[i].shape[1]/2) 
+                title = f'{basetitle} {index} yslice{y_slice}'
+                quickImshow(self.tomo_recon_stacks[i][:,y_slice,:], title=title,
                         path=self.output_folder, save_fig=self.save_plots,
                         save_only=self.save_plots_only)
-                self._saveTomo('recon stack', self.tomo_recon_stacks[i], index)
+                z_slice = int(self.tomo_recon_stacks[i].shape[2]/2) 
+                title = f'{basetitle} {index} zslice{z_slice}'
+                quickImshow(self.tomo_recon_stacks[i][:,:,z_slice], title=title,
+                        path=self.output_folder, save_fig=self.save_plots,
+                        save_only=self.save_plots_only)
+#                quickPlot(self.tomo_recon_stacks[i]
+#                        [x_slice,int(self.tomo_recon_stacks[i].shape[1]/2),:],
+#                        title=f'{title} cut{int(self.tomo_recon_stacks[i].shape[1]/2)}',
+#                        path=self.output_folder, save_fig=self.save_plots,
+#                        save_only=self.save_plots_only)
+                if not self.test_mode:
+                    self._saveTomo('recon stack', self.tomo_recon_stacks[i], index)
             self.tomo_stacks[i] = np.array([])
 
             # Update config and save to file
@@ -2281,14 +2338,35 @@ class Tomo:
                     ([x_bounds[1]-1, x_bounds[1]-1], [tomosum_min, tomosum_max], 'r-'),
                     title=f'recon stack sum yz', path='combine_pngs', save_fig=True, save_only=True)
         else:
+            x_bounds = None
+            change_x_bounds = 'y'
             if combine_stacks and 'x_bounds' in combine_stacks:
                 x_bounds = combine_stacks['x_bounds']
-                if not is_index_range(x_bounds, 0, tomosum.size):
+                if is_index_range(x_bounds, 0, tomosum.size):
+                    if not self.test_mode:
+                        quickPlot(tomosum, vlines=x_bounds, title='recon stack sum yz')
+                        print(f'x_bounds = {x_bounds} (lower bound inclusive, upper bound '+
+                                'exclusive)')
+                    change_x_bounds = 'n'
+                else:
                     illegal_value(x_bounds, 'combine_stacks:x_bounds', 'config file')
-                elif not self.test_mode:
+                    x_bounds = None
+            if self.test_mode:
+                if x_bounds is None:
+                    x_bounds = [0, tomosum.size]
+            else:
+                if not input_yesno('\nDo you want to change the image x-bounds (y/n)?',
+                        change_x_bounds):
+                    if x_bounds is None:
+                        x_bounds = [0, tomosum.size]
+                else:
                     accept = False
+                    if x_bounds is None:
+                        index_ranges = None
+                    else:
+                        index_ranges = [x_bounds]
                     while not accept:
-                        mask, x_bounds = draw_mask_1d(tomosum, current_index_ranges=x_bounds,
+                        mask, x_bounds = draw_mask_1d(tomosum, current_index_ranges=index_ranges,
                                 title='select x data range', legend='recon stack sum yz')
                         while len(x_bounds) != 1:
                             print('Please select exactly one continuous range')
@@ -2299,30 +2377,9 @@ class Tomo:
                         print(f'x_bounds = {x_bounds} (lower bound inclusive, upper bound '+
                                 'exclusive)')
                         accept = input_yesno('Accept these bounds (y/n)?', 'y')
-                        if not accept:
-                            x_bounds = None
-            else:
-                if not input_yesno('\nDo you want to change the image x-bounds (y/n)?', 'n'):
-                    x_bounds = [0, tomosum.size]
-                else:
-                    accept = False
-                    while not accept:
-                        mask, x_bounds = draw_mask_1d(tomosum, title='select x data range',
-                                legend='recon stack sum yz')
-                        while len(x_bounds) != 1:
-                            print('Please select exactly one continuous range')
-                            mask, x_bounds = draw_mask_1d(tomosum, title='select x data range',
-                                    legend='recon stack sum yz')
-                        x_bounds = list(x_bounds[0])
-                        quickPlot(tomosum, vlines=x_bounds, title='recon stack sum yz')
-                        print(f'x_bounds = {x_bounds} (lower bound inclusive, upper bound '+
-                                'exclusive)')
-                        accept = input_yesno('Accept these bounds (y/n)?', 'y')
-            if False and self.test_mode:
-                np.savetxt(f'{self.output_folder}/recon_stack_sum_yz.txt',
-                        tomosum[x_bounds[0]:x_bounds[1]], fmt='%.6e')
             if self.save_plots_only:
                 clearPlot('recon stack sum yz')
+        logging.info(f'x_bounds = {x_bounds}')
 
         # Selecting y bounds (in xz-plane)
         tomosum = 0
@@ -2343,48 +2400,48 @@ class Tomo:
                     ([y_bounds[1]-1, y_bounds[1]-1], [tomosum_min, tomosum_max], 'r-'),
                     title=f'recon stack sum xz', path='combine_pngs', save_fig=True, save_only=True)
         else:
+            y_bounds = None
+            change_y_bounds = 'y'
             if combine_stacks and 'y_bounds' in combine_stacks:
                 y_bounds = combine_stacks['y_bounds']
-                if not is_index_range(y_bounds, 0, tomosum.size):
-                    illegal_value(y_bounds, 'combine_stacks:y_bounds', 'config file')
-                elif not self.test_mode:
-                    accept = False
-                    while not accept:
-                        mask, y_bounds = draw_mask_1d(tomosum, current_index_ranges=y_bounds,
-                                title='select y data range', legend='recon stack sum xz')
-                        while len(y_bounds) != 1:
-                            print('Please select exactly one continuous range')
-                            mask, y_bounds = draw_mask_1d(tomosum, title='select y data range',
-                                    legend='recon stack sum xz')
-                        y_bounds = list(y_bounds[0])
+                if is_index_range(y_bounds, 0, tomosum.size):
+                    if not self.test_mode:
                         quickPlot(tomosum, vlines=y_bounds, title='recon stack sum xz')
                         print(f'y_bounds = {y_bounds} (lower bound inclusive, upper bound '+
                                 'exclusive)')
-                        accept = input_yesno('Accept these bounds (y/n)?', 'y')
-                        if not accept:
-                            y_bounds = None
-            else:
-                if not input_yesno('\nDo you want to change the image y-bounds (y/n)?', 'n'):
+                    change_y_bounds = 'n'
+                else:
+                    illegal_value(y_bounds, 'combine_stacks:y_bounds', 'config file')
+                    y_bounds = None
+            if self.test_mode:
+                if y_bounds is None:
                     y_bounds = [0, tomosum.size]
+            else:
+                if not input_yesno('\nDo you want to change the image y-bounds (y/n)?',
+                        change_y_bounds):
+                    if y_bounds is None:
+                        y_bounds = [0, tomosum.size]
                 else:
                     accept = False
+                    if y_bounds is None:
+                        index_ranges = None
+                    else:
+                        index_ranges = [y_bounds]
                     while not accept:
-                        mask, y_bounds = draw_mask_1d(tomosum, title='select y data range',
-                                legend='recon stack sum xz')
+                        mask, y_bounds = draw_mask_1d(tomosum, current_index_ranges=index_ranges,
+                                title='select x data range', legend='recon stack sum xz')
                         while len(y_bounds) != 1:
                             print('Please select exactly one continuous range')
-                            mask, y_bounds = draw_mask_1d(tomosum, title='select y data range',
+                            mask, y_bounds = draw_mask_1d(tomosum, title='select x data range',
                                     legend='recon stack sum xz')
                         y_bounds = list(y_bounds[0])
                         quickPlot(tomosum, vlines=y_bounds, title='recon stack sum xz')
                         print(f'y_bounds = {y_bounds} (lower bound inclusive, upper bound '+
                                 'exclusive)')
                         accept = input_yesno('Accept these bounds (y/n)?', 'y')
-            if False and self.test_mode:
-                np.savetxt(f'{self.output_folder}/recon_stack_sum_xz.txt',
-                        tomosum[y_bounds[0]:y_bounds[1]], fmt='%.6e')
             if self.save_plots_only:
                 clearPlot('recon stack sum xz')
+        logging.info(f'y_bounds = {y_bounds}')
 
         # Combine reconstructed tomography stacks
         logging.info(f'Combining reconstructed stacks ...')
@@ -2408,36 +2465,8 @@ class Tomo:
         logging.info(f'... done in {time()-t0:.2f} seconds!')
         combined_stacks = [stack['index'] for stack in stacks]
 
-        # Wrap up if in test_mode
-        tomosum = np.sum(tomo_recon_combined, axis=(1,2))
-        if self.test_mode:
-            zoom_perc = self.config['preprocess'].get('zoom_perc', 100)
-            filename = 'recon combined sum xy'
-            if zoom_perc is None or zoom_perc == 100:
-                filename += ' fullres.dat'
-            else:
-                filename += f' {zoom_perc}p.dat'
-            quickPlot(tomosum, title='recon combined sum xy',
-                    path=self.output_folder, save_fig=self.save_plots,
-                    save_only=self.save_plots_only)
-            if False:
-                np.savetxt(f'{self.output_folder}/recon_combined_sum_xy.txt',
-                        tomosum, fmt='%.6e')
-            np.savetxt(f'{self.output_folder}/recon_combined.txt',
-                    tomo_recon_combined[int(tomosum.size/2),:,:], fmt='%.6e')
-
-            # Update config and save to file
-            if combine_stacks:
-                combine_stacks['x_bounds'] = x_bounds
-                combine_stacks['y_bounds'] = y_bounds
-                combine_stacks['stacks'] = combined_stacks
-            else:
-                self.config['combine_stacks'] = {'x_bounds' : x_bounds, 'y_bounds' : y_bounds,
-                        'stacks' : combined_stacks}
-            self.cf.saveFile(self.config_out)
-            return
-
         # Selecting z bounds (in xy-plane)
+        tomosum = np.sum(tomo_recon_combined, axis=(1,2))
         if self.galaxy_flag:
             if z_bounds[0] == -1:
                 z_bounds[0] = 0
@@ -2452,25 +2481,45 @@ class Tomo:
                     ([z_bounds[1]-1, z_bounds[1]-1], [tomosum_min, tomosum_max], 'r-'),
                     title=f'recon stack sum xy', path='combine_pngs', save_fig=True, save_only=True)
         else:
-            if not input_yesno('\nDo you want to change the image z-bounds (y/n)?', 'n'):
-                z_bounds = [0, tomosum.size]
+            z_bounds = None
+            if combine_stacks and 'z_bounds' in combine_stacks:
+                z_bounds = combine_stacks['z_bounds']
+                if is_index_range(z_bounds, 0, tomosum.size):
+                    if not self.test_mode:
+                        quickPlot(tomosum, vlines=z_bounds, title='recon stack sum xy')
+                        print(f'z_bounds = {z_bounds} (lower bound inclusive, upper bound '+
+                                'exclusive)')
+                else:
+                    illegal_value(z_bounds, 'combine_stacks:z_bounds', 'config file')
+                    z_bounds = None
+            if self.test_mode:
+                if z_bounds is None:
+                    z_bounds = [0, tomosum.size]
             else:
-                accept = False
-                while not accept:
-                    mask, z_bounds = draw_mask_1d(tomosum, title='select z data range',
-                            legend='recon stack sum xy')
-                    while len(z_bounds) != 1:
-                        print('Please select exactly one continuous range')
-                        mask, z_bounds = draw_mask_1d(tomosum, title='select z data range',
-                                legend='recon stack sum xy')
-                    z_bounds = list(z_bounds[0])
-                    quickPlot(tomosum, vlines=z_bounds, title='recon stack sum xy')
-                    print(f'z_bounds = {z_bounds} (lower bound inclusive, upper bound exclusive)')
-                    accept = input_yesno('Accept these bounds (y/n)?', 'y')
+                if not input_yesno('\nDo you want to change the image z-bounds (y/n)?', 'n'):
+                    if z_bounds is None:
+                        z_bounds = [0, tomosum.size]
+                else:
+                    accept = False
+                    if z_bounds is None:
+                        index_ranges = None
+                    else:
+                        index_ranges = [z_bounds]
+                    while not accept:
+                        mask, z_bounds = draw_mask_1d(tomosum, current_index_ranges=index_ranges,
+                                title='select x data range', legend='recon stack sum xy')
+                        while len(z_bounds) != 1:
+                            print('Please select exactly one continuous range')
+                            mask, z_bounds = draw_mask_1d(tomosum, title='select x data range',
+                                    legend='recon stack sum xy')
+                        z_bounds = list(z_bounds[0])
+                        quickPlot(tomosum, vlines=z_bounds, title='recon stack sum xy')
+                        print(f'z_bounds = {z_bounds} (lower bound inclusive, upper bound '+
+                                'exclusive)')
+                        accept = input_yesno('Accept these bounds (y/n)?', 'y')
             if self.save_plots_only:
-                clearPlot('recon combined sum xy')
-        if z_bounds[0] != 0 or z_bounds[1] != tomosum.size:
-            tomo_recon_combined = tomo_recon_combined[z_bounds[0]:z_bounds[1],:,:]
+                clearPlot('recon stack sum xy')
+        logging.info(f'z_bounds = {z_bounds}')
 
         # Plot center slices
         if self.galaxy_flag:
@@ -2491,13 +2540,25 @@ class Tomo:
                 title=f'recon combined zslice{int(tomo_recon_combined.shape[2]/2)}',
                 path=path, save_fig=save_fig, save_only=save_only)
 
-        # Save combined reconstructed tomography stack to file
+        # Save combined reconstructed tomography stack or test mode data to file
         if self.galaxy_flag:
             t0 = time()
             output_name = galaxy_param['output_name']
             logging.info(f'Saving combined reconstructed tomography stack to {output_name} ...')
             np.save(output_name, tomo_recon_combined)
             logging.info(f'... done in {time()-t0:.2f} seconds!')
+        elif self.test_mode:
+            zoom_perc = self.config['preprocess'].get('zoom_perc', 100)
+            filename = 'recon combined sum xy'
+            if zoom_perc is None or zoom_perc == 100:
+                filename += ' fullres.dat'
+            else:
+                filename += f' {zoom_perc}p.dat'
+            quickPlot(tomosum, title='recon combined sum xy',
+                    path=self.output_folder, save_fig=self.save_plots,
+                    save_only=self.save_plots_only)
+            np.savetxt(f'{self.output_folder}/recon_combined.txt',
+                    tomo_recon_combined[int(tomosum.size/2),:,:], fmt='%.6e')
         else:
             base_name = 'recon combined'
             for stack in stacks:
