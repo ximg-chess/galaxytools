@@ -127,7 +127,6 @@ def __main__():
             filepath = fields[0]
             element_identifier = fields[1] if len(fields) > 1 else fields[0].split('/')[-1]
             datasets.append({'element_identifier' : element_identifier, 'filepath' : filepath})
-    print(f'datasets:\n{datasets}')
     logging.debug(f'datasets:\n{datasets}')
     if input_type == 'files' and len(datasets) != num_stack:
         raise ValueError('Inconsistent number of input files provided.')
@@ -160,7 +159,6 @@ def __main__():
             else:
                 collection = {'name' : name, 'filepaths' : [filepath]}
                 collections.append(collection)
-    print(f'collections:\n{collections}')
     logging.debug(f'collections:\n{collections}')
 
     # Instantiate Tomo object

@@ -41,7 +41,6 @@ except:
 
 from detector import TomoDetectorConfig
 from fit import Fit
-#from msnctools.general import illegal_value, is_int, is_num, is_index_range, get_trailing_int, \
 from general import illegal_value, is_int, is_num, is_index_range, get_trailing_int, \
         input_int, input_num, input_yesno, input_menu, findImageFiles, loadImageStack, clearPlot, \
         draw_mask_1d, quickPlot, clearImshow, quickImshow, combine_tiffs_in_h5, Config
