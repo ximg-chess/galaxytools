@@ -23,10 +23,6 @@ try:
     from matplotlib.widgets import Button
 except:
     pass
-try:
-    import pyinputplus as pyip
-except:
-    pass
 
 from ast import literal_eval
 from copy import deepcopy
@@ -292,7 +288,7 @@ def get_trailing_int(string):
     else:
         return int(mo.group())
 
-def input_int(s=None, v_min=None, v_max=None, default=None):
+def input_int(s=None, v_min=None, v_max=None, default=None, inset=None):
     if default is not None:
         if not isinstance(default, int):
             illegal_value(default, 'default', 'input_int') 
@@ -302,14 +298,14 @@ def input_int(s=None, v_min=None, v_max=None, default=None):
         default_string = ''
     if v_min is not None:
         if not isinstance(v_min, int):
-            illegal_value(vmin, 'vmin', 'input_int') 
+            illegal_value(v_min, 'v_min', 'input_int') 
             return None
         if default is not None and default < v_min:
             logging.error('Illegal v_min, default combination ({v_min}, {default})')
             return None
     if v_max is not None:
         if not isinstance(v_max, int):
-            illegal_value(vmax, 'vmax', 'input_int') 
+            illegal_value(v_max, 'v_max', 'input_int') 
             return None
         if v_min is not None and v_min > v_max:
             logging.error(f'Illegal v_min, v_max combination ({v_min}, {v_max})')
@@ -317,8 +313,13 @@ def input_int(s=None, v_min=None, v_max=None, default=None):
         if default is not None and default > v_max:
             logging.error('Illegal default, v_max combination ({default}, {v_max})')
             return None
+    if inset is not None:
+        if (not isinstance(inset, (tuple, list)) or False in [True if isinstance(i, int) else
+                False for i in inset]):
+            illegal_value(inset, 'inset', 'input_int') 
+            return None
     if v_min is not None and v_max is not None:
-        v_range = f' (in range [{v_min}, {v_max}])'
+        v_range = f' ({v_min}, {v_max})'
     elif v_min is not None:
         v_range = f' (>= {v_min})'
     elif v_max is not None:
@@ -333,8 +334,11 @@ def input_int(s=None, v_min=None, v_max=None, default=None):
         i = input()
         if isinstance(i, str) and not len(i):
             v = default
+            print(f'{v}')
         else:
             v = literal_eval(i)
+        if inset and v not in inset:
+           raise ValueError(f'{v} not part of the set {inset}')
     except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
         v = None
     except:
@@ -371,7 +375,7 @@ def input_num(s=None, v_min=None, v_max=None, default=None):
             logging.error('Illegal default, v_max combination ({default}, {v_max})')
             return None
     if v_min is not None and v_max is not None:
-        v_range = f' (in range [{v_min}, {v_max}])'
+        v_range = f' ({v_min}, {v_max})'
     elif v_min is not None:
         v_range = f' (>= {v_min})'
     elif v_max is not None:
@@ -386,6 +390,7 @@ def input_num(s=None, v_min=None, v_max=None, default=None):
         i = input()
         if isinstance(i, str) and not len(i):
             v = default
+            print(f'{v}')
         else:
             v = literal_eval(i)
     except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
@@ -410,7 +415,7 @@ def input_int_list(s=None, v_min=None, v_max=None):
             logging.error(f'Illegal v_min, v_max combination ({v_min}, {v_max})')
             return None
     if v_min is not None and v_max is not None:
-        v_range = f' (each value in range [{v_min}, {v_max}])'
+        v_range = f' (each value in ({v_min}, {v_max}))'
     elif v_min is not None:
         v_range = f' (each value >= {v_min})'
     elif v_max is not None:
@@ -457,14 +462,54 @@ def input_yesno(s=None, default=None):
     i = input()
     if isinstance(i, str) and not len(i):
         i = default
-    if i.lower() in 'yes':
+        print(f'{i}')
+    if i is not None and i.lower() in 'yes':
         v = True
-    elif i.lower() in 'no':
+    elif i is not None and i.lower() in 'no':
         v = False
     else:
         print('Illegal input, enter yes or no')
         v = input_yesno(s, default)
     return v
+
+def input_menu(items, default=None, header=None):
+    if not isinstance(items, (tuple, list)) or False in [True if isinstance(i, str) else False
+            for i in items]:
+        illegal_value(items, 'items', 'input_menu') 
+        return None
+    if default is not None:
+        if not (isinstance(default, str) and default in items):
+            logging.error(f'Illegal value for default ({default}), must be in {items}') 
+            return None
+        default_string = f' [{items.index(default)+1}]'
+    else:
+        default_string = ''
+    if header is None:
+        print(f'Choose one of the following items (1, {len(items)}){default_string}:')
+    else:
+        print(f'{header} (1, {len(items)}){default_string}:')
+    for i, choice in enumerate(items):
+        print(f'  {i+1}: {choice}')
+    try:
+        choice  = input()
+        if isinstance(choice, str) and not len(choice):
+            choice = items.index(default)
+            print(f'{choice+1}')
+        else:
+            choice = literal_eval(choice)
+            if isinstance(choice, int) and 1 <= choice <= len(items):
+                choice -= 1
+            else:
+                raise ValueError
+    except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
+        choice = None
+    except:
+        print('Unexpected error')
+        raise
+    if choice is None:
+        print(f'Illegal choice, enter a number between 1 and {len(items)}')
+        choice = input_menu(items, default)
+    return choice
 
 def create_mask(x, bounds=None, reverse_mask=False, current_mask=None):
     # bounds is a pair of number in the same units a x
@@ -492,10 +537,11 @@ def create_mask(x, bounds=None, reverse_mask=False, current_mask=None):
     return mask
 
 def draw_mask_1d(ydata, xdata=None, current_index_ranges=None, current_mask=None,
-        select_mask=True):
+        select_mask=True, num_index_ranges_max=None, title=None, legend=None, test_mode=False):
     def draw_selections(ax):
         ax.clear()
-        ax.set_title(axes_title)
+        ax.set_title(title)
+        ax.legend([legend])
         ax.plot(xdata, ydata, 'k')
         for (low, upp) in current_include:
             xlow = 0.5*(xdata[max(0, low-1)]+xdata[low])
@@ -563,7 +609,7 @@ def draw_mask_1d(ydata, xdata=None, current_index_ranges=None, current_mask=None
     ydata = np.asarray(ydata)
     if ydata.ndim > 1:
         logging.warning(f'Illegal ydata dimension ({ydata.ndim})')
-        return None
+        return None, None
     num_data = ydata.size
     if xdata is None:
         xdata = np.arange(num_data)
@@ -571,24 +617,34 @@ def draw_mask_1d(ydata, xdata=None, current_index_ranges=None, current_mask=None
         xdata = np.asarray(xdata, dtype=np.float64)
         if xdata.ndim > 1 or xdata.size != num_data:
             logging.warning(f'Illegal xdata shape ({xdata.shape})')
-            return None
+            return None, None
         if not np.all(xdata[:-1] < xdata[1:]):
             logging.warning('Illegal xdata: must be monotonically increasing')
-            return None
+            return None, None
     if current_index_ranges is not None:
         if not isinstance(current_index_ranges, (tuple, list)):
             logging.warning('Illegal current_index_ranges parameter ({current_index_ranges}, '+
                     f'{type(current_index_ranges)})')
-            return None
+            return None, None
     if not isinstance(select_mask, bool):
         logging.warning('Illegal select_mask parameter ({select_mask}, {type(select_mask)})')
-        return None
+        return None, None
+    if num_index_ranges_max is not None:
+        logging.warning('num_index_ranges_max input not yet implemented in draw_mask_1d')
+    if title is None:
+        title = 'select ranges of data'
+    elif not isinstance(title, str):
+        illegal(title, 'title')
+        title = ''
+    if legend is None and not isinstance(title, str):
+        illegal(legend, 'legend')
+        legend = None
 
     if select_mask:
-        axes_title = 'Click and drag to select ranges of data you wish to include.'
+        title = f'Click and drag to {title} you wish to include'
         selection_color = 'green'
     else:
-        axes_title = 'Click and drag to select ranges of data you wish to exclude.'
+        title = f'Click and drag to {title} you wish to exclude'
         selection_color = 'red'
 
     # Set initial selected mask and the selected/unselected index ranges as needed
@@ -635,29 +691,32 @@ def draw_mask_1d(ydata, xdata=None, current_index_ranges=None, current_mask=None
         if current_include[-1][1] < num_data-1:
             current_exclude.append((current_include[-1][1]+1, num_data-1))
 
-    # Set up matplotlib figure
-    fig, ax = plt.subplots()
-    plt.subplots_adjust(bottom=0.2)
-    draw_selections(ax)
+    if not test_mode:
 
-    # Set up event handling for click-and-drag range selection
-    cid_click = fig.canvas.mpl_connect('button_press_event', onclick)
-    cid_release = fig.canvas.mpl_connect('button_release_event', onrelease)
+        # Set up matplotlib figure
+        plt.close('all')
+        fig, ax = plt.subplots()
+        plt.subplots_adjust(bottom=0.2)
+        draw_selections(ax)
 
-    # Set up confirm / clear range selection buttons
-    confirm_b = Button(plt.axes([0.75, 0.05, 0.15, 0.075]), 'Confirm')
-    clear_b = Button(plt.axes([0.59, 0.05, 0.15, 0.075]), 'Clear')
-    cid_confirm = confirm_b.on_clicked(confirm_selection)
-    cid_clear = clear_b.on_clicked(clear_last_selection)
+        # Set up event handling for click-and-drag range selection
+        cid_click = fig.canvas.mpl_connect('button_press_event', onclick)
+        cid_release = fig.canvas.mpl_connect('button_release_event', onrelease)
 
-    # Show figure
-    plt.show()
+        # Set up confirm / clear range selection buttons
+        confirm_b = Button(plt.axes([0.75, 0.05, 0.15, 0.075]), 'Confirm')
+        clear_b = Button(plt.axes([0.59, 0.05, 0.15, 0.075]), 'Clear')
+        cid_confirm = confirm_b.on_clicked(confirm_selection)
+        cid_clear = clear_b.on_clicked(clear_last_selection)
 
-    # Disconnect callbacks when figure is closed
-    fig.canvas.mpl_disconnect(cid_click)
-    fig.canvas.mpl_disconnect(cid_release)
-    confirm_b.disconnect(cid_confirm)
-    clear_b.disconnect(cid_clear)
+        # Show figure
+        plt.show(block=True)
+
+        # Disconnect callbacks when figure is closed
+        fig.canvas.mpl_disconnect(cid_click)
+        fig.canvas.mpl_disconnect(cid_release)
+        confirm_b.disconnect(cid_confirm)
+        clear_b.disconnect(cid_clear)
 
     # Swap selection depending on select_mask
     if not select_mask:
@@ -726,21 +785,19 @@ def selectImageRange(first_index, offset, num_imgs, name=None, num_required=None
     else:
         name = ' '
     # Check existing values
-    use_input = 'no'
+    use_input = False
     if (is_int(first_index, 0) and is_int(offset, 0) and is_int(num_imgs, 1)):
         if offset < 0:
-            use_input = pyip.inputYesNo('\nCurrent'+name+f'first index = {first_index}, '+
-                    'use this value ([y]/n)? ', blank=True)
+            use_input = input_yesno(f'\nCurrent{name}first index = {first_index}, '+
+                    'use this value (y/n)?', 'y')
         else:
-            use_input = pyip.inputYesNo('\nCurrent'+name+'first index/offset = '+
-                    f'{first_index}/{offset}, use these values ([y]/n)? ',
-                    blank=True)
+            use_input = input_yesno(f'\nCurrent{name}first index/offset = '+
+                    f'{first_index}/{offset}, use these values (y/n)?', 'y')
         if num_required is None:
-            if use_input != 'no':
-                use_input = pyip.inputYesNo('Current number of'+name+'images = '+
-                        f'{num_imgs}, use this value ([y]/n)? ',
-                        blank=True)
-    if use_input != 'no':
+            if use_input:
+                use_input = input_yesno(f'Current number of{name}images = '+
+                        f'{num_imgs}, use this value (y/n)? ', 'y')
+    if use_input:
         return first_index, offset, num_imgs
 
     # Check range against requirements
@@ -766,32 +823,27 @@ def selectImageRange(first_index, offset, num_imgs, name=None, num_required=None
         use_all = f'Use all ([{first_index}, {last_index}])'
         pick_offset = 'Pick a first index offset and a number of images'
         pick_bounds = 'Pick the first and last index'
-        menuchoice = pyip.inputMenu([use_all, pick_offset, pick_bounds], numbered=True)
-        if menuchoice == use_all:
+        choice = input_menu([use_all, pick_offset, pick_bounds], default=pick_offset)
+        if not choice:
             offset = 0
-        elif menuchoice == pick_offset:
-            offset = pyip.inputInt('Enter the first index offset'+
-                    f' [0, {last_index-first_index}]: ', min=0, max=last_index-first_index)
+        elif choice == 1:
+            offset = input_int('Enter the first index offset', 0, last_index-first_index)
             first_index += offset
             if first_index == last_index:
                 num_imgs = 1
             else:
-                num_imgs = pyip.inputInt(f'Enter the number of images [1, {num_imgs-offset}]: ',
-                        min=1, max=num_imgs-offset)
+                num_imgs = input_int('Enter the number of images', 1, num_imgs-offset)
         else:
-            offset = pyip.inputInt(f'Enter the first index [{first_index}, {last_index}]: ',
-                    min=first_index, max=last_index)-first_index
+            offset = input_int('Enter the first index', first_index, last_index)
             first_index += offset
-            num_imgs = pyip.inputInt(f'Enter the last index [{first_index}, {last_index}]: ',
-                    min=first_index, max=last_index)-first_index+1
+            num_imgs = input_int('Enter the last index', first_index, last_index)-first_index+1
     else:
         use_all = f'Use ([{first_index}, {first_index+num_required-1}])'
         pick_offset = 'Pick the first index offset'
-        menuchoice = pyip.inputMenu([use_all, pick_offset], numbered=True)
+        choice = input_menu([use_all, pick_offset], pick_offset)
         offset = 0
-        if menuchoice == pick_offset:
-            offset = pyip.inputInt('Enter the first index offset'+
-                    f'[0, {num_imgs-num_required}]: ', min=0, max=num_imgs-num_required)
+        if choice == 1:
+            offset = input_int('Enter the first index offset', 0, num_imgs-num_required)
             first_index += offset
         num_imgs = num_required
 
@@ -873,7 +925,7 @@ def loadImageStack(files, filetype, img_offset, num_imgs, num_img_skip=0,
                     img_x_bounds[0]:img_x_bounds[1],img_y_bounds[0]:img_y_bounds[1]]
         logging.info(f'... done in {time()-t0:.2f} seconds!')
     else:
-        illegal_value(filetype, 'filetype', 'findImageRange')
+        illegal_value(filetype, 'filetype', 'loadImageStack')
     return img_stack
 
 def combine_tiffs_in_h5(files, num_imgs, h5_filename):
@@ -1084,8 +1136,8 @@ def selectArrayBounds(a, x_low=None, x_upp=None, num_x_min=None, ask_bounds=Fals
             illegal_value(x_upp, 'x_upp', 'selectArrayBounds')
             return None
         quickPlot((range(len_a), a), vlines=(x_low,x_upp), title=title)
-        if pyip.inputYesNo(f'\nCurrent array bounds: [{x_low}, {x_upp}], '+
-                'use these values ([y]/n)? ', blank=True) == 'no':
+        if not input_yesno(f'\nCurrent array bounds: [{x_low}, {x_upp}] '+
+                    'use these values (y/n)?', 'y'):
             x_low = None
             x_upp = None
         else:
@@ -1098,17 +1150,13 @@ def selectArrayBounds(a, x_low=None, x_upp=None, num_x_min=None, ask_bounds=Fals
         x_low_max = len_a-num_x_min
         while True:
             quickPlot(range(x_min, x_max), a[x_min:x_max], title=title)
-            zoom_flag = pyip.inputInt('Set lower data bound ([0]) or zoom in (1)?: ',
-                    min=0, max=1, blank=True)
-            if zoom_flag == 1:
-                x_min = pyip.inputInt(f'    Set lower zoom index [0, {x_low_max}]: ',
-                        min=0, max=x_low_max)
-                x_max = pyip.inputInt(f'    Set upper zoom index [{x_min+1}, {x_low_max+1}]: ',
-                        min=x_min+1, max=x_low_max+1)
-            else:
-                x_low = pyip.inputInt(f'    Set lower data bound [0, {x_low_max}]: ',
-                        min=0, max=x_low_max)
+            zoom_flag = input_yesno('Set lower data bound (y) or zoom in (n)?', 'y')
+            if zoom_flag:
+                x_low = input_int('    Set lower data bound', 0, x_low_max)
                 break
+            else:
+                x_min = input_int('    Set lower zoom index', 0, x_low_max)
+                x_max = input_int('    Set upper zoom index', x_min+1, x_low_max+1)
     else:
         if not is_int(x_low, 0, len_a-num_x_min):
             illegal_value(x_low, 'x_low', 'selectArrayBounds')
@@ -1119,24 +1167,20 @@ def selectArrayBounds(a, x_low=None, x_upp=None, num_x_min=None, ask_bounds=Fals
         x_upp_min = x_min
         while True:
             quickPlot(range(x_min, x_max), a[x_min:x_max], title=title)
-            zoom_flag = pyip.inputInt('Set upper data bound ([0]) or zoom in (1)?: ',
-                    min=0, max=1, blank=True)
-            if zoom_flag == 1:
-                x_min = pyip.inputInt(f'    Set upper zoom index [{x_upp_min}, {len_a-1}]: ',
-                        min=x_upp_min, max=len_a-1)
-                x_max = pyip.inputInt(f'    Set upper zoom index [{x_min+1}, {len_a}]: ',
-                        min=x_min+1, max=len_a)
-            else:
-                x_upp = pyip.inputInt(f'    Set upper data bound [{x_upp_min}, {len_a}]: ',
-                        min=x_upp_min, max=len_a)
+            zoom_flag = input_yesno('Set upper data bound (y) or zoom in (n)?', 'y')
+            if zoom_flag:
+                x_upp = input_int('    Set upper data bound', x_upp_min, len_a)
                 break
+            else:
+                x_min = input_int('    Set upper zoom index', x_upp_min, len_a-1)
+                x_max = input_int('    Set upper zoom index', x_min+1, len_a)
     else:
         if not is_int(x_upp, x_low+num_x_min, len_a):
             illegal_value(x_upp, 'x_upp', 'selectArrayBounds')
             return None
     print(f'lower bound = {x_low} (inclusive)\nupper bound = {x_upp} (exclusive)]')
     quickPlot((range(len_a), a), vlines=(x_low,x_upp), title=title)
-    if pyip.inputYesNo('Accept these bounds ([y]/n)?: ', blank=True) == 'no':
+    if not input_yesno('Accept these bounds (y/n)?', 'y'):
         x_low, x_upp = selectArrayBounds(a, None, None, num_x_min, title=title)
     clearPlot(title)
     return x_low, x_upp
@@ -1184,17 +1228,13 @@ def selectImageBounds(a, axis, low=None, upp=None, num_min=None,
             else:
                 quickImshow(a[min_:max_,:], title=title, aspect='auto',
                         extent=[0,a.shape[1], max_,min_])
-            zoom_flag = pyip.inputInt('Set lower data bound (0) or zoom in (1)?: ',
-                    min=0, max=1)
+            zoom_flag = input_yesno('Set lower data bound (y) or zoom in (n)?', 'y')
             if zoom_flag:
-                min_ = pyip.inputInt(f'    Set lower zoom index [0, {low_max}]: ',
-                        min=0, max=low_max)
-                max_ = pyip.inputInt(f'    Set upper zoom index [{min_+1}, {low_max+1}]: ',
-                        min=min_+1, max=low_max+1)
-            else:
-                low = pyip.inputInt(f'    Set lower data bound [0, {low_max}]: ',
-                        min=0, max=low_max)
+                low = input_int('    Set lower data bound', 0, low_max)
                 break
+            else:
+                min_ = input_int('    Set lower zoom index', 0, low_max)
+                max_ = input_int('    Set upper zoom index', min_+1, low_max+1)
     else:
         if not is_int(low, 0, a.shape[axis]-num_min):
             illegal_value(low, 'low', 'selectImageBounds')
@@ -1210,17 +1250,13 @@ def selectImageBounds(a, axis, low=None, upp=None, num_min=None,
             else:
                 quickImshow(a[min_:max_,:], title=title, aspect='auto',
                         extent=[0,a.shape[1], max_,min_])
-            zoom_flag = pyip.inputInt('Set upper data bound (0) or zoom in (1)?: ',
-                    min=0, max=1)
+            zoom_flag = input_yesno('Set upper data bound (y) or zoom in (n)?', 'y')
             if zoom_flag:
-                min_ = pyip.inputInt(f'    Set upper zoom index [{upp_min}, {a.shape[axis]-1}]: ',
-                        min=upp_min, max=a.shape[axis]-1)
-                max_ = pyip.inputInt(f'    Set upper zoom index [{min_+1}, {a.shape[axis]}]: ',
-                        min=min_+1, max=a.shape[axis])
-            else:
-                upp = pyip.inputInt(f'    Set upper data bound [{upp_min}, {a.shape[axis]}]: ',
-                        min=upp_min, max=a.shape[axis])
+                upp = input_int('    Set upper data bound', upp_min, a.shape[axis])
                 break
+            else:
+                min_ = input_int('    Set upper zoom index', upp_min, a.shape[axis]-1)
+                max_ = input_int('    Set upper zoom index', min_+1, a.shape[axis])
     else:
         if not is_int(upp, low+num_min, a.shape[axis]):
             illegal_value(upp, 'upp', 'selectImageBounds')
@@ -1237,11 +1273,10 @@ def selectImageBounds(a, axis, low=None, upp=None, num_min=None,
     print(f'lower bound = {low} (inclusive)\nupper bound = {upp} (exclusive)')
     quickImshow(a_tmp, title=title)
     del a_tmp
-    if pyip.inputYesNo('Accept these bounds ([y]/n)?: ', blank=True) == 'no':
+    if not input_yesno('Accept these bounds (y/n)?', 'y'):
         bounds = selectImageBounds(a, axis, low=low_save, upp=upp_save, num_min=num_min_save,
             title=title)
     return bounds
-
 
 
 class Config:
@@ -1283,7 +1318,7 @@ class Config:
             self.config = {item[0].strip():literal_eval(item[1].strip()) for item in
                     [line.split('#')[0].split('=') for line in lines if '=' in line.split('#')[0]]}
         else:
-            illegal_value(self.suffix, 'config file extension', 'loadFile')
+            illegal_value(self.suffix, 'config file extension', 'Config.loadFile')
 
         # Make sure config file was correctly loaded
         if isinstance(self.config, dict):
@@ -1295,7 +1330,6 @@ class Config:
     def loadDict(self, config_dict):
         """Takes a dictionary and places it into self.config.
         """
-        exit('loadDict not tested yet, what format do we follow: txt or yaml?')
         if self.load_flag:
             logging.warning('Overwriting the previously loaded config file')
 
@@ -1303,7 +1337,7 @@ class Config:
             self.config = config_dict
             self.load_flag = True
         else:
-            illegal_value(config_dict, 'dictionary config object', 'loadDict')
+            illegal_value(config_dict, 'dictionary config object', 'Config.loadDict')
             self.config = {}
 
     def saveFile(self, config_file):
@@ -1311,7 +1345,7 @@ class Config:
         """
         suffix = os.path.splitext(config_file)[1]
         if suffix != '.yml' and suffix != '.yaml':
-            illegal_value(suffix, 'config file extension', 'saveFile')
+            illegal_value(suffix, 'config file extension', 'Config.saveFile')
 
         # Check if config file exists
         if os.path.isfile(config_file):
@@ -1324,15 +1358,31 @@ class Config:
             yaml.safe_dump(self.config, f)
 
     def validate(self, pars_required, pars_missing=None):
-        """Returns False if any required first level keys are missing.
+        """Returns False if any required keys are missing.
         """
         if not self.load_flag:
             logging.error('Load a config file prior to calling Config.validate')
-        pars = [p for p in pars_required if p not in self.config]
-        if isinstance(pars_missing, list):
-            pars_missing.extend(pars)
-        elif pars_missing is not None:
-            illegal_value(pars_missing, 'pars_missing', 'Config.validate')
-        if len(pars) > 0:
+
+        def validate_nested_pars(config, par):
+            par_levels = par.split(':')
+            first_level_par = par_levels[0]
+            try:
+                first_level_par = int(first_level_par)
+            except:
+                pass
+            try:
+                next_level_config = config[first_level_par]
+                if len(par_levels) > 1:
+                    next_level_par = ':'.join(par_levels[1:])
+                    return validate_nested_pars(next_level_config, next_level_par)
+                else:
+                    return True
+            except:
+                return False
+
+        pars_missing = [p for p in pars_required if not validate_nested_pars(self.config, p)]
+        if len(pars_missing) > 0:
+            logging.error(f'Missing item(s) in configuration: {", ".join(pars_missing)}')
             return False
-        return True
+        else:
+            return True

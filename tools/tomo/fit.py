@@ -8,6 +8,7 @@ Created on Mon Dec  6 15:36:22 2021
 """
 
 import sys
+import re
 import logging
 import numpy as np
 
@@ -18,7 +19,7 @@ from lmfit import Model, Parameters
 from lmfit.models import ConstantModel, LinearModel, QuadraticModel, PolynomialModel,\
         StepModel, RectangleModel, GaussianModel, LorentzianModel
 
-from general import *
+from general import is_index, index_nearest, quickPlot
 
 # sigma = fwhm_factor*fwhm
 fwhm_factor = {
