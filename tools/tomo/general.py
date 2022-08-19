@@ -739,7 +739,7 @@ def findImageFiles(path, filetype, name=None):
     # Find available index range
     if filetype == 'tif':
         if not isinstance(path, str) or not os.path.isdir(path):
-            illegal_value(path, 'path', 'findImageRange')
+            illegal_value(path, 'path', 'findImageFiles')
             return -1, 0, []
         indexRegex = re.compile(r'\d+')
         # At this point only tiffs
@@ -762,7 +762,7 @@ def findImageFiles(path, filetype, name=None):
         paths = [os.path.join(path, f) for f in files]
     elif filetype == 'h5':
         if not isinstance(path, str) or not os.path.isfile(path):
-            illegal_value(path, 'path', 'findImageRange')
+            illegal_value(path, 'path', 'findImageFiles')
             return -1, 0, []
         # At this point only h5 in alamo2 detector style
         first_index = 0
@@ -771,7 +771,7 @@ def findImageFiles(path, filetype, name=None):
             last_index = num_imgs-1
         paths = [path]
     else:
-        illegal_value(filetype, 'filetype', 'findImageRange')
+        illegal_value(filetype, 'filetype', 'findImageFiles')
         return -1, 0, []
     logging.debug('\nNumber of available'+name+f'images: {num_imgs}')
     logging.debug('Index range of available'+name+f'images: [{first_index}, '+

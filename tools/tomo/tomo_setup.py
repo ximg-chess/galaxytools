@@ -57,19 +57,19 @@ def __main__():
             handlers=[logging.StreamHandler()])
 
     # Check command line arguments
-    logging.info(f'config = {args.config}')
+    logging.debug(f'config = {args.config}')
     if args.detector is None:
-        logging.info(f'detector = {args.detector}')
+        logging.debug(f'detector = {args.detector}')
     else:
-        logging.info(f'detector = {args.detector.split()}')
-    logging.info(f'num_theta = {args.num_theta}')
+        logging.debug(f'detector = {args.detector.split()}')
+    logging.debug(f'num_theta = {args.num_theta}')
     if args.theta_range is None:
-        logging.info(f'theta_range = {args.theta_range}')
+        logging.debug(f'theta_range = {args.theta_range}')
     else:
-        logging.info(f'theta_range = {args.theta_range.split()}')
-    logging.info(f'output_config = {args.output_config}')
-    logging.info(f'output_data = {args.output_data}')
-    logging.info(f'log = {args.log}')
+        logging.debug(f'theta_range = {args.theta_range.split()}')
+    logging.debug(f'output_config = {args.output_config}')
+    logging.debug(f'output_data = {args.output_data}')
+    logging.debug(f'log = {args.log}')
     logging.debug(f'is log stdout? {args.log is sys.stdout}')
     if args.detector is not None and len(args.detector.split()) != 3:
         raise ValueError(f'Invalid detector: {args.detector}')
@@ -97,13 +97,13 @@ def __main__():
         assert(args.theta_range is not None)
     else:
         ref_heights = None
-    logging.info(f'config_type = {config_type} {type(config_type)}')
-    logging.info(f'input_type = {input_type} {type(input_type)}')
-    logging.info(f'num_stack = {num_stack} {type(num_stack)}')
-    logging.info(f'stack_types = {stack_types} {type(stack_types)}')
-    logging.info(f'num_imgs = {num_imgs} {type(num_imgs)}')
-    logging.info(f'img_offsets = {img_offsets} {type(img_offsets)}')
-    logging.info(f'ref_heights = {ref_heights} {type(ref_heights)}')
+    logging.debug(f'config_type = {config_type} {type(config_type)}')
+    logging.debug(f'input_type = {input_type} {type(input_type)}')
+    logging.debug(f'num_stack = {num_stack} {type(num_stack)}')
+    logging.debug(f'stack_types = {stack_types} {type(stack_types)}')
+    logging.debug(f'num_imgs = {num_imgs} {type(num_imgs)}')
+    logging.debug(f'img_offsets = {img_offsets} {type(img_offsets)}')
+    logging.debug(f'ref_heights = {ref_heights} {type(ref_heights)}')
     if config_type != 'config_file' and config_type != 'config_manual':
         raise ValueError('Invalid input config provided.')
     if input_type != 'collections' and input_type != 'files':
@@ -198,8 +198,10 @@ def __main__():
         if config_type == 'config_file':
             assert(dark_field is not None)
             assert(dark_field['data_path'] is None)
-            assert(dark_field['img_start'] == -1)
-            assert(not dark_field['num'])
+            if dark_field.get('img_start') is None or dark_field['img_start'] != -1:
+                dark_field['img_start'] = -1
+            if dark_field.get('num') is None or dark_field['num'] != 0:
+                dark_field['num'] = 0
         else:
             tomo.config['dark_field'] = {'data_path' : None, 'img_start' : -1, 'num' : 0}
         tdf_files = [None]
@@ -208,7 +210,8 @@ def __main__():
         if config_type == 'config_file':
             assert(dark_field is not None)
             assert(dark_field['data_path'] is not None)
-            assert(dark_field.get('img_start') is not None)
+            if dark_field.get('img_start') is None:
+                dark_field['img_start'] = 0
         else:
             tomo.config['dark_field'] = {'data_path' : tdf_files[0], 'img_start' : 0}
             dark_field = tomo.config['dark_field']
@@ -229,7 +232,8 @@ def __main__():
     if config_type == 'config_file':
         assert(bright_field is not None)
         assert(bright_field['data_path'] is not None)
-        assert(bright_field.get('img_start') is not None)
+        if bright_field.get('img_start') is None:
+            bright_field['img_start'] = 0
     else:
         tomo.config['bright_field'] = {'data_path' : tbf_files[0], 'img_start' : 0}
         bright_field = tomo.config['bright_field']
@@ -251,7 +255,8 @@ def __main__():
         assert(stack_info.get('stacks') is not None)
         for stack in stack_info['stacks']:
             assert(stack['data_path'] is not None)
-            assert(stack.get('img_start') is not None)
+            if stack.get('img_start') is None:
+                stack['img_start'] = 0
             assert(stack.get('index') is not None)
             assert(stack.get('ref_height') is not None)
     else:

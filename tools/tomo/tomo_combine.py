@@ -45,8 +45,8 @@ def __main__():
     logging.basicConfig(format=logging_format, level=level, force=True,
             handlers=[logging.StreamHandler()])
 
-    logging.debug(f'input_stacks = {args.input_stacks}')
     logging.debug(f'config = {args.config}')
+    logging.debug(f'input_stacks = {args.input_stacks}')
     logging.debug(f'x_bounds = {args.x_bounds} {type(args.x_bounds)}')
     logging.debug(f'y_bounds = {args.y_bounds} {type(args.y_bounds)}')
     logging.debug(f'z_bounds = {args.z_bounds} {type(args.z_bounds)}')
@@ -68,7 +68,7 @@ def __main__():
     # Combined reconstructed tomography stacks
     galaxy_param = {'x_bounds' : args.x_bounds, 'y_bounds' : args.y_bounds,
             'z_bounds' : args.z_bounds, 'output_name' : args.output_data}
-    logging.info(f'galaxy_param = {galaxy_param}')
+    logging.debug(f'galaxy_param = {galaxy_param}')
     tomo.combineTomoStacks(galaxy_param)
 
     # Displaying memory usage

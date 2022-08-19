@@ -47,8 +47,8 @@ def __main__():
     logging.basicConfig(format=logging_format, level=level, force=True,
             handlers=[logging.StreamHandler()])
 
-    logging.debug(f'input_stacks = {args.input_stacks}')
     logging.debug(f'config = {args.config}')
+    logging.debug(f'input_stacks = {args.input_stacks}')
     logging.debug(f'row_bounds = {args.row_bounds} {type(args.row_bounds)}')
     logging.debug(f'center_rows = {args.center_rows} {type(args.center_rows)}')
     logging.debug(f'center_type_selector = {args.center_type_selector}')

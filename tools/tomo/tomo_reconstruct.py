@@ -18,7 +18,7 @@ def __main__():
     parser.add_argument('-c', '--config',
             help='Input config')
     parser.add_argument('--center_offsets',
-            required=True, nargs=2, type=float, help='Reconstruction center axis offsets')
+            nargs=2, type=float, help='Reconstruction center axis offsets')
     parser.add_argument('--output_config',
             help='Output config')
     parser.add_argument('--output_data',
@@ -41,8 +41,8 @@ def __main__():
     logging.basicConfig(format=logging_format, level=level, force=True,
             handlers=[logging.StreamHandler()])
 
-    logging.debug(f'input_stacks = {args.input_stacks}')
     logging.debug(f'config = {args.config}')
+    logging.debug(f'input_stacks = {args.input_stacks}')
     logging.debug(f'center_offsets = {args.center_offsets} {type(args.center_offsets)}')
     logging.debug(f'output_config = {args.output_config}')
     logging.debug(f'output_data = {args.output_data}')
@@ -56,12 +56,22 @@ def __main__():
         raise ValueError('Invalid config file provided.')
     logging.debug(f'config:\n{tomo.config}')
 
+    # Set reconstruction center axis offsets
+    if args.center_offsets is None:
+        find_center = tomo.config.get('find_center')
+        if find_center is None:
+            raise ValueError('Invalid config file provided (missing find_center).')
+        center_offsets = [float(find_center.get('lower_center_offset')),
+                float(find_center.get('upper_center_offset'))]
+    else:
+        center_offsets = args.center_offsets
+
     # Load preprocessed image files
     tomo.loadTomoStacks(args.input_stacks)
 
     # Reconstruct tomography stacks
-    galaxy_param = {'center_offsets' : args.center_offsets, 'output_name' : args.output_data}
-    logging.info(f'galaxy_param = {galaxy_param}')
+    galaxy_param = {'center_offsets' : center_offsets, 'output_name' : args.output_data}
+    logging.debug(f'galaxy_param = {galaxy_param}')
     tomo.reconstructTomoStacks(galaxy_param)
 
     # Displaying memory usage
