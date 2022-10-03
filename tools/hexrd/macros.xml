@@ -393,9 +393,9 @@ HEXRD_ provides analysis of x-ray diffraction data, especially high-energy x-ray
 
 **OUTPUTS**
 
-  - config yaml - parameter for hexrd
-  - log - the hexrd logging output
-  - grains.out
+  - config yaml - parameters for hexrd find-orientations and fit-grains forward projection algorithms. 
+  - log - the hexrd logging output as it would be in the command line interface
+  - grains.out - list of all unique grains in the sample with the following descriptors for each grain : unique integer ID, completeness in forward projection algorithm, goodness of fit, grain centroid positions, grain orientation in exponential map form, and elastic strain tensors. 
 ]]></token>
     <token name="@FIND_ORIENTATIONS_OUTPUTS_HELP@"><![CDATA[@COMMON_OUTPUTS_HELP@
   - analysis eta-ome_maps.npz *(used as input for hexrd fit-grains)*
