@@ -1,0 +1,46 @@
+<tool id="tomo_reconstruct" name="Tomo Reconstruction" version="0.2.0" python_template_version="3.9">
+    <description>Perform a tomography reconstruction</description>
+    <macros>
+        <import>tomo_macros.xml</import>
+    </macros>
+    <expand macro="requirements" />
+    <command detect_errors="exit_code"><![CDATA[
+        mkdir center_slice_pngs;
+        $__tool_directory__/tomo_reconstruct.py
+        -i '$red_stacks'
+        -c '$config'
+        #if str($center_offsets.type_selector) == "offsets_manual"
+            --center_offsets $center_offsets.lower_center_offset $center_offsets.upper_center_offset
+        #end if
+        --output_data 'output_data.npz'
+        --output_config 'output_config.yaml'
+        -l '$log'
+    ]]></command>
+    <inputs>
+        <expand macro="common_inputs"/>
+        <param name="red_stacks" type='data' format='npz' optional='false' label="Reduced stacks"/>
+        <conditional name="center_offsets">
+            <param name="type_selector" type="select" label="Read reconstruction center axis offsets from file or enter enter manually">
+                <option value="offsets_from_file" selected="true">Read center axis offsets from file</option>
+                <option value="offsets_manual">Manually enter center axis offsets</option>
+            </param>
+            <when value="offsets_from_file"/>
+            <when value="offsets_manual">
+                <param name="lower_center_offset" type="float" value = "0" optional="false" label="Lower center offset"/>
+                <param name="upper_center_offset" type="float" value = "0" optional="false" label="Upper center offset"/>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <expand macro="common_outputs"/>
+        <data name="output_data" format="npz" label="Reconstructed tomography stacks" from_work_dir="output_data.npz"/>
+        <collection name="center_slice_pngs" type="list" label="Recontructed slices midway in each dimension">
+            <discover_datasets pattern="__name_and_ext__" directory="center_slice_pngs"/>
+        </collection>
+        <data name="output_config" format="tomo.config.yaml" label="Output config reconstruction" from_work_dir="output_config.yaml"/>
+    </outputs>
+    <help><![CDATA[
+        Reconstruct tomography images.
+    ]]></help>
+    <expand macro="citations"/>
+</tool>
